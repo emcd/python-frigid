@@ -50,10 +50,10 @@
 from . import __
 
 
-def immutable( class_: type[ __.C ] ) -> type[ __.C ]:
-    ''' Decorator that makes a class immutable after initialization.
+def immutable( class_: type[ __.C ] ) -> type[ __.C ]: # pylint: disable=too-complex
+    ''' Decorator which makes class immutable after initialization.
 
-        Cannot be applied to classes that define their own __setattr__
+        Cannot be applied to classes which define their own __setattr__
         or __delattr__ methods.
     '''
     for method in ( '__setattr__', '__delattr__' ):
@@ -62,20 +62,25 @@ def immutable( class_: type[ __.C ] ) -> type[ __.C ]:
             raise DecoratorCompatibilityError( class_.__name__, method )
     original_init = next(
         base.__dict__[ '__init__' ] for base in class_.__mro__
-        if '__init__' in base.__dict__ )
+        if '__init__' in base.__dict__ ) # pylint: disable=magic-value-comparison
 
     def __init__(
         self: object, *posargs: __.a.Any, **nomargs: __.a.Any
     ) -> None:
-        attributes = super( class_, self ).__getattribute__( '__dict__' )
-        #super( class_, self ).__setattr__( '__dict__', { } )
+        # TODO: Consider '__slots__' without '__dict__' case.
+        attributes: dict[ str, __.a.Any ]
+        try: attributes = super( class_, self ).__getattribute__( '__dict__' )
+        except AttributeError:
+            attributes = { }
+            super( class_, self ).__setattr__( '__dict__', attributes )
         behaviors: __.cabc.MutableSet[ str ] = (
             attributes.get( '_behaviors_', set( ) ) )
-        super( class_, self ).__setattr__( '_behaviors_', behaviors )
+        if not behaviors:
+            super( class_, self ).__setattr__( '_behaviors_', behaviors )
         original_init( self, *posargs, **nomargs )
         super( class_, self ).__setattr__(
-            '__dict__', __.DictionaryProxy( attributes ) )
-        behaviors.add( 'immutability' )
+            '__dict__', __.ImmutableDictionary( attributes ) )
+        behaviors.add( __.behavior_label )
 
     def __delattr__( self: object, name: str ) -> None:
         if __.behavior_label in getattr( self, '_behaviors_', ( ) ):

@@ -59,13 +59,13 @@ class Namespace( _objects.Object ):  # pylint: disable=eq-without-hash
         **attributes: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
         super( ).__getattribute__( '__dict__' ).update(
-            __.AccretiveDictionary( *iterables, **attributes ) )
+            __.ImmutableDictionary( *iterables, **attributes ) )
         super( ).__init__( )
 
     def __repr__( self ) -> str:
         attributes = ', '.join(
-            f"{key} = {value!r}"
-            for key, value in super( ).__getattribute__( '__dict__' ).items( ) )
+            f"{key} = {value!r}" for key, value
+            in super( ).__getattribute__( '__dict__' ).items( ) )
         fqname = __.calculate_fqname( self )
         if not attributes: return f"{fqname}( )"
         return f"{fqname}( {attributes} )"

@@ -177,6 +177,10 @@ Use Cases 🎯
    :alt: Ruff
    :target: https://github.com/astral-sh/ruff
 
+.. image:: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
+   :alt: Hypothesis
+   :target: https://hypothesis.readthedocs.io
+
 .. image:: https://img.shields.io/pypi/implementation/frigid
    :alt: PyPI - Implementation
    :target: https://pypi.org/project/frigid/

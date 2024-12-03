@@ -53,6 +53,7 @@
 
 
 from . import __
+from . import classes as _classes
 from . import objects as _objects
 
 
@@ -141,6 +142,11 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
         raise NotImplementedError # pragma: no coverage
 
 
+class _Dictionary(
+    __.ImmutableDictionary[ __.H, __.V ], metaclass = _classes.Class
+): pass
+
+
 class Dictionary( # pylint: disable=eq-without-hash
     _objects.Object, _DictionaryOperations[ __.H, __.V ]
 ):
@@ -148,13 +154,14 @@ class Dictionary( # pylint: disable=eq-without-hash
 
     __slots__ = ( '_data_', )
 
+    _data_: _Dictionary[ __.H, __.V ]
+
     def __init__(
         self,
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **entries: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
-        self._data_ = __.DictionaryProxy(
-            __.AccretiveDictionary( *iterables, **entries ) )
+        self._data_ = _Dictionary( *iterables, **entries )
         super( ).__init__( )
 
     def __iter__( self ) -> __.cabc.Iterator[ __.H ]:
@@ -247,15 +254,15 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
     ) -> None:
         self._validator_ = validator
         from itertools import chain
-        for key, value in chain.from_iterable( map(
-            lambda element: (
+        for key, value in chain.from_iterable( map( # type: ignore
+            lambda element: ( # type: ignore
                 element.items( )
                 if isinstance( element, __.cabc.Mapping )
                 else element
             ),
             ( *iterables, entries )
         ) ):
-            if not self._validator_( key, value ):
+            if not self._validator_( key, value ): # type: ignore
                 from .exceptions import EntryValidityError
                 raise EntryValidityError( key, value )
         super( ).__init__( *iterables, **entries )

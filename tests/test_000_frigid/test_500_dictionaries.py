@@ -80,9 +80,13 @@ def test_100_instantiation( module_qname, class_name ):
     assert isinstance( dct, factory )
     assert 1 == dct[ 'foo' ]
     assert 2 == dct[ 'bar' ]
-    assert dct[ 'unicorn' ] if class_name == 'Dictionary' else dct[ 'unicorn' ] == 42
-    assert not dct[ 'orb' ] if class_name == 'Dictionary' else dct[ 'orb' ] == 84
-    assert ( 'foo', 'bar', 'unicorn', 'orb' ) == tuple( sorted( dct.keys( ) ) )
+    assert (
+        dct[ 'unicorn' ] if class_name == 'Dictionary'
+        else dct[ 'unicorn' ] == 42 )
+    assert (
+        not dct[ 'orb' ] if class_name == 'Dictionary'
+        else dct[ 'orb' ] == 84 )
+    assert ( 'bar', 'foo', 'orb', 'unicorn' ) == tuple( sorted( dct.keys( ) ) )
 
 
 @pytest.mark.parametrize(

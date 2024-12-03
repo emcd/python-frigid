@@ -272,12 +272,12 @@ def is_absent( value: object ) -> a.TypeIs[ Absent ]:
     return absent is value
 
 
-class AccretiveDictionary(
+class ImmutableDictionary(
     ConcealerExtension,
     dict[ _H, _V ],
     a.Generic[ _H, _V ],
 ):
-    ''' Accretive subclass of :py:class:`dict`.
+    ''' Immutable subclass of :py:class:`dict`.
 
         Can be used as an instance dictionary.
 
@@ -289,8 +289,19 @@ class AccretiveDictionary(
         *iterables: DictionaryPositionalArgument[ _H, _V ],
         **entries: DictionaryNominativeArgument[ _V ],
     ):
+        self._behaviors_: set[ str ] = set( )
         super( ).__init__( )
-        self.update( *iterables, **entries )
+        from itertools import chain
+        # Add values in order received, enforcing no alteration.
+        for indicator, value in chain.from_iterable( map( # type: ignore
+            lambda element: ( # type: ignore
+                element.items( )
+                if isinstance( element, cabc.Mapping )
+                else element
+            ),
+            ( *iterables, entries )
+        ) ): self[ indicator ] = value # type: ignore
+        self._behaviors_.add( behavior_label )
 
     def __delitem__( self, key: _H ) -> None:
         from .exceptions import EntryImmutabilityError
@@ -298,7 +309,11 @@ class AccretiveDictionary(
 
     def __setitem__( self, key: _H, value: _V ) -> None:
         from .exceptions import EntryImmutabilityError
-        if key in self: raise EntryImmutabilityError( key )
+        default: set[ str ] = set( )
+        if behavior_label in getattr( self, '_behaviors_', default ):
+            raise EntryImmutabilityError( key )
+        if key in self:
+            raise EntryImmutabilityError( key )
         super( ).__setitem__( key, value )
 
     def clear( self ) -> a.Never:
@@ -323,21 +338,13 @@ class AccretiveDictionary(
         raise OperationValidityError( 'popitem' )
 
     def update( # type: ignore
-        self,
+        self, # pylint: disable=unused-argument
         *iterables: DictionaryPositionalArgument[ _H, _V ],
         **entries: DictionaryNominativeArgument[ _V ],
     ) -> None:
-        ''' Adds new entries as a batch. '''
-        from itertools import chain
-        # Add values in order received, enforcing no alteration.
-        for indicator, value in chain.from_iterable( map( # type: ignore
-            lambda element: ( # type: ignore
-                element.items( )
-                if isinstance( element, cabc.Mapping )
-                else element
-            ),
-            ( *iterables, entries )
-        ) ): self[ indicator ] = value # type: ignore
+        ''' Raises exception. Cannot perform mass update. '''
+        from .exceptions import OperationValidityError
+        raise OperationValidityError( 'update' )
 
 
 class Docstring( str ):
