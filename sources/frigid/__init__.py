@@ -30,7 +30,7 @@ from . import exceptions
 from . import modules
 from . import namespaces
 from . import objects
-#from . import qaliases
+from . import qaliases
 
 from .classes import *
 from .dictionaries import *

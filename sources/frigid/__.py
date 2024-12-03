@@ -45,6 +45,7 @@ from types import (
 from . import _annotations as a
 
 
+C = a.TypeVar( 'C' )  # Class
 H = a.TypeVar( 'H', bound = cabc.Hashable )  # Hash Key
 V = a.TypeVar( 'V' )  # Value
 _H = a.TypeVar( '_H' )
@@ -72,6 +73,9 @@ DictionaryValidator: a.TypeAlias = a.Annotation[
 ]
 ModuleReclassifier: a.TypeAlias = cabc.Callable[
     [ cabc.Mapping[ str, a.Any ] ], None ]
+
+
+behavior_label = 'immutability'
 
 
 def repair_class_reproduction( original: type, reproduction: type ) -> None:
@@ -106,9 +110,6 @@ def _repair_cpython_class_closures( # pylint: disable=too-complex
                 accessor = getattr( attribute_, aname )
                 if None is accessor: continue
                 if try_repair_closure( accessor ): return # pragma: no branch
-
-
-_immutability_label = 'immutability'
 
 
 class InternalClass( type ):
@@ -173,13 +174,13 @@ def _immutable_class__init__( class_: type ) -> None:
     if class_.__dict__.get( '_class_decorators_' ): return
     del class_._class_decorators_
     if ( class_behaviors := class_.__dict__.get( '_class_behaviors_' ) ):
-        class_behaviors.add( _immutability_label )
-    else: setattr( class_, '_class_behaviors_', { _immutability_label } )
+        class_behaviors.add( behavior_label )
+    else: setattr( class_, '_class_behaviors_', { behavior_label } )
 
 
 def _immutable_class__delattr__( class_: type, name: str ) -> bool:
     # Consult class attributes dictionary to ignore immutable base classes.
-    if _immutability_label not in class_.__dict__.get(
+    if behavior_label not in class_.__dict__.get(
         '_class_behaviors_', ( )
     ): return False
     raise AttributeError(
@@ -191,7 +192,7 @@ def _immutable_class__delattr__( class_: type, name: str ) -> bool:
 
 def _immutable_class__setattr__( class_: type, name: str ) -> bool:
     # Consult class attributes dictionary to ignore immutable base classes.
-    if _immutability_label not in class_.__dict__.get(
+    if behavior_label not in class_.__dict__.get(
         '_class_behaviors_', ( )
     ): return False
     raise AttributeError(
@@ -339,6 +340,10 @@ class AccretiveDictionary(
         ) ): self[ indicator ] = value # type: ignore
 
 
+class Docstring( str ):
+    ''' Dedicated docstring container. '''
+
+
 def calculate_class_fqname( class_: type ) -> str:
     ''' Calculates fully-qualified name for class. '''
     return f"{class_.__module__}.{class_.__qualname__}"
@@ -360,6 +365,21 @@ def discover_public_attributes(
     return tuple( sorted(
         name for name, attribute in attributes.items( )
         if not name.startswith( '_' ) and callable( attribute ) ) )
+
+
+def generate_docstring(
+    *fragment_ids: type | Docstring | str
+) -> str:
+    ''' Sews together docstring fragments into clean docstring. '''
+    from inspect import cleandoc, getdoc, isclass
+    from ._docstrings import TABLE
+    fragments: list[ str ] = [ ]
+    for fragment_id in fragment_ids:
+        if isclass( fragment_id ): fragment = getdoc( fragment_id ) or ''
+        elif isinstance( fragment_id, Docstring ): fragment = fragment_id
+        else: fragment = TABLE[ fragment_id ]
+        fragments.append( cleandoc( fragment ) )
+    return '\n\n'.join( fragments )
 
 
 __all__ = ( )

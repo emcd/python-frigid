@@ -49,7 +49,7 @@ from .classes import (
 from .dictionaries import (
     AbstractDictionary as           AbstractImmutableDictionary,
     Dictionary as                   ImmutableDictionary,
-    #ValidatorDictionary as          ImmutableValidatorDictionary,
+    ValidatorDictionary as          ImmutableValidatorDictionary,
 )
 from .modules import (
     Module as               ImmutableModule,

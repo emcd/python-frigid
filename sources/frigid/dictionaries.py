@@ -87,9 +87,18 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
         from .exceptions import EntryImmutabilityError
         raise EntryImmutabilityError( key )
 
+
+class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
+    ''' Mix-in providing additional dictionary operations. '''
+
+    def __init__( self, *posargs: __.a.Any, **nomargs: __.a.Any ) -> None:
+        super( ).__init__( *posargs, **nomargs )
+
     def __or__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.a.Self:
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
-        return type( self )( other )
+        data = dict( self )
+        data.update( other )
+        return self.with_data( data )
 
     def __ror__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.a.Self:
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
@@ -100,11 +109,11 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
         other: __.cabc.Set[ __.H ] | __.cabc.Mapping[ __.H, __.V ]
     ) -> __.a.Self:
         if isinstance( other, __.cabc.Mapping ):
-            return type( self )(
+            return self.with_data(
                 ( key, value ) for key, value in self.items( )
                 if key in other and other[ key ] == value )
         if isinstance( other, ( __.cabc.Set, __.cabc.KeysView ) ):
-            return type( self )(
+            return self.with_data(
                 ( key, self[ key ] ) for key in self.keys( ) & other )
         return NotImplemented
 
@@ -117,8 +126,24 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
         ): return NotImplemented
         return self & other
 
+    @__.abstract_member_function
+    def copy( self ) -> __.a.Self:
+        ''' Provides fresh copy of dictionary. '''
+        raise NotImplementedError # pragma: no coverage
 
-class Dictionary( _objects.Object, AbstractDictionary[ __.H, __.V ] ):
+    @__.abstract_member_function
+    def with_data(
+        self,
+        *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
+        **entries: __.DictionaryNominativeArgument[ __.V ],
+    ) -> __.a.Self:
+        ''' Creates new dictionary with same behavior but different data. '''
+        raise NotImplementedError # pragma: no coverage
+
+
+class Dictionary( # pylint: disable=eq-without-hash
+    _objects.Object, _DictionaryOperations[ __.H, __.V ]
+):
     ''' Immutable dictionary. '''
 
     __slots__ = ( '_data_', )
@@ -128,8 +153,8 @@ class Dictionary( _objects.Object, AbstractDictionary[ __.H, __.V ] ):
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **entries: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
-        data = __.AccretiveDictionary( *iterables, **entries )
-        super( ).__setattr__( '_data_', __.DictionaryProxy( data ) )
+        self._data_ = __.DictionaryProxy(
+            __.AccretiveDictionary( *iterables, **entries ) )
         super( ).__init__( )
 
     def __iter__( self ) -> __.cabc.Iterator[ __.H ]:
@@ -139,7 +164,9 @@ class Dictionary( _objects.Object, AbstractDictionary[ __.H, __.V ] ):
         return len( self._data_ )
 
     def __repr__( self ) -> str:
-        return f"{__.calculate_fqname( self )}( {self._data_!r} )"
+        return "{fqname}( {contents} )".format(
+            fqname = __.calculate_fqname( self ),
+            contents = self._data_.__repr__( ) )
 
     def __str__( self ) -> str:
         return str( self._data_ )
@@ -159,6 +186,10 @@ class Dictionary( _objects.Object, AbstractDictionary[ __.H, __.V ] ):
         if isinstance( other, __.cabc.Mapping ):
             return self._data_ != other
         return NotImplemented
+
+    def copy( self ) -> __.a.Self:
+        ''' Provides fresh copy of dictionary. '''
+        return type( self )( self )
 
     def get(
         self, key: __.H, default: __.Optional[ __.V ] = __.absent
@@ -185,9 +216,70 @@ class Dictionary( _objects.Object, AbstractDictionary[ __.H, __.V ] ):
         ''' Provides iterable view over dictionary values. '''
         return self._data_.values( )
 
+    def with_data(
+        self,
+        *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
+        **entries: __.DictionaryNominativeArgument[ __.V ],
+    ) -> __.a.Self:
+        return type( self )( *iterables, **entries )
+
 Dictionary.__doc__ = __.generate_docstring(
     Dictionary, 'dictionary entries immutability' )
 # Register as subclass of Mapping rather than use it as mixin.
 # We directly implement, for the sake of efficiency, the methods which the
 # mixin would provide.
 __.cabc.Mapping.register( Dictionary )  # type: ignore
+
+
+class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
+    ''' Immutable dictionary with validation of entries on initialization. '''
+
+    __slots__ = ( '_validator_', )
+
+    _validator_: __.DictionaryValidator[ __.H, __.V ]
+
+    def __init__(
+        self,
+        validator: __.DictionaryValidator[ __.H, __.V ],
+        /,
+        *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
+        **entries: __.DictionaryNominativeArgument[ __.V ],
+    ) -> None:
+        self._validator_ = validator
+        from itertools import chain
+        for key, value in chain.from_iterable( map(
+            lambda element: (
+                element.items( )
+                if isinstance( element, __.cabc.Mapping )
+                else element
+            ),
+            ( *iterables, entries )
+        ) ):
+            if not self._validator_( key, value ):
+                from .exceptions import EntryValidityError
+                raise EntryValidityError( key, value )
+        super( ).__init__( *iterables, **entries )
+
+    def __repr__( self ) -> str:
+        return "{fqname}( {validator}, {contents} )".format(
+            fqname = __.calculate_fqname( self ),
+            validator = self._validator_.__repr__( ),
+            contents = self._data_.__repr__( ) )
+
+    def copy( self ) -> __.a.Self:
+        ''' Provides fresh copy of dictionary. '''
+        return type( self )( self._validator_, self )
+
+    def with_data(
+        self,
+        *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
+        **entries: __.DictionaryNominativeArgument[ __.V ],
+    ) -> __.a.Self:
+        ''' Creates new dictionary with same behavior but different data. '''
+        return type( self )( self._validator_, *iterables, **entries )
+
+ValidatorDictionary.__doc__ = __.generate_docstring(
+    ValidatorDictionary,
+    'dictionary entries immutability',
+    'dictionary entries validation',
+)

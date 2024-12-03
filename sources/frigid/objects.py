@@ -50,7 +50,7 @@
 from . import __
 
 
-def immutable( class_: type ) -> type:
+def immutable( class_: type[ __.C ] ) -> type[ __.C ]:
     ''' Decorator that makes a class immutable after initialization.
 
         Cannot be applied to classes that define their own __setattr__
@@ -78,13 +78,13 @@ def immutable( class_: type ) -> type:
         behaviors.add( 'immutability' )
 
     def __delattr__( self: object, name: str ) -> None:
-        if 'immutability' in getattr( self, '_behaviors_', ( ) ):
+        if __.behavior_label in getattr( self, '_behaviors_', ( ) ):
             from .exceptions import AttributeImmutabilityError
             raise AttributeImmutabilityError( name )
         super( class_, self ).__delattr__( name )
 
     def __setattr__( self: object, name: str, value: __.a.Any ) -> None:
-        if 'immutability' in getattr( self, '_behaviors_', ( ) ):
+        if __.behavior_label in getattr( self, '_behaviors_', ( ) ):
             from .exceptions import AttributeImmutabilityError
             raise AttributeImmutabilityError( name )
         super( class_, self ).__setattr__( name, value )
