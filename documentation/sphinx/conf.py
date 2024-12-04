@@ -88,6 +88,7 @@ nitpick_ignore = [
     ( 'py:class', "frigid.__._H" ),
     ( 'py:class', "frigid.__._V" ),
     ( 'py:class', "frigid.__.Annotated" ),
+    ( 'py:class', "frigid.__.C" ),
     ( 'py:class', "frigid.__.H" ),
     ( 'py:class', "frigid.__.V" ),
     ( 'py:class', "collections.abc.Annotated" ),
@@ -114,6 +115,10 @@ linkcheck_ignore = [
     fr'https://emcd\.github\.io/.*{project}.*/.*',
     # Stack Overflow rate limits too aggressively, which breaks matrix builds.
     r'https://stackoverflow\.com/help/.*',
+    # TODO: Remove temporary bootstrapping.
+    fr'https://github\.com/emcd/.*{project}.*',
+    fr'https://github\.com/emcd/.*{project}.*/.*',
+    fr'https://pypi.org/project/{project}/',
 ]
 
 # -- Options for HTML output -------------------------------------------------

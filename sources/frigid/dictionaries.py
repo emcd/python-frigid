@@ -94,6 +94,10 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
 
     def __or__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.a.Self:
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
+        conflicts = set( self.keys( ) ) & set( other.keys( ) )
+        if conflicts:
+            from .exceptions import EntryImmutabilityError
+            raise EntryImmutabilityError( next( iter( conflicts ) ) )
         data = dict( self )
         data.update( other )
         return self.with_data( data )

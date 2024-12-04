@@ -34,14 +34,20 @@
     * Objects requiring attribute stability
 
     >>> from frigid import Object
-    >>> obj = Object( x = 1, y = 2 )  # Initialize with attributes
+    >>> class Point( Object ):
+    ...     def __init__( self, x, y ):
+    ...         self.x = x
+    ...         self.y = y
+    ...         super( ).__init__( )
+    ...
+    >>> obj = Point( 1, 2 )  # Initialize with attributes
     >>> obj.z = 3  # Attempt to add attribute
     Traceback (most recent call last):
-        ...
+    ...
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'z'.
     >>> obj.x = 4  # Attempt modification
     Traceback (most recent call last):
-        ...
+    ...
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
 '''
 # pylint: enable=line-too-long

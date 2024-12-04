@@ -27,7 +27,24 @@ API
 Package ``frigid``
 ===============================================================================
 
-.. todo:: Overview
+Data structures which are completely immutable after creation. This behavior is
+useful for configuration objects, value objects, and other scenarios requiring
+collections with strong immutability guarantees.
+
+* ``Dictionary``: A dict-like structure that becomes completely immutable after
+  creation. Includes a ``ValidatorDictionary`` variant, which validates entries
+  during creation.
+
+* ``Namespace``: Similar to :py:class:`types.SimpleNamespace` but completely
+  immutable after creation.
+
+* ``Module``: A module type that enforces complete attribute immutability.
+
+* ``Object``: Base class for objects with immutable attributes.
+
+* ``Class``: Metaclass for creating classes with immutable class attributes.
+
+* ``immutable``: Decorator for making classes produce immutable instances.
 
 
 Module ``frigid.dictionaries``

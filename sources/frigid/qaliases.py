@@ -47,9 +47,9 @@ from .classes import (
     ProtocolClass as        ImmutableProtocolClass,
 )
 from .dictionaries import (
-    AbstractDictionary as           AbstractImmutableDictionary,
-    Dictionary as                   ImmutableDictionary,
-    ValidatorDictionary as          ImmutableValidatorDictionary,
+    AbstractDictionary as   AbstractImmutableDictionary,
+    Dictionary as           ImmutableDictionary,
+    ValidatorDictionary as  ImmutableValidatorDictionary,
 )
 from .modules import (
     Module as               ImmutableModule,
@@ -60,4 +60,5 @@ from .namespaces import (
 )
 from .objects import (
     Object as               ImmutableObject,
+    immutable,
 )

@@ -146,21 +146,22 @@ def test_160_or_combines_dictionaries( module_qname, class_name ):
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
     posargs, nomargs = select_arguments( class_name )
+    # Test union of non-overlapping dictionaries
     d1 = factory( *posargs, a = 1 )
-    d2 = factory( *posargs, c = 4 )
-    d3 = { 'd': 5, 'e': 6 }
+    d2 = factory( *posargs, b = 2 )
+    d3 = { 'c': 3, 'd': 4 }
+    # Union with another immutable dictionary
     d4 = d1 | d2
     assert isinstance( d4, factory )
-    assert d4 == { 'a': 1, 'c': 4 }
+    assert d4 == { 'a': 1, 'b': 2 }
+    # Union with regular dict
     d5 = d1 | d3
     assert isinstance( d5, factory )
-    assert d5 == { 'a': 1, 'd': 5, 'e': 6 }
+    assert d5 == { 'a': 1, 'c': 3, 'd': 4 }
+    # Reverse union with regular dict
     d6 = d3 | d1
     assert isinstance( d6, factory )
-    assert d6 == { 'a': 1, 'd': 5, 'e': 6 }
-    d7 = factory( *posargs, a = 2 )
-    d8 = d1 | d7
-    assert d8 == { 'a': 2 }
+    assert d6 == { 'a': 1, 'c': 3, 'd': 4 }
 
 
 @pytest.mark.parametrize(
@@ -175,6 +176,29 @@ def test_161_or_rejects_invalid_operands( module_qname, class_name ):
     dct = factory( *posargs, **nomargs )
     assert NotImplemented == dct.__or__( [ ] )
     assert NotImplemented == dct.__ror__( [ ] )
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_162_or_prevents_key_conflicts( module_qname, class_name ):
+    ''' Dictionary union raises error on key conflicts. '''
+    module = cache_import_module( module_qname )
+    factory = getattr( module, class_name )
+    posargs, nomargs = select_arguments( class_name )
+    d1 = factory( *posargs, conflict_key = 1, unique1 = 2 )
+    d2 = factory( *posargs, conflict_key = 3, unique2 = 4 )
+    d3 = { 'conflict_key': 2, 'unique3': 5 }
+    with pytest.raises( exceptions.EntryImmutabilityError ) as excinfo:
+        d1 | d2
+    assert "entry for 'conflict_key'" in str( excinfo.value )
+    with pytest.raises( exceptions.EntryImmutabilityError ) as excinfo:
+        d1 | d3
+    assert "entry for 'conflict_key'" in str( excinfo.value )
+    with pytest.raises( exceptions.EntryImmutabilityError ) as excinfo:
+        d3 | d1
+    assert "entry for 'conflict_key'" in str( excinfo.value )
 
 
 @pytest.mark.parametrize(
@@ -298,8 +322,8 @@ def test_204_validator_dictionary_operations_preserve_validation(
         return isinstance( v, int )
 
     d1 = factory( int_validator, a = 1, b = 2 )
-    d2 = factory( int_validator, b = 3, c = 4 )
-    d3 = { 'a': 1, 'd': 5 }
+    d2 = factory( int_validator, c = 3, d = 4 )  # No overlapping keys with d1
+    d3 = { 'e': 5, 'f': 6 }  # No overlapping keys with d1
     d4 = d1 & d2
     assert isinstance( d4, factory )
     assert d4._validator_ is int_validator
@@ -307,11 +331,11 @@ def test_204_validator_dictionary_operations_preserve_validation(
     d5 = d1 & d3
     assert isinstance( d5, factory )
     assert d5._validator_ is int_validator
-    assert d5 == { 'a': 1 }
+    assert d5 == { }  # No common key-value pairs
     d6 = d1 | d2
     assert isinstance( d6, factory )
     assert d6._validator_ is int_validator
-    assert d6 == { 'a': 1, 'b': 3, 'c': 4 }
+    assert d6 == { 'a': 1, 'b': 2, 'c': 3, 'd': 4 }
     d7 = d1.with_data( x = 10, y = 20 )
     assert isinstance( d7, factory )
     assert d7._validator_ is int_validator
@@ -320,6 +344,7 @@ def test_204_validator_dictionary_operations_preserve_validation(
     assert isinstance( d8, factory )
     assert d8._validator_ is int_validator
     assert d8 == d1
+
 
 
 @pytest.mark.parametrize(

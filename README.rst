@@ -179,7 +179,7 @@ Use Cases 🎯
 
 .. image:: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
    :alt: Hypothesis
-   :target: https://hypothesis.readthedocs.io
+   :target: https://hypothesis.readthedocs.io/en/latest/
 
 .. image:: https://img.shields.io/pypi/implementation/frigid
    :alt: PyPI - Implementation
