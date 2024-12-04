@@ -134,10 +134,13 @@ class InternalClass( type ):
         _immutable_class__init__( selfclass )
 
     def __dir__( selfclass ) -> tuple[ str, ... ]:
+        default: frozenset[ str ] = frozenset( )
+        includes: frozenset[ str ] = frozenset.union( *( # type: ignore
+            getattr( class_, '_class_attribute_visibility_includes_', default )
+            for class_ in selfclass.__mro__ ) )
         return tuple( sorted(
             name for name in super( ).__dir__( )
-            if not name.startswith( '_' )
-                or name in selfclass._class_attribute_visibility_includes_ ) )
+            if not name.startswith( '_' ) or name in includes ) )
 
     def __delattr__( selfclass, name: str ) -> None:
         if not _immutable_class__delattr__( selfclass, name ):

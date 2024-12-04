@@ -92,9 +92,6 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
 class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
     ''' Mix-in providing additional dictionary operations. '''
 
-    def __init__( self, *posargs: __.a.Any, **nomargs: __.a.Any ) -> None:
-        super( ).__init__( *posargs, **nomargs )
-
     def __or__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.a.Self:
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
         data = dict( self )
@@ -253,7 +250,10 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
         **entries: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
         self._validator_ = validator
+        entries_: list[ tuple[ __.H, __.V ] ] = [ ]
         from itertools import chain
+        # Collect entries in case an iterable is a generator
+        # which would be consumed during validation, before initialization.
         for key, value in chain.from_iterable( map( # type: ignore
             lambda element: ( # type: ignore
                 element.items( )
@@ -265,7 +265,8 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
             if not self._validator_( key, value ): # type: ignore
                 from .exceptions import EntryValidityError
                 raise EntryValidityError( key, value )
-        super( ).__init__( *iterables, **entries )
+            entries_.append( ( key, value ) ) # type: ignore
+        super( ).__init__( entries_ )
 
     def __repr__( self ) -> str:
         return "{fqname}( {validator}, {contents} )".format(

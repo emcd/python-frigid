@@ -50,6 +50,21 @@
 from . import __
 
 
+def _check_behavior( obj: object ) -> bool:
+    behaviors: __.cabc.MutableSet[ str ]
+    if _check_dict( obj ):
+        attributes = getattr( obj, '__dict__' )
+        behaviors = attributes.get( '_behaviors_', set( ) )
+    else: behaviors = getattr( obj, '_behaviors_', set( ) )
+    return __.behavior_label in behaviors
+
+
+def _check_dict( obj: object ) -> bool:
+    # Return False even if '__dict__' in '__slots__'.
+    if hasattr( obj, '__slots__' ): return False
+    return hasattr( obj, '__dict__' )
+
+
 def immutable( class_: type[ __.C ] ) -> type[ __.C ]: # pylint: disable=too-complex
     ''' Decorator which makes class immutable after initialization.
 
@@ -67,29 +82,27 @@ def immutable( class_: type[ __.C ] ) -> type[ __.C ]: # pylint: disable=too-com
     def __init__(
         self: object, *posargs: __.a.Any, **nomargs: __.a.Any
     ) -> None:
-        # TODO: Consider '__slots__' without '__dict__' case.
-        attributes: dict[ str, __.a.Any ]
-        try: attributes = super( class_, self ).__getattribute__( '__dict__' )
-        except AttributeError:
-            attributes = { }
-            super( class_, self ).__setattr__( '__dict__', attributes )
-        behaviors: __.cabc.MutableSet[ str ] = (
-            attributes.get( '_behaviors_', set( ) ) )
-        if not behaviors:
-            super( class_, self ).__setattr__( '_behaviors_', behaviors )
+        # TODO: Use accretive set for behaviors.
         original_init( self, *posargs, **nomargs )
-        super( class_, self ).__setattr__(
-            '__dict__', __.ImmutableDictionary( attributes ) )
+        behaviors: __.cabc.MutableSet[ str ]
+        if _check_dict( self ):
+            attributes = getattr( self, '__dict__' )
+            behaviors = attributes.get( '_behaviors_', set( ) )
+            if not behaviors: attributes[ '_behaviors_' ] = behaviors
+            setattr( self, '__dict__', __.ImmutableDictionary( attributes ) )
+        else:
+            behaviors = getattr( self, '_behaviors_', set( ) )
+            if not behaviors: setattr( self, '_behaviors_', behaviors )
         behaviors.add( __.behavior_label )
 
     def __delattr__( self: object, name: str ) -> None:
-        if __.behavior_label in getattr( self, '_behaviors_', ( ) ):
+        if _check_behavior( self ):
             from .exceptions import AttributeImmutabilityError
             raise AttributeImmutabilityError( name )
         super( class_, self ).__delattr__( name )
 
     def __setattr__( self: object, name: str, value: __.a.Any ) -> None:
-        if __.behavior_label in getattr( self, '_behaviors_', ( ) ):
+        if _check_behavior( self ):
             from .exceptions import AttributeImmutabilityError
             raise AttributeImmutabilityError( name )
         super( class_, self ).__setattr__( name, value )
@@ -102,11 +115,9 @@ def immutable( class_: type[ __.C ] ) -> type[ __.C ]: # pylint: disable=too-com
 
 @immutable
 class Object:
-    ''' Base class for immutable objects.
-
-        Instances become immutable after initialization.
-        Attempts to modify attributes after initialization will raise
-        AttributeImmutabilityError.
-    '''
+    ''' Immutable objects. '''
 
     __slots__ = ( '__dict__', '_behaviors_' )
+
+Object.__doc__ = __.generate_docstring(
+    Object, 'instance attributes immutability' )

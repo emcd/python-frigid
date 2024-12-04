@@ -252,6 +252,109 @@ def test_202_validator_dictionary_validation( module_qname, class_name ):
 
 @pytest.mark.parametrize(
     'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
+)
+def test_203_validator_dictionary_generator_handling( module_qname, class_name ):
+    ''' Validator dictionary properly handles generator inputs. '''
+    module = cache_import_module( module_qname )
+    factory = getattr( module, class_name )
+
+    def int_validator( k, v ):
+        return isinstance( v, int )
+
+    gen = ( ( str( i ), i ) for i in range( 3 ) )
+    dct = factory( int_validator, gen )
+    assert dct == { '0': 0, '1': 1, '2': 2 }
+    gen = ( ( f'g{i}', i ) for i in range( 2 ) )
+    dct = factory(
+        int_validator,
+        gen,
+        { 'm1': 10, 'm2': 20 },
+        k1 = 100,
+        k2 = 200,
+    )
+    assert dct == {
+        'g0': 0, 'g1': 1,
+        'm1': 10, 'm2': 20,
+        'k1': 100, 'k2': 200,
+    }
+    gen = ( ( str( i ), 'bad' if i == 1 else i ) for i in range( 3 ) )
+    with pytest.raises( exceptions.EntryValidityError ):
+        factory( int_validator, gen )
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
+)
+def test_204_validator_dictionary_operations_preserve_validation(
+    module_qname, class_name
+):
+    ''' Dictionary operations maintain validation rules. '''
+    module = cache_import_module( module_qname )
+    factory = getattr( module, class_name )
+
+    def int_validator( k, v ):
+        return isinstance( v, int )
+
+    d1 = factory( int_validator, a = 1, b = 2 )
+    d2 = factory( int_validator, b = 3, c = 4 )
+    d3 = { 'a': 1, 'd': 5 }
+    d4 = d1 & d2
+    assert isinstance( d4, factory )
+    assert d4._validator_ is int_validator
+    assert d4 == { }  # No common key-value pairs
+    d5 = d1 & d3
+    assert isinstance( d5, factory )
+    assert d5._validator_ is int_validator
+    assert d5 == { 'a': 1 }
+    d6 = d1 | d2
+    assert isinstance( d6, factory )
+    assert d6._validator_ is int_validator
+    assert d6 == { 'a': 1, 'b': 3, 'c': 4 }
+    d7 = d1.with_data( x = 10, y = 20 )
+    assert isinstance( d7, factory )
+    assert d7._validator_ is int_validator
+    assert d7 == { 'x': 10, 'y': 20 }
+    d8 = d1.copy( )
+    assert isinstance( d8, factory )
+    assert d8._validator_ is int_validator
+    assert d8 == d1
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
+)
+def test_205_validator_dictionary_complex_validation( module_qname, class_name ):
+    ''' Validator dictionary handles complex validation rules. '''
+    module = cache_import_module( module_qname )
+    factory = getattr( module, class_name )
+
+    def complex_validator( k, v ):
+        return (
+            isinstance( k, str )
+            and isinstance( v, int )
+            and len( k ) == v
+        )
+
+    d1 = factory( complex_validator, a = 1, bb = 2, ccc = 3 )
+    assert d1 == { 'a': 1, 'bb': 2, 'ccc': 3 }
+    with pytest.raises( exceptions.EntryValidityError ):
+        factory( complex_validator, a = 2 )  # Value doesn't match key length
+    with pytest.raises( exceptions.EntryValidityError ):
+        factory( complex_validator, bb = 'x' )  # Value not int
+    with pytest.raises( exceptions.EntryValidityError ):
+        factory( complex_validator, { 123: 3 } )  # Key not string
+    d2 = factory( complex_validator, bb = 2, xxx = 3 )
+    d3 = d1 & d2
+    assert d3 == { 'bb': 2 }
+    d4 = d1.with_data( zz = 2 )
+    assert d4 == { 'zz': 2 }
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
     product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
 )
 def test_220_duplication( module_qname, class_name ):

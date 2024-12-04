@@ -58,8 +58,8 @@ class Namespace( _objects.Object ):  # pylint: disable=eq-without-hash
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **attributes: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
-        super( ).__getattribute__( '__dict__' ).update(
-            __.ImmutableDictionary( *iterables, **attributes ) )
+        self.__dict__.update(
+            __.ImmutableDictionary( *iterables, **attributes ) ) # type: ignore
         super( ).__init__( )
 
     def __repr__( self ) -> str:
