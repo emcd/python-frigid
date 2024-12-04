@@ -28,7 +28,7 @@
     * ``Omnierror``: Base for all package errors
     * ``AttributeImmutabilityError``: Raised for attribute modification
     * ``EntryImmutabilityError``: Raised for dictionary entry modification
-    * ``InvalidOperationError``: Raised for invalid operations
+    * ``OperationValidityError``: Raised for invalid operations
 '''
 
 

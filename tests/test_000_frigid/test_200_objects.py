@@ -22,7 +22,8 @@
 
 # mypy: ignore-errors
 # pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name,magic-value-comparison,protected-access
+# pylint: disable=invalid-name,magic-value-comparison
+# pylint: disable=missing-class-docstring,protected-access,unused-variable
 
 
 import pytest
@@ -243,7 +244,7 @@ def test_206_immutable_decorator_mixed_slots_dict( ):
     obj = Example( )
     assert 1 == obj.x
     assert 2 == obj.y
-    assert 3 == obj.z
+    assert 3 == obj.z # pylint: disable=no-member
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         obj.x = 4
     with pytest.raises( exceptions.AttributeImmutabilityError ):
@@ -266,7 +267,7 @@ def test_207_immutable_decorator_initialization_deletion( ):
     with pytest.raises( AttributeError ):
         _ = obj.x
     with pytest.raises( exceptions.AttributeImmutabilityError ):
-        del obj._behaviors_
+        del obj._behaviors_ # pylint: disable=no-member
 
 
 @pytest.mark.parametrize(

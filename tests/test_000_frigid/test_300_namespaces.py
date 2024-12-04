@@ -119,7 +119,7 @@ def test_105_namespace_equality( module_qname, class_name ):
     ns3 = SimpleNamespace( foo = 1, bar = 2 )
     assert ns1 == ns3
     assert ns3 == ns1
-    assert not ( ns1 == -1 )
+    assert not ( ns1 == -1 ) # pylint: disable=superfluous-parens
     assert ns1 != -1
     assert ns1 != ( )
     ns4 = factory( foo = 1, bar = 3 )

@@ -105,14 +105,16 @@ def test_500_module_reclassification( module_qname, class_name ):
     'module_qname, class_name',
     product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
 )
-def test_501_module_reclassification_with_custom_type( module_qname, class_name ):
+def test_501_module_reclassification_with_custom_type(
+    module_qname, class_name
+):
     ''' Modules can be reclassified to custom module type. '''
     module = cache_import_module( module_qname )
     Module = getattr( module, class_name )
     from types import ModuleType as Module_
 
     class CustomModule( Module ):
-        pass
+        ''' foo '''
 
     m1 = Module_( 'm1' )
     attrs = { 'm1': m1 }

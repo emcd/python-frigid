@@ -23,6 +23,24 @@
 
     Dictionaries which cannot be modified after creation.
 
+    .. note::
+
+        While :py:class:`types.MappingProxyType` also provides a read-only view
+        of a dictionary, it has important differences from
+        :py:class:`Dictionary`:
+
+        * A ``MappingProxyType`` is a view over a mutable dictionary, so its
+          contents can still change if the underlying dictionary is modified.
+        * ``Dictionary`` owns its data and guarantees that it will never
+          change.
+        * ``Dictionary`` provides set operations (union, intersection) that
+          maintain immutability guarantees.
+
+        Use ``MappingProxyType`` when you want to expose a read-only view of a
+        dictionary that might need to change. Use ``Dictionary`` when you want
+        to ensure that the data can never change, such as for configuration
+        objects or other cases requiring strong immutability guarantees.
+
     * :py:class:`AbstractDictionary`:
       Base class defining the immutable dictionary interface. Implementations
       must provide ``__getitem__``, ``__iter__``, and ``__len__``.

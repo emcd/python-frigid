@@ -22,8 +22,10 @@
 
 # mypy: ignore-errors
 # pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name,magic-value-comparison,protected-access
+# pylint: disable=invalid-name,magic-value-comparison
+# pylint: disable=pointless-statement,protected-access
 # pylint: disable=too-many-locals,too-many-statements,unnecessary-dunder-call
+# pylint: disable=unused-argument,unused-variable
 
 
 import pytest
@@ -269,7 +271,6 @@ def test_202_validator_dictionary_validation( module_qname, class_name ):
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
     posargs, nomargs = select_arguments( class_name )
-    dct = factory( *posargs, valid = 42 )
     with pytest.raises( exceptions.EntryValidityError ):
         factory( *posargs, invalid = 'str' )
 
@@ -278,7 +279,9 @@ def test_202_validator_dictionary_validation( module_qname, class_name ):
     'module_qname, class_name',
     product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
 )
-def test_203_validator_dictionary_generator_handling( module_qname, class_name ):
+def test_203_validator_dictionary_generator_handling(
+    module_qname, class_name
+):
     ''' Validator dictionary properly handles generator inputs. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
@@ -351,7 +354,9 @@ def test_204_validator_dictionary_operations_preserve_validation(
     'module_qname, class_name',
     product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
 )
-def test_205_validator_dictionary_complex_validation( module_qname, class_name ):
+def test_205_validator_dictionary_complex_validation(
+    module_qname, class_name
+):
     ''' Validator dictionary handles complex validation rules. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
@@ -441,7 +446,7 @@ def test_225_dictionary_equality( module_qname, class_name ):
     assert dct2 == dct1
     assert dct1 == dct3
     assert dct3 == dct1
-    assert not ( dct1 == -1 )
+    assert not ( dct1 == -1 ) # pylint: disable=superfluous-parens
     assert dct1 != -1
     assert dct1 != ( )
 
