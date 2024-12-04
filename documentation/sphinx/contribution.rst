@@ -124,16 +124,10 @@ Initial Installation
 
         pipx install hatch
 
-6. Ensure that you have installed `pre-commit <https://pre-commit.com/>`_ via
-   Pipx:
+6. Install Git pre-commit and pre-push hooks:
    ::
 
-        pipx install pre-commit
-
-7. Install Git pre-commit and pre-push hooks:
-   ::
-
-        pre-commit install --config .auxiliary/configuration/pre-commit.yaml
+        hatch --env develop run pre-commit install --config .auxiliary/configuration/pre-commit.yaml
 
 Installation Updates
 -------------------------------------------------------------------------------

@@ -116,8 +116,6 @@ linkcheck_ignore = [
     # Stack Overflow rate limits too aggressively, which breaks matrix builds.
     r'https://stackoverflow\.com/help/.*',
     # TODO: Remove temporary bootstrapping.
-    fr'https://github\.com/emcd/.*{project}.*',
-    fr'https://github\.com/emcd/.*{project}.*/.*',
     fr'https://pypi.org/project/{project}/',
 ]
 
