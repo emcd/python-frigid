@@ -2,3 +2,41 @@
 
 .. towncrier release notes start
 
+Frigid 1.0 (2024-12-04)
+=======================
+
+Features
+--------
+
+- Add ``@immutable`` decorator for making instances of existing classes immutable
+  after initialization. Compatible with most classes except those defining their
+  own ``__setattr__`` or ``__delattr__`` methods.
+- Add ``Module`` class and ``reclassify_modules`` function for creating and
+  converting to immutable modules. This prevents runtime modification of module
+  attributes, helping ensure interface stability.
+- Add ``Namespace`` class providing a completely immutable alternative to
+  ``types.SimpleNamespace``. All attributes must be set during initialization
+  and cannot be modified afterward.
+- Add ``Object`` base class for creating objects with immutable attributes.
+  Derived classes must set attributes in ``__init__`` before calling
+  ``super().__init__()``.
+- Add immutable dictionaries, which have additional methods, such as ``copy`` and
+  ``with_data``, additional operations, such as union (``|``) and intersection
+  (``&``):
+
+    * ``Dictionary`` for simple immutable mappings
+    * ``ValidatorDictionary`` which uses a provided validator function
+- Add metaclasses for creating classes with immutable class attributes:
+
+    * ``Class`` for standard classes
+    * ``ABCFactory`` for abstract base classes
+    * ``ProtocolClass`` for protocol classes
+- Add qualified aliases in ``qaliases`` module with "Immutable" prefix for all
+  core classes, helping avoid namespace conflicts.
+
+
+Supported Platforms
+-------------------
+
+- Add support for CPython 3.10 to 3.13.
+- Add support for PyPy 3.10.
