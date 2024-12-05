@@ -107,7 +107,7 @@ jobs:
         shell: bash
 
       - name: Sign Distributions
-        uses: sigstore/gh-action-sigstore-python@v2.1.1
+        uses: sigstore/gh-action-sigstore-python@v3.0.0
         with:
           inputs: >-
             ${{ env.DISTRIBUTIONS_PATH }}/SHA256SUMS.txt
