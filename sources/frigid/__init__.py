@@ -39,7 +39,7 @@ from .namespaces import *
 from .objects import *
 
 
-__version__ = '1.0rc0'
+__version__ = '1.1a0'
 
 
 _attribute_visibility_includes_ = frozenset( ( '__version__', ) )
