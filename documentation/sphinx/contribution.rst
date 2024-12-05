@@ -272,10 +272,10 @@ Initial Release Candidate
 
         hatch --env develop version minor,alpha
 
-9. Tag.
+9. Tag start of development for next release.
     ::
 
-        git tag v${alpha_version}
+        git tag i${next_release_version}
 
 Release
 -------------------------------------------------------------------------------
