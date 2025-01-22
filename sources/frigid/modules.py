@@ -39,14 +39,14 @@
 from . import __
 
 
-class Module( __.Module ):
+class Module( __.types.ModuleType ):
     ''' Immutable modules. '''
 
     def __delattr__( self, name: str ) -> None:
         from .exceptions import AttributeImmutabilityError
         raise AttributeImmutabilityError( name )
 
-    def __setattr__( self, name: str, value: __.a.Any ) -> None:
+    def __setattr__( self, name: str, value: __.typx.Any ) -> None:
         from .exceptions import AttributeImmutabilityError
         raise AttributeImmutabilityError( name )
 
@@ -55,7 +55,7 @@ Module.__doc__ = __.generate_docstring(
 
 
 def reclassify_modules(
-    attributes: __.cabc.Mapping[ str, __.a.Any ],
+    attributes: __.cabc.Mapping[ str, __.typx.Any ],
     to_class: type[ Module ] = Module
 ) -> None:
     ''' Reclassifies modules in dictionary with custom module type. '''

@@ -59,7 +59,7 @@ from __future__ import annotations
 from . import __
 
 
-ClassDecorators: __.a.TypeAlias = (
+ClassDecorators: __.typx.TypeAlias = (
     __.cabc.Iterable[ __.cabc.Callable[ [ type ], type ] ] )
 
 
@@ -70,20 +70,20 @@ class Class( type ):
     ''' Immutable class factory. '''
 
     def __new__(  # pylint: disable=too-many-arguments
-        factory: type[ type ],
+        clscls: type[ type ],
         name: str,
         bases: tuple[ type, ... ],
-        namespace: dict[ str, __.a.Any ], *,
+        namespace: dict[ str, __.typx.Any ], *,
         decorators: ClassDecorators = ( ),
-        docstring: __.Optional[ __.a.Nullable[ str ] ] = __.absent,
-        **args: __.a.Any
+        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        **args: __.typx.Any
     ) -> Class:
         class_ = type.__new__(
-            factory, name, bases, namespace, **args )
+            clscls, name, bases, namespace, **args )
         return _class__new__(  # type: ignore
             class_, decorators = decorators, docstring = docstring )
 
-    def __init__( selfclass, *posargs: __.a.Any, **nomargs: __.a.Any ):
+    def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
         _class__init__( selfclass )
 
@@ -91,35 +91,34 @@ class Class( type ):
         if not _class__delattr__( selfclass, name ):
             super( ).__delattr__( name )
 
-    def __setattr__( selfclass, name: str, value: __.a.Any ) -> None:
+    def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not _class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
 Class.__doc__ = __.generate_docstring(
     Class,
     'description of class factory class',
-    'class attributes immutability'
-)
+    'class attributes immutability' )
 
 
-class ABCFactory( __.ABCFactory ):  # type: ignore
+class ABCFactory( __.abc.ABCMeta ):
     ''' Immutable abstract base class factory. '''
 
     def __new__(  # pylint: disable=too-many-arguments
-        factory: type[ type ],
+        clscls: type[ type ],
         name: str,
         bases: tuple[ type, ... ],
-        namespace: dict[ str, __.a.Any ], *,
+        namespace: dict[ str, __.typx.Any ], *,
         decorators: ClassDecorators = ( ),
-        docstring: __.Optional[ __.a.Nullable[ str ] ] = __.absent,
-        **args: __.a.Any
+        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        **args: __.typx.Any
     ) -> ABCFactory:
-        class_ = __.ABCFactory.__new__(
-            factory, name, bases, namespace, **args )
-        return _class__new__(  # type: ignore
+        class_ = __.abc.ABCMeta.__new__(
+            clscls, name, bases, namespace, **args )
+        return _class__new__(
             class_, decorators = decorators, docstring = docstring )
 
-    def __init__( selfclass, *posargs: __.a.Any, **nomargs: __.a.Any ):
+    def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
         _class__init__( selfclass )
 
@@ -127,37 +126,36 @@ class ABCFactory( __.ABCFactory ):  # type: ignore
         if not _class__delattr__( selfclass, name ):
             super( ).__delattr__( name )
 
-    def __setattr__( selfclass, name: str, value: __.a.Any ) -> None:
+    def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not _class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
 ABCFactory.__doc__ = __.generate_docstring(
     ABCFactory,
     'description of class factory class',
-    'class attributes immutability'
-)
+    'class attributes immutability' )
 
 
 # pylint: disable=bad-classmethod-argument,no-self-argument
-class ProtocolClass( type( __.a.Protocol ) ):
+class ProtocolClass( type( __.typx.Protocol ) ):
     ''' Immutable protocol class factory. '''
 
     def __new__(  # pylint: disable=too-many-arguments
-        factory: type[ type ],
+        clscls: type[ type ],
         name: str,
         bases: tuple[ type, ... ],
-        namespace: dict[ str, __.a.Any ], *,
+        namespace: dict[ str, __.typx.Any ], *,
         decorators: ClassDecorators = ( ),
-        docstring: __.Optional[ __.a.Nullable[ str ] ] = __.absent,
-        **args: __.a.Any
+        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        **args: __.typx.Any
     ) -> ProtocolClass:
-        class_ = __.a.Protocol.__class__.__new__(  # type: ignore
-            factory, name, bases, namespace, **args )  # type: ignore
+        class_ = __.typx.Protocol.__class__.__new__(  # type: ignore
+            clscls, name, bases, namespace, **args )  # type: ignore
         return _class__new__(
             class_,  # type: ignore
             decorators = decorators, docstring = docstring )
 
-    def __init__( selfclass, *posargs: __.a.Any, **nomargs: __.a.Any ):
+    def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
         _class__init__( selfclass )
 
@@ -165,7 +163,7 @@ class ProtocolClass( type( __.a.Protocol ) ):
         if not _class__delattr__( selfclass, name ):
             super( ).__delattr__( name )
 
-    def __setattr__( selfclass, name: str, value: __.a.Any ) -> None:
+    def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not _class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 # pylint: enable=bad-classmethod-argument,no-self-argument
@@ -173,14 +171,13 @@ class ProtocolClass( type( __.a.Protocol ) ):
 ProtocolClass.__doc__ = __.generate_docstring(
     ProtocolClass,
     'description of class factory class',
-    'class attributes immutability'
-)
+    'class attributes immutability' )
 
 
 def _class__new__(
     original: type,
     decorators: ClassDecorators = ( ),
-    docstring: __.Optional[ __.a.Nullable[ str ] ] = __.absent,
+    docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
 ) -> type:
     # Handle decorators similar to accretive implementation.
     # Some decorators create new classes, which invokes this method again.

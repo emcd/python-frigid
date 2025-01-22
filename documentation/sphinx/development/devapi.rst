@@ -17,25 +17,32 @@
    +--------------------------------------------------------------------------+
 
 
-.. include:: ../../README.rst
+:tocdepth: 3
 
 
-Table of Contents
+Internal Development Interface
 ===============================================================================
 
-.. toctree::
-   :maxdepth: 2
 
-   examples/index
-   api
-   changelog
-   contribution/index
-   license
+Module ``frigid.__.imports``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.imports
 
 
-Indices
-===============================================================================
+Module ``frigid.__.immutables``
+-------------------------------------------------------------------------------
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. automodule:: frigid.__.immutables
+
+
+Module ``frigid.__.dictionaries``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.dictionaries
+
+
+Module ``frigid.__.docstrings``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.docstrings
