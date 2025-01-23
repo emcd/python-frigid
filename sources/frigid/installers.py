@@ -18,33 +18,33 @@
 #============================================================================#
 
 
-''' Immutable data structures. '''
+''' Convenience to expose certain package features as Python builtins. '''
 
-# ruff: noqa: F401,F403
 
+from __future__ import annotations
 
 from . import __
-from . import classes
-from . import dictionaries
-from . import exceptions
-from . import installers
-from . import modules
-from . import namespaces
-from . import objects
-from . import qaliases
-from . import sequences
-
-from .classes import *
-from .dictionaries import *
-from .installers import *
-from .modules import *
-from .namespaces import *
-from .objects import *
-from .sequences import *
 
 
-__version__ = '2.0a0'
+def install(
+    single_name: __.typx.Annotated[
+        str | None,
+        __.typx.Doc(
+            'Name to use for single function in builtins. ``None`` to skip.' )
+    ] = 'one',
+) -> None:
+    ''' Installs 1-element tuple constructor into builtins.
 
-
-_attribute_visibility_includes_ = frozenset( ( '__version__', ) )
-__.reclassify_modules( __name__, recursive = True )
+        Example
+        -------
+        >>> install( )  # Installs as 'one'
+        >>> one( 42 )   # Now available in builtins
+        (42,)
+        >>> install( single_name = 'single' )  # Install with custom name
+        >>> single( 42 )
+        (42,)
+    '''
+    builtins = __import__( 'builtins' )
+    if single_name:
+        from .sequences import one
+        setattr( builtins, single_name, one )

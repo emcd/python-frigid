@@ -18,33 +18,34 @@
 #============================================================================#
 
 
-''' Immutable data structures. '''
+''' Immutable sequences. '''
 
-# ruff: noqa: F401,F403
 
+from __future__ import annotations
 
 from . import __
-from . import classes
-from . import dictionaries
-from . import exceptions
-from . import installers
-from . import modules
-from . import namespaces
-from . import objects
-from . import qaliases
-from . import sequences
-
-from .classes import *
-from .dictionaries import *
-from .installers import *
-from .modules import *
-from .namespaces import *
-from .objects import *
-from .sequences import *
 
 
-__version__ = '2.0a0'
+_V = __.typx.TypeVar( '_V' )
 
 
-_attribute_visibility_includes_ = frozenset( ( '__version__', ) )
-__.reclassify_modules( __name__, recursive = True )
+def one( value: _V ) -> tuple[ _V, ... ]:
+    ''' Produces single-item tuple from value.
+
+        Provides a more explicit and readable alternative to the comma-syntax
+        for creating single-item tuples. While Python allows ``( x, )`` for
+        creating single-item tuples, using ``one( x )`` can be clearer,
+        especially in certain contexts:
+
+        * List comprehensions and generator expressions
+        * Situations where formatter behavior with trailing commas is undesired
+
+        Example
+        -------
+        >>> one( 42 )
+        (42,)
+        >>> result = [ one( x ) for x in range( 3 ) ]
+        >>> result
+        [(0,), (1,), (2,)]
+    '''
+    return value, # pylint: disable=trailing-comma-tuple
