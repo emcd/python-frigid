@@ -22,7 +22,8 @@
 
 # mypy: ignore-errors
 # pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name,magic-value-comparison,protected-access
+# pylint: disable=invalid-name,magic-value-comparison,no-member
+# pylint: disable=protected-access
 
 
 import pytest

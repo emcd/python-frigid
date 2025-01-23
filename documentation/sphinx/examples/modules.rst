@@ -100,32 +100,14 @@ Mass Reclassification
 -------------------------------------------------------------------------------
 
 For cases where multiple modules need to be protected, the
-``reclassify_modules`` function can convert all modules in a dictionary to
-immutable modules:
-
-.. doctest:: Module
-
-    >>> from frigid import reclassify_modules
-    >>> # Create some regular modules
-    >>> settings = types.ModuleType( 'settings' )
-    >>> constants = types.ModuleType( 'constants' )
-    >>> # Put them in a dictionary
-    >>> modules = { 'settings': settings, 'constants': constants }
-    >>> # Make them all immutable
-    >>> reclassify_modules( modules )
-    >>> # Verify immutability
-    >>> settings.DEBUG = True
-    Traceback (most recent call last):
-    ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'DEBUG'.
-
-This is particularly useful in package ``__init__.py`` files to protect all
-submodules:
+``reclassify_modules`` function can convert all modules in a package to
+immutable modules. This is particularly useful in package ``__init__.py`` files
+to protect all submodules:
 
 .. code-block:: python
 
     from frigid import reclassify_modules
-    reclassify_modules( globals( ) )
+    reclassify_modules( __name__ )
 
 .. warning::
 
