@@ -233,6 +233,7 @@ def discover_public_attributes(
         name for name, attribute in attributes.items( )
         if not name.startswith( '_' ) and callable( attribute ) ) )
 
+
 def reclassify_modules(
     attributes: typx.Annotated[
         cabc.Mapping[ str, typx.Any ] | types.ModuleType | str,

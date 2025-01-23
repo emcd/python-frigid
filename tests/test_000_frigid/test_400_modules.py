@@ -79,49 +79,148 @@ def test_101_immutability( module_qname, class_name ):
     'module_qname, class_name',
     product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
 )
-def test_500_module_reclassification( module_qname, class_name ):
-    ''' Modules are correctly reclassified as immutable. '''
+def test_500_module_reclassification_by_dict( module_qname, class_name ):
+    ''' Modules are correctly reclassified as immutable from dictionary. '''
     module = cache_import_module( module_qname )
     Module = getattr( module, class_name )
-    from types import ModuleType as Module_
-    m1 = Module_( 'm1' )
-    m2 = Module_( 'm2' )
-    m3 = Module( 'm3' )
-    attrs = { 'bar': 42, 'orb': True, 'm1': m1, 'm2': m2, 'm3': m3 }
+    from types import ModuleType
+    m1 = ModuleType( f"{PACKAGE_NAME}.test1" )
+    m2 = ModuleType( f"{PACKAGE_NAME}.test2" )
+    m3 = ModuleType( "other.module" )
+    attrs = {
+        '__package__': PACKAGE_NAME,
+        'module1': m1,
+        'module2': m2,
+        'external': m3,
+        'other': 42,
+    }
     assert not isinstance( m1, Module )
     assert not isinstance( m2, Module )
-    assert isinstance( m3, Module )
+    assert not isinstance( m3, Module )
     module.reclassify_modules( attrs )
     assert isinstance( m1, Module )
     assert isinstance( m2, Module )
-    assert isinstance( m3, Module )
+    assert not isinstance( m3, Module )
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         m1.new_attr = 42
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         m2.new_attr = 42
+    m3.new_attr = 42  # Should work
 
 
 @pytest.mark.parametrize(
     'module_qname, class_name',
     product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
 )
-def test_501_module_reclassification_with_custom_type(
-    module_qname, class_name
-):
-    ''' Modules can be reclassified to custom module type. '''
+def test_501_module_reclassification_by_name( module_qname, class_name ):
+    ''' Modules are correctly reclassified as immutable from name. '''
     module = cache_import_module( module_qname )
     Module = getattr( module, class_name )
-    from types import ModuleType as Module_
-
-    class CustomModule( Module ):
-        ''' foo '''
-
-    m1 = Module_( 'm1' )
-    attrs = { 'm1': m1 }
-    module.reclassify_modules( attrs, to_class = CustomModule )
-    assert isinstance( m1, CustomModule )
+    from types import ModuleType
+    from sys import modules
+    test_module = ModuleType( f"{PACKAGE_NAME}.test" )
+    test_module.__package__ = PACKAGE_NAME
+    modules[ test_module.__name__ ] = test_module
+    assert not isinstance( test_module, Module )
+    module.reclassify_modules( test_module.__name__ )
+    assert isinstance( test_module, Module )
     with pytest.raises( exceptions.AttributeImmutabilityError ):
-        m1.new_attr = 42
+        test_module.new_attr = 42
+    modules.pop( test_module.__name__ )  # Cleanup
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_502_module_reclassification_by_object( module_qname, class_name ):
+    ''' Modules are correctly reclassified as immutable from object. '''
+    module = cache_import_module( module_qname )
+    Module = getattr( module, class_name )
+    from types import ModuleType
+    test_module = ModuleType( f"{PACKAGE_NAME}.test" )
+    test_module.__package__ = PACKAGE_NAME
+    assert not isinstance( test_module, Module )
+    module.reclassify_modules( test_module )
+    assert isinstance( test_module, Module )
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        test_module.new_attr = 42
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_503_recursive_module_reclassification( module_qname, class_name ):
+    ''' Recursive module reclassification works correctly. '''
+    module = cache_import_module( module_qname )
+    Module = getattr( module, class_name )
+    from types import ModuleType
+    root = ModuleType( f"{PACKAGE_NAME}.test" )
+    root.__package__ = PACKAGE_NAME
+    sub1 = ModuleType( f"{PACKAGE_NAME}.test.sub1" )
+    sub2 = ModuleType( f"{PACKAGE_NAME}.test.sub2" )
+    root.sub1 = sub1
+    root.sub2 = sub2
+    assert not isinstance( root, Module )
+    assert not isinstance( sub1, Module )
+    assert not isinstance( sub2, Module )
+    module.reclassify_modules( root, recursive = True )
+    assert isinstance( root, Module )
+    assert isinstance( sub1, Module )
+    assert isinstance( sub2, Module )
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        root.new_attr = 42
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        sub1.new_attr = 42
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        sub2.new_attr = 42
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_504_module_reclassification_respects_package(
+    module_qname, class_name
+):
+    ''' Module reclassification only affects package modules. '''
+    module = cache_import_module( module_qname )
+    Module = getattr( module, class_name )
+    from types import ModuleType
+    root = ModuleType( f"{PACKAGE_NAME}.test" )
+    root.__package__ = PACKAGE_NAME
+    external = ModuleType( "other_package.module" )
+    root.external = external
+    assert not isinstance( root, Module )
+    assert not isinstance( external, Module )
+    module.reclassify_modules( root )
+    assert isinstance( root, Module )
+    assert not isinstance( external, Module )
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        root.new_attr = 42
+    external.new_attr = 42  # Should work
+    assert 42 == external.new_attr
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_505_module_reclassification_requires_package(
+    module_qname, class_name
+):
+    ''' Module reclassification requires package name. '''
+    module = cache_import_module( module_qname )
+    Module = getattr( module, class_name )
+    from types import ModuleType
+    m1 = ModuleType( f"{PACKAGE_NAME}.test1" )
+    attrs = { 'module1': m1 }  # Missing __package__ or __name__
+    assert not isinstance( m1, Module )
+    module.reclassify_modules( attrs )
+    assert not isinstance( m1, Module )
+    m1.new_attr = 42  # Should work
+    assert 42 == m1.new_attr
 
 
 @pytest.mark.parametrize(
