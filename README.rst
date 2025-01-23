@@ -16,12 +16,13 @@
    |                                                                          |
    +--------------------------------------------------------------------------+
 
+
 *******************************************************************************
                                   frigid
 *******************************************************************************
 
 .. image:: https://img.shields.io/pypi/v/frigid
-   :alt: Project Version
+   :alt: Package Version
    :target: https://pypi.org/project/frigid/
 
 .. image:: https://img.shields.io/pypi/status/frigid
@@ -36,13 +37,13 @@
    :alt: Code Coverage Percentage
    :target: https://github.com/emcd/python-frigid/actions/workflows/tester.yaml
 
+.. image:: https://img.shields.io/github/license/emcd/python-frigid
+   :alt: Project License
+   :target: https://github.com/emcd/python-frigid/blob/master/LICENSE.txt
+
 .. image:: https://img.shields.io/pypi/pyversions/frigid
    :alt: Python Versions
    :target: https://pypi.org/project/frigid/
-
-.. image:: https://img.shields.io/pypi/l/frigid
-   :alt: Project License
-   :target: https://github.com/emcd/python-frigid/blob/master/LICENSE.txt
 
 
 🔒 A Python library package which provides **immutable data structures** -
@@ -153,6 +154,10 @@ Use Cases 🎯
    :alt: GitHub last commit
    :target: https://github.com/emcd/python-frigid
 
+.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json
+   :alt: Copier
+   :target: https://github.com/copier-org/copier
+
 .. image:: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
    :alt: Hatch
    :target: https://github.com/pypa/hatch
@@ -171,7 +176,7 @@ Use Cases 🎯
 
 .. image:: https://microsoft.github.io/pyright/img/pyright_badge.svg
    :alt: Pyright
-   :target: https://microsoft.github.io/pyright/
+   :target: https://microsoft.github.io/pyright
 
 .. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
    :alt: Ruff
