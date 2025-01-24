@@ -262,6 +262,184 @@ def test_120_docstring_assignment( module_qname, class_name ):
     'module_qname, class_name',
     product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
 )
+def test_130_mutable_attributes( module_qname, class_name ):
+    ''' Specified attributes remain mutable. '''
+    module = cache_import_module( module_qname )
+    class_factory_class = getattr( module, class_name )
+
+    class Object(
+        metaclass = class_factory_class, mutables = ( 'mutable_attr', )
+    ):
+        ''' test '''
+        mutable_attr = 42
+        immutable_attr = 'fixed'
+
+    Object.mutable_attr = -1
+    assert -1 == Object.mutable_attr
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        Object.immutable_attr = 'changed'
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_131_mutable_inheritance( module_qname, class_name ):
+    ''' Mutable attributes are inherited properly. '''
+    module = cache_import_module( module_qname )
+    class_factory_class = getattr( module, class_name )
+
+    class Base(
+        metaclass = class_factory_class, mutables = ( 'base_mutable', )
+    ):
+        ''' test base '''
+        base_mutable = 'base'
+        base_immutable = 'fixed'
+
+    class Child( Base, mutables = ( 'child_mutable', ) ):
+        ''' test child '''
+        child_mutable = 'child'
+        child_immutable = 'fixed'
+
+    # Base class mutables remain mutable
+    Base.base_mutable = 'changed_base'
+    assert 'changed_base' == Base.base_mutable
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        Base.base_immutable = 'attempt'
+
+    # Child inherits base mutables and adds its own
+    Child.base_mutable = 'inherited_changed'
+    assert 'inherited_changed' == Child.base_mutable
+    Child.child_mutable = 'child_changed'
+    assert 'child_changed' == Child.child_mutable
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        Child.child_immutable = 'attempt'
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        Child.base_immutable = 'attempt'
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_132_mutable_edge_cases( module_qname, class_name ):
+    ''' Handle edge cases for mutable attributes. '''
+    module = cache_import_module( module_qname )
+    class_factory_class = getattr( module, class_name )
+
+    # Empty mutables collection
+    class EmptyMutables( metaclass = class_factory_class, mutables = ( ) ):
+        ''' test empty mutables '''
+        attr = 42
+
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        EmptyMutables.attr = -1
+
+    # Non-existent attributes can be added if listed as mutable
+    class NonExistentMutable(
+        metaclass = class_factory_class,
+        mutables = ( 'does_not_exist', 'another_future_attr' )
+    ):
+        ''' test non-existent mutable '''
+        attr = 42
+
+    # Should succeed because it's in mutables list
+    NonExistentMutable.does_not_exist = 'new'
+    assert 'new' == NonExistentMutable.does_not_exist
+
+    # Should fail because it's not in mutables list
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        NonExistentMutable.not_in_mutables = 'attempt'
+
+    # Special method names as mutable attributes
+    class SpecialMutable(
+        metaclass = class_factory_class,
+        mutables = ( '__special__', )
+    ):
+        ''' test special method mutable '''
+        __special__ = None
+
+    SpecialMutable.__special__ = 42
+    assert 42 == SpecialMutable.__special__
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_133_multiple_inheritance_mutables( module_qname, class_name ):
+    ''' Handle mutable attributes with multiple inheritance. '''
+    module = cache_import_module( module_qname )
+    class_factory_class = getattr( module, class_name )
+
+    class First(
+        metaclass = class_factory_class, mutables = ( 'shared', 'first' )
+    ):
+        ''' test first parent '''
+        shared = 1
+        first = 'a'
+
+    class Second(
+        metaclass = class_factory_class, mutables = ( 'shared', 'second' )
+    ):
+        ''' test second parent '''
+        shared = 2
+        second = 'b'
+
+    class Child( First, Second, mutables = ( 'child', ) ):
+        ''' test child '''
+        child = 'c'
+        fixed = 'd'
+
+    # All declared mutables should work
+    Child.shared = 3
+    assert 3 == Child.shared
+    Child.first = 'changed_a'
+    assert 'changed_a' == Child.first
+    Child.second = 'changed_b'
+    assert 'changed_b' == Child.second
+    Child.child = 'changed_c'
+    assert 'changed_c' == Child.child
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        Child.fixed = 'attempt'
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_134_mutable_deletion( module_qname, class_name ):
+    ''' Handle deletion of mutable attributes. '''
+    module = cache_import_module( module_qname )
+    class_factory_class = getattr( module, class_name )
+
+    class DeletableMutable(
+        metaclass = class_factory_class,
+        mutables = ( 'deletable', 'not_yet_set' )
+    ):
+        ''' test mutable deletion '''
+        deletable = 'original'
+        fixed = 'constant'
+
+    # Can delete mutable attribute that exists
+    del DeletableMutable.deletable
+    assert not hasattr( DeletableMutable, 'deletable' )
+
+    # Can set and then delete mutable attribute that didn't exist at creation
+    DeletableMutable.not_yet_set = 'temporary'
+    assert 'temporary' == DeletableMutable.not_yet_set
+    del DeletableMutable.not_yet_set
+    assert not hasattr( DeletableMutable, 'not_yet_set' )
+
+    # Cannot delete immutable attribute
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        del DeletableMutable.fixed
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
 def test_900_docstring_sanity( module_qname, class_name ):
     ''' Class has valid docstring. '''
     module = cache_import_module( module_qname )

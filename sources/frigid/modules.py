@@ -39,14 +39,14 @@
 from . import __
 
 
-class Module( __.Module ):
+class Module( __.types.ModuleType ):
     ''' Immutable modules. '''
 
     def __delattr__( self, name: str ) -> None:
         from .exceptions import AttributeImmutabilityError
         raise AttributeImmutabilityError( name )
 
-    def __setattr__( self, name: str, value: __.a.Any ) -> None:
+    def __setattr__( self, name: str, value: __.typx.Any ) -> None:
         from .exceptions import AttributeImmutabilityError
         raise AttributeImmutabilityError( name )
 
@@ -55,12 +55,46 @@ Module.__doc__ = __.generate_docstring(
 
 
 def reclassify_modules(
-    attributes: __.cabc.Mapping[ str, __.a.Any ],
-    to_class: type[ Module ] = Module
+    attributes: __.typx.Annotated[
+        __.cabc.Mapping[ str, __.typx.Any ] | __.types.ModuleType | str,
+        __.typx.Doc(
+            'Module, module name, or dictionary of object attributes.' ),
+    ],
+    recursive: __.typx.Annotated[
+        bool, __.typx.Doc( 'Recursively reclassify package modules?' )
+    ] = False,
 ) -> None:
-    ''' Reclassifies modules in dictionary with custom module type. '''
+    ''' Reclassifies modules to be immutable.
+
+        This function converts existing modules to immutable modules, enforcing
+        attribute immutability after conversion. It can operate on individual
+        modules or entire package hierarchies.
+
+        Notes
+        -----
+        * Only converts modules within the same package to prevent unintended
+          modifications to external modules
+        * When used with a dictionary, converts any module objects found as
+          values if they belong to the same package
+        * Module conversion is permanent for the runtime session
+        * Has no effect on already-immutable modules
+    '''
     from inspect import ismodule
-    for attribute in attributes.values( ):
-        if not ismodule( attribute ): continue
-        if isinstance( attribute, to_class ): continue
-        attribute.__class__ = to_class
+    from sys import modules
+    if isinstance( attributes, str ):
+        attributes = modules[ attributes ]
+    if isinstance( attributes, __.types.ModuleType ):
+        module = attributes
+        attributes = attributes.__dict__
+    else: module = None
+    package_name = (
+        attributes.get( '__package__' ) or attributes.get( '__name__' ) )
+    if not package_name: return
+    for value in attributes.values( ):
+        if not ismodule( value ): continue
+        if not value.__name__.startswith( f"{package_name}." ): continue
+        if recursive: reclassify_modules( value, recursive = True )
+        if isinstance( value, Module ): continue
+        value.__class__ = Module
+    if module and not isinstance( module, Module ):
+        module.__class__ = Module

@@ -12,36 +12,33 @@
 # ruff: noqa: E402,F401
 
 
-def _prepare( ):
-    from pathlib import Path
-    from sys import path as module_discovery_locations
-    from tomli import load  # TODO: Python 3.11: tomllib
-    project_location = Path( __file__ ).parent.parent.parent
-    pyproject_location = project_location / 'pyproject.toml'
-    module_discovery_locations.insert( 0, str( project_location / 'sources' ) )
-    with pyproject_location.open( 'rb' ) as project_file:
-        return load( project_file )
-
-
-def _calculate_copyright_notice( information, copyright_holder ):
+def _calculate_copyright_notice( ):
     from datetime import datetime as DateTime
-    first_year = information[ 'tool' ][ 'SELF' ][ 'year-of-origin' ]
+    first_year = 2024
     now_year = DateTime.utcnow( ).year
     if first_year < now_year: year_range = f"{first_year}-{now_year}"
     else: year_range = str( first_year )
-    return f"{year_range}, {copyright_holder}"
+    return f"{year_range}, Eric McDonald"
+
+
+def _import_version( ):
+    from importlib import import_module
+    from pathlib import Path
+    from sys import path
+    project_location = Path( __file__ ).parent.parent.parent
+    path.insert( 0, str( project_location / 'sources' ) )
+    module = import_module( 'frigid' )
+    return module.__version__
 
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-_information = _prepare( )
-
-project = _information[ 'project' ][ 'name' ]
-author = _information[ 'project' ][ 'authors' ][ 0 ][ 'name' ]
+project = 'python-frigid'
+author = 'Eric McDonald'
 copyright = ( # pylint: disable=redefined-builtin
-    _calculate_copyright_notice( _information, author ) )
-from frigid import __version__ as release, __version__ as version
+    _calculate_copyright_notice( ) )
+release = version = _import_version( )
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -80,17 +77,18 @@ nitpick_ignore = [
     ( 'py:class', "module" ),
     ( 'py:class',
       "v, remove specified key and return the corresponding value." ),
-    # Other weirdnesses. (Something is broken in how Sphinx autodoc processes
-    # certain typing forms.)
+    # Type annotation weirdnesses.
     ( 'py:class', "Doc" ),
     ( 'py:class', "NotImplementedType" ),
+    ( 'py:class', "absence.objects.AbsentSingleton" ),
     ( 'py:class', "frigid.dictionaries._DictionaryOperations" ),
-    ( 'py:class', "frigid.__._H" ),
-    ( 'py:class', "frigid.__._V" ),
-    ( 'py:class', "frigid.__.Annotated" ),
-    ( 'py:class', "frigid.__.C" ),
-    ( 'py:class', "frigid.__.H" ),
-    ( 'py:class', "frigid.__.V" ),
+    ( 'py:class', "frigid.__.dictionaries._H" ),
+    ( 'py:class', "frigid.__.dictionaries._V" ),
+    ( 'py:class', "frigid.__.dictionaries.Annotated" ),
+    ( 'py:class', "frigid.__.imports.Annotated" ),
+    ( 'py:class', "frigid.__.imports.C" ),
+    ( 'py:class', "frigid.__.imports.H" ),
+    ( 'py:class', "frigid.__.imports.V" ),
     ( 'py:class', "collections.abc.Annotated" ),
     ( 'py:class', "typing_extensions._ProtocolMeta" ),
     ( 'py:class', "typing_extensions.Annotated" ),
@@ -101,22 +99,25 @@ nitpick_ignore = [
     ( 'py:class', "typing_extensions.TypeIs" ),
     ( 'py:class', "types.Annotated" ),
     ( 'py:class', "types.NoneType" ),
-    ( 'py:obj', "frigid.__._H" ),
-    ( 'py:obj', "frigid.__._V" ),
-    ( 'py:obj', "frigid.__.H" ),
-    ( 'py:obj', "frigid.__.V" ),
+    ( 'py:obj', "frigid.__.dictionaries._H" ),
+    ( 'py:obj', "frigid.__.dictionaries._V" ),
+    ( 'py:obj', "frigid.__.imports.H" ),
+    ( 'py:obj', "frigid.__.imports.V" ),
+    ( 'py:class', "typing_extensions.Any" ),
 ]
 
 # -- Options for linkcheck builder -------------------------------------------
 
 linkcheck_ignore = [
     # Circular dependency between building HTML and publishing it.
-    # Ideally, we want to warn on failure rather than ignore.
-    fr'https://emcd\.github\.io/.*{project}.*/.*',
+    r'https://emcd\.github\.io/python-frigid/.*',
     # Stack Overflow rate limits too aggressively, which breaks matrix builds.
     r'https://stackoverflow\.com/help/.*',
-    # TODO: Remove temporary bootstrapping.
-    fr'https://pypi.org/project/{project}/',
+    # Repository does not exist during initial development.
+    r'https://github\.com/emcd/python-frigid',
+    r'https://github\.com/emcd/python-frigid/.*',
+    # Package does not exist during initial development.
+    r'https://pypi.org/project/frigid/',
 ]
 
 # -- Options for HTML output -------------------------------------------------

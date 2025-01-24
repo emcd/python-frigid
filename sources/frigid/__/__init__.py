@@ -18,33 +18,14 @@
 #============================================================================#
 
 
-''' Immutable data structures. '''
-
-# ruff: noqa: F401,F403
+''' Common constants, imports, and utilities. '''
 
 
-from . import __
-from . import classes
-from . import dictionaries
-from . import exceptions
-from . import installers
-from . import modules
-from . import namespaces
-from . import objects
-from . import qaliases
-from . import sequences
-
-from .classes import *
+# Expose everything from internal modules.
+from .docstrings import *  # Managed by Copier.
 from .dictionaries import *
-from .installers import *
-from .modules import *
-from .namespaces import *
-from .objects import *
-from .sequences import *
+from .immutables import *  # Managed by Copier.
+from .imports import *
 
 
-__version__ = '2.0rc0'
-
-
-_attribute_visibility_includes_ = frozenset( ( '__version__', ) )
-__.reclassify_modules( __name__, recursive = True )
+__all__ = ( )

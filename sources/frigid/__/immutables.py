@@ -18,61 +18,19 @@
 #============================================================================#
 
 
-''' Common constants, imports, and utilities. '''
-
-# ruff: noqa: F401
-# pylint: disable=unused-import
+''' Attribute concealment and immutability. '''
 
 
 from __future__ import annotations
 
 import collections.abc as cabc
+import types
 
-from abc import (
-    ABCMeta as ABCFactory,
-    abstractmethod as abstract_member_function,
-)
-from functools import partial as partial_function
-from inspect import cleandoc as clean_docstring
-from sys import modules
-from types import (
-    MappingProxyType as DictionaryProxy,
-    ModuleType as Module,
-    NotImplementedType as TypeofNotImplemented,
-    SimpleNamespace,
-)
-
-from . import _annotations as a
+import typing_extensions as typx
 
 
-C = a.TypeVar( 'C' )  # Class
-H = a.TypeVar( 'H', bound = cabc.Hashable )  # Hash Key
-V = a.TypeVar( 'V' )  # Value
-_H = a.TypeVar( '_H' )
-_V = a.TypeVar( '_V' )
-
-ClassDecorators: a.TypeAlias = (
+ClassDecorators: typx.TypeAlias = (
     cabc.Iterable[ cabc.Callable[ [ type ], type ] ] )
-ComparisonResult: a.TypeAlias = bool | TypeofNotImplemented
-DictionaryNominativeArgument: a.TypeAlias = a.Annotation[
-    V,
-    a.Doc(
-        'Zero or more keyword arguments from which to initialize '
-        'dictionary data.' ),
-]
-DictionaryPositionalArgument: a.TypeAlias = a.Annotation[
-    cabc.Mapping[ H, V ] | cabc.Iterable[ tuple[ H, V ] ],
-    a.Doc(
-        'Zero or more iterables from which to initialize dictionary data. '
-        'Each iterable must be dictionary or sequence of key-value pairs. '
-        'Duplicate keys will result in an error.' ),
-]
-DictionaryValidator: a.TypeAlias = a.Annotation[
-    cabc.Callable[ [ H, V ], bool ],
-    a.Doc( 'Callable which validates entries before addition to dictionary.' ),
-]
-ModuleReclassifier: a.TypeAlias = cabc.Callable[
-    [ cabc.Mapping[ str, a.Any ] ], None ]
 
 
 behavior_label = 'immutability'
@@ -90,7 +48,8 @@ def repair_class_reproduction( original: type, reproduction: type ) -> None:
 def _repair_cpython_class_closures( # pylint: disable=too-complex
     original: type, reproduction: type
 ) -> None:
-    def try_repair_closure( function: cabc.Callable[ ..., a.Any ] ) -> bool:
+    # Adapted from https://github.com/python/cpython/pull/124455/files
+    def try_repair_closure( function: cabc.Callable[ ..., typx.Any ] ) -> bool:
         try: index = function.__code__.co_freevars.index( '__class__' )
         except ValueError: return False
         if not function.__closure__: return False # pragma: no branch
@@ -112,24 +71,24 @@ def _repair_cpython_class_closures( # pylint: disable=too-complex
                 if try_repair_closure( accessor ): return # pragma: no branch
 
 
-class InternalClass( type ):
+class ImmutableClass( type ):
     ''' Concealment and immutability on class attributes. '''
 
     _class_attribute_visibility_includes_: cabc.Collection[ str ] = (
         frozenset( ) )
 
     def __new__(
-        factory: type[ type ],
+        clscls: type[ type ],
         name: str,
         bases: tuple[ type, ... ],
-        namespace: dict[ str, a.Any ], *,
+        namespace: dict[ str, typx.Any ], *,
         decorators: ClassDecorators = ( ),
-        **args: a.Any
-    ) -> InternalClass:
-        class_ = type.__new__( factory, name, bases, namespace, **args )
+        **args: typx.Any
+    ) -> ImmutableClass:
+        class_ = type.__new__( clscls, name, bases, namespace, **args )
         return _immutable_class__new__( class_, decorators = decorators )
 
-    def __init__( selfclass, *posargs: a.Any, **nomargs: a.Any ):
+    def __init__( selfclass, *posargs: typx.Any, **nomargs: typx.Any ):
         super( ).__init__( *posargs, **nomargs )
         _immutable_class__init__( selfclass )
 
@@ -146,7 +105,7 @@ class InternalClass( type ):
         if not _immutable_class__delattr__( selfclass, name ):
             super( ).__delattr__( name )
 
-    def __setattr__( selfclass, name: str, value: a.Any ) -> None:
+    def __setattr__( selfclass, name: str, value: typx.Any ) -> None:
         if not _immutable_class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
@@ -220,7 +179,23 @@ class ConcealerExtension:
                 or name in self._attribute_visibility_includes_ ) )
 
 
-class InternalObject( ConcealerExtension, metaclass = InternalClass ):
+class ImmutableModule(
+    ConcealerExtension, types.ModuleType, metaclass = ImmutableClass
+):
+    ''' Concealment and immutability on module attributes. '''
+
+    def __delattr__( self, name: str ) -> None:
+        raise AttributeError( # noqa: TRY003
+            f"Cannot delete attribute {name!r} "
+            f"on module {self.__name__!r}." ) # pylint: disable=no-member
+
+    def __setattr__( self, name: str, value: typx.Any ) -> None:
+        raise AttributeError( # noqa: TRY003
+            f"Cannot assign attribute {name!r} "
+            f"on module {self.__name__!r}." ) # pylint: disable=no-member
+
+
+class ImmutableObject( ConcealerExtension, metaclass = ImmutableClass ):
     ''' Concealment and immutability on instance attributes. '''
 
     def __delattr__( self, name: str ) -> None:
@@ -229,129 +204,11 @@ class InternalObject( ConcealerExtension, metaclass = InternalClass ):
             "of class {class_fqname!r}.".format(
                 name = name, class_fqname = calculate_fqname( self ) ) )
 
-    def __setattr__( self, name: str, value: a.Any ) -> None:
+    def __setattr__( self, name: str, value: typx.Any ) -> None:
         raise AttributeError(
             "Cannot assign attribute {name!r} on instance "
             "of class {class_fqname!r}.".format(
                 name = name, class_fqname = calculate_fqname( self ) ) )
-
-
-class Falsifier( metaclass = InternalClass ): # pylint: disable=eq-without-hash
-    ''' Produces falsey objects.
-
-        Why not something already in Python?
-        :py:class:`object` produces truthy objects.
-        :py:class:`types.NoneType` "produces" falsey ``None`` singleton.
-        :py:class:`typing_extensions.NoDefault` is truthy singleton.
-    '''
-
-    def __bool__( self ) -> bool: return False
-
-    def __eq__( self, other: a.Any ) -> ComparisonResult:
-        return self is other
-
-    def __ne__( self, other: a.Any ) -> ComparisonResult:
-        return self is not other
-
-
-class Absent( Falsifier, InternalObject ):
-    ''' Type of the sentinel for option without default value. '''
-
-    def __new__( selfclass ) -> a.Self:
-        ''' Singleton. '''
-        absent_ = globals( ).get( 'absent' )
-        if isinstance( absent_, selfclass ): return absent_
-        return super( ).__new__( selfclass )
-
-
-Optional: a.TypeAlias = V | Absent
-absent: a.Annotation[
-    Absent, a.Doc( ''' Sentinel for option with no default value. ''' )
-] = Absent( )
-
-
-def is_absent( value: object ) -> a.TypeIs[ Absent ]:
-    ''' Checks if a value is absent or not. '''
-    return absent is value
-
-
-class ImmutableDictionary(
-    ConcealerExtension,
-    dict[ _H, _V ],
-    a.Generic[ _H, _V ],
-):
-    ''' Immutable subclass of :py:class:`dict`.
-
-        Can be used as an instance dictionary.
-
-        Prevents attempts to mutate dictionary via inherited interface.
-    '''
-
-    def __init__(
-        self,
-        *iterables: DictionaryPositionalArgument[ _H, _V ],
-        **entries: DictionaryNominativeArgument[ _V ],
-    ):
-        self._behaviors_: set[ str ] = set( )
-        super( ).__init__( )
-        from itertools import chain
-        # Add values in order received, enforcing no alteration.
-        for indicator, value in chain.from_iterable( map( # type: ignore
-            lambda element: ( # type: ignore
-                element.items( )
-                if isinstance( element, cabc.Mapping )
-                else element
-            ),
-            ( *iterables, entries )
-        ) ): self[ indicator ] = value # type: ignore
-        self._behaviors_.add( behavior_label )
-
-    def __delitem__( self, key: _H ) -> None:
-        from .exceptions import EntryImmutabilityError
-        raise EntryImmutabilityError( key )
-
-    def __setitem__( self, key: _H, value: _V ) -> None:
-        from .exceptions import EntryImmutabilityError
-        default: set[ str ] = set( )
-        if behavior_label in getattr( self, '_behaviors_', default ):
-            raise EntryImmutabilityError( key )
-        if key in self:
-            raise EntryImmutabilityError( key )
-        super( ).__setitem__( key, value )
-
-    def clear( self ) -> a.Never:
-        ''' Raises exception. Cannot clear immutable entries. '''
-        from .exceptions import OperationValidityError
-        raise OperationValidityError( 'clear' )
-
-    def copy( self ) -> a.Self:
-        ''' Provides fresh copy of dictionary. '''
-        return type( self )( self )
-
-    def pop( # pylint: disable=unused-argument
-        self, key: _H, default: Optional[ _V ] = absent
-    ) -> a.Never:
-        ''' Raises exception. Cannot pop immutable entry. '''
-        from .exceptions import OperationValidityError
-        raise OperationValidityError( 'pop' )
-
-    def popitem( self ) -> a.Never:
-        ''' Raises exception. Cannot pop immutable entry. '''
-        from .exceptions import OperationValidityError
-        raise OperationValidityError( 'popitem' )
-
-    def update( # type: ignore
-        self, # pylint: disable=unused-argument
-        *iterables: DictionaryPositionalArgument[ _H, _V ],
-        **entries: DictionaryNominativeArgument[ _V ],
-    ) -> None:
-        ''' Raises exception. Cannot perform mass update. '''
-        from .exceptions import OperationValidityError
-        raise OperationValidityError( 'update' )
-
-
-class Docstring( str ):
-    ''' Dedicated docstring container. '''
 
 
 def calculate_class_fqname( class_: type ) -> str:
@@ -366,7 +223,7 @@ def calculate_fqname( obj: object ) -> str:
 
 
 def discover_public_attributes(
-    attributes: cabc.Mapping[ str, a.Any ]
+    attributes: cabc.Mapping[ str, typx.Any ]
 ) -> tuple[ str, ... ]:
     ''' Discovers public attributes of certain types from dictionary.
 
@@ -377,19 +234,33 @@ def discover_public_attributes(
         if not name.startswith( '_' ) and callable( attribute ) ) )
 
 
-def generate_docstring(
-    *fragment_ids: type | Docstring | str
-) -> str:
-    ''' Sews together docstring fragments into clean docstring. '''
-    from inspect import cleandoc, getdoc, isclass
-    from ._docstrings import TABLE
-    fragments: list[ str ] = [ ]
-    for fragment_id in fragment_ids:
-        if isclass( fragment_id ): fragment = getdoc( fragment_id ) or ''
-        elif isinstance( fragment_id, Docstring ): fragment = fragment_id
-        else: fragment = TABLE[ fragment_id ]
-        fragments.append( cleandoc( fragment ) )
-    return '\n\n'.join( fragments )
-
-
-__all__ = ( )
+def reclassify_modules(
+    attributes: typx.Annotated[
+        cabc.Mapping[ str, typx.Any ] | types.ModuleType | str,
+        typx.Doc( 'Module, module name, or dictionary of object attributes.' ),
+    ],
+    recursive: typx.Annotated[
+        bool,
+        typx.Doc( 'Recursively reclassify package modules?' ),
+    ] = False,
+) -> None:
+    ''' Reclassifies modules to be immutable. '''
+    from inspect import ismodule
+    from sys import modules
+    if isinstance( attributes, str ):
+        attributes = modules[ attributes ]
+    if isinstance( attributes, types.ModuleType ):
+        module = attributes
+        attributes = attributes.__dict__
+    else: module = None
+    package_name = (
+        attributes.get( '__package__' ) or attributes.get( '__name__' ) )
+    if not package_name: return
+    for value in attributes.values( ):
+        if not ismodule( value ): continue
+        if not value.__name__.startswith( f"{package_name}." ): continue
+        if recursive: reclassify_modules( value, recursive = True )
+        if isinstance( value, ImmutableModule ): continue
+        value.__class__ = ImmutableModule
+    if module and not isinstance( module, ImmutableModule ):
+        module.__class__ = ImmutableModule

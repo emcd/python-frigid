@@ -27,6 +27,7 @@ Examples
    classes
    dictionaries
    namespaces
+   sequences
    objects
    modules
    aliases

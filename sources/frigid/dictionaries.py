@@ -86,15 +86,15 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
         - __getitem__, __iter__, __len__
     '''
 
-    @__.abstract_member_function
+    @__.abc.abstractmethod
     def __iter__( self ) -> __.cabc.Iterator[ __.H ]:
         raise NotImplementedError  # pragma: no coverage
 
-    @__.abstract_member_function
+    @__.abc.abstractmethod
     def __len__( self ) -> int:
         raise NotImplementedError  # pragma: no coverage
 
-    @__.abstract_member_function
+    @__.abc.abstractmethod
     def __getitem__( self, key: __.H ) -> __.V:
         raise NotImplementedError  # pragma: no coverage
 
@@ -110,7 +110,7 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
 class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
     ''' Mix-in providing additional dictionary operations. '''
 
-    def __or__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.a.Self:
+    def __or__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.typx.Self:
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
         conflicts = set( self.keys( ) ) & set( other.keys( ) )
         if conflicts:
@@ -120,14 +120,14 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
         data.update( other )
         return self.with_data( data )
 
-    def __ror__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.a.Self:
+    def __ror__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.typx.Self:
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
         return self | other
 
     def __and__(
         self,
         other: __.cabc.Set[ __.H ] | __.cabc.Mapping[ __.H, __.V ]
-    ) -> __.a.Self:
+    ) -> __.typx.Self:
         if isinstance( other, __.cabc.Mapping ):
             return self.with_data(
                 ( key, value ) for key, value in self.items( )
@@ -140,23 +140,23 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
     def __rand__(
         self,
         other: __.cabc.Set[ __.H ] | __.cabc.Mapping[ __.H, __.V ]
-    ) -> __.a.Self:
+    ) -> __.typx.Self:
         if not isinstance(
             other, ( __.cabc.Mapping, __.cabc.Set, __.cabc.KeysView )
         ): return NotImplemented
         return self & other
 
-    @__.abstract_member_function
-    def copy( self ) -> __.a.Self:
+    @__.abc.abstractmethod
+    def copy( self ) -> __.typx.Self:
         ''' Provides fresh copy of dictionary. '''
         raise NotImplementedError # pragma: no coverage
 
-    @__.abstract_member_function
+    @__.abc.abstractmethod
     def with_data(
         self,
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **entries: __.DictionaryNominativeArgument[ __.V ],
-    ) -> __.a.Self:
+    ) -> __.typx.Self:
         ''' Creates new dictionary with same behavior but different data. '''
         raise NotImplementedError # pragma: no coverage
 
@@ -197,31 +197,31 @@ class Dictionary( # pylint: disable=eq-without-hash
     def __str__( self ) -> str:
         return str( self._data_ )
 
-    def __contains__( self, key: __.a.Any ) -> bool:
+    def __contains__( self, key: __.typx.Any ) -> bool:
         return key in self._data_
 
     def __getitem__( self, key: __.H ) -> __.V:
         return self._data_[ key ]
 
-    def __eq__( self, other: __.a.Any ) -> __.ComparisonResult:
+    def __eq__( self, other: __.typx.Any ) -> __.ComparisonResult:
         if isinstance( other, __.cabc.Mapping ):
             return self._data_ == other
         return NotImplemented
 
-    def __ne__( self, other: __.a.Any ) -> __.ComparisonResult:
+    def __ne__( self, other: __.typx.Any ) -> __.ComparisonResult:
         if isinstance( other, __.cabc.Mapping ):
             return self._data_ != other
         return NotImplemented
 
-    def copy( self ) -> __.a.Self:
+    def copy( self ) -> __.typx.Self:
         ''' Provides fresh copy of dictionary. '''
         return type( self )( self )
 
     def get(
-        self, key: __.H, default: __.Optional[ __.V ] = __.absent
-    ) -> __.a.Annotation[
+        self, key: __.H, default: __.Absential[ __.V ] = __.absent
+    ) -> __.typx.Annotated[
         __.V,
-        __.a.Doc(
+        __.typx.Doc(
             'Value of entry, if it exists. '
             'Else, supplied default value or ``None``.' )
     ]:
@@ -246,7 +246,7 @@ class Dictionary( # pylint: disable=eq-without-hash
         self,
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **entries: __.DictionaryNominativeArgument[ __.V ],
-    ) -> __.a.Self:
+    ) -> __.typx.Self:
         return type( self )( *iterables, **entries )
 
 Dictionary.__doc__ = __.generate_docstring(
@@ -296,7 +296,7 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
             validator = self._validator_.__repr__( ),
             contents = self._data_.__repr__( ) )
 
-    def copy( self ) -> __.a.Self:
+    def copy( self ) -> __.typx.Self:
         ''' Provides fresh copy of dictionary. '''
         return type( self )( self._validator_, self )
 
@@ -304,7 +304,7 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
         self,
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **entries: __.DictionaryNominativeArgument[ __.V ],
-    ) -> __.a.Self:
+    ) -> __.typx.Self:
         ''' Creates new dictionary with same behavior but different data. '''
         return type( self )( self._validator_, *iterables, **entries )
 

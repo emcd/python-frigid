@@ -86,7 +86,7 @@ def immutable( class_: type[ __.C ] ) -> type[ __.C ]: # pylint: disable=too-com
         if '__init__' in base.__dict__ ) # pylint: disable=magic-value-comparison
 
     def __init__(
-        self: object, *posargs: __.a.Any, **nomargs: __.a.Any
+        self: object, *posargs: __.typx.Any, **nomargs: __.typx.Any
     ) -> None:
         # TODO: Use accretive set for behaviors.
         original_init( self, *posargs, **nomargs )
@@ -107,7 +107,7 @@ def immutable( class_: type[ __.C ] ) -> type[ __.C ]: # pylint: disable=too-com
             raise AttributeImmutabilityError( name )
         super( class_, self ).__delattr__( name )
 
-    def __setattr__( self: object, name: str, value: __.a.Any ) -> None:
+    def __setattr__( self: object, name: str, value: __.typx.Any ) -> None:
         if _check_behavior( self ):
             from .exceptions import AttributeImmutabilityError
             raise AttributeImmutabilityError( name )

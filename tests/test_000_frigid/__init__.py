@@ -18,10 +18,10 @@
 #============================================================================#
 
 
-''' Package of tests. '''
+''' Package of tests.
 
-# mypy: ignore-errors
-# pylint: disable=magic-value-comparison
+    Common imports, constants, and utilities for tests.
+'''
 
 
 from types import MappingProxyType as DictionaryProxy

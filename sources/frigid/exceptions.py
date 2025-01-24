@@ -28,14 +28,13 @@
     * ``Omnierror``: Base for all package errors
     * ``AttributeImmutabilityError``: Raised for attribute modification
     * ``EntryImmutabilityError``: Raised for dictionary entry modification
-    * ``OperationValidityError``: Raised for invalid operations
 '''
 
 
 from . import __  # pylint: disable=cyclic-import
 
 
-class Omniexception( __.InternalObject, BaseException ):
+class Omniexception( __.ImmutableObject, BaseException ):
     ''' Base for all exceptions raised by package API. '''
 
     _attribute_visibility_includes_: __.cabc.Collection[ str ] = (
@@ -75,13 +74,15 @@ class EntryImmutabilityError( Omnierror, TypeError ):
 class EntryValidityError( Omnierror, ValueError ):
     ''' Attempt to add invalid entry to dictionary. '''
 
-    def __init__( self, indicator: __.cabc.Hashable, value: __.a.Any ) -> None:
+    def __init__(
+        self, indicator: __.cabc.Hashable, value: __.typx.Any
+    ) -> None:
         super( ).__init__(
             f"Cannot add invalid entry with key, {indicator!r}, "
             f"and value, {value!r}, to dictionary." )
 
 
-class OperationValidityError( Omnierror, RuntimeError, TypeError ):
+class OperationInvalidity( Omnierror, RuntimeError, TypeError ):
     ''' Attempt to perform invalid operation. '''
 
     def __init__( self, name: str ) -> None:

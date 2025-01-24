@@ -69,6 +69,44 @@ And new attributes cannot be added after class creation:
     ...
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'SQRT2'.
 
+Mutable Attributes
+-------------------------------------------------------------------------------
+
+While classes are generally immutable, specific attributes can be marked as
+mutable via a metaclass argument:
+
+.. doctest:: Class
+
+    >>> class Configuration( metaclass = Class, mutables = ( 'debug_level', ) ):
+    ...     debug_level = 0  # Mutable attribute
+    ...     VERSION = '1.0'  # Immutable attribute
+
+Mutable attributes can be modified after class creation:
+
+.. doctest:: Class
+
+    >>> Configuration.debug_level = 2  # OK to modify mutable attribute
+    >>> Configuration.debug_level
+    2
+    >>> Configuration.VERSION = '2.0'  # But not immutable ones
+    Traceback (most recent call last):
+    ...
+    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'VERSION'.
+
+Mutable attributes can also be added after class creation if they are listed in
+``mutables``:
+
+.. doctest:: Class
+
+    >>> class DynamicConfig( metaclass = Class, mutables = ( 'future_setting', ) ):
+    ...     initial_setting = 'fixed'
+
+    >>> DynamicConfig.future_setting = 'dynamic'  # OK to add listed attribute
+    >>> DynamicConfig.another_setting = 'error'   # But not unlisted ones
+    Traceback (most recent call last):
+    ...
+    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'another_setting'.
+
 Decorator Support
 -------------------------------------------------------------------------------
 
@@ -116,7 +154,8 @@ Abstract Base Classes
 
 The ``ABCFactory`` metaclass creates immutable abstract base classes. This is
 particularly useful for defining stable interfaces that should not change after
-definition.
+definition. All of the behaviors, mentioned for standard classes, also apply to
+these.
 
 .. doctest:: ABCFactory
 
@@ -152,7 +191,8 @@ Protocol Classes
 ===============================================================================
 
 The ``ProtocolClass`` metaclass creates immutable protocol classes, which is
-useful for defining static type interfaces.
+useful for defining static type interfaces. All of the behaviors, mentioned for
+standard classes, also apply to these.
 
 .. doctest:: ProtocolClass
 
