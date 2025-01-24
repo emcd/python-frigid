@@ -67,6 +67,17 @@ Key Features ⭐
   initialization; useful for compatibility with class decorators, such as
   `dataclasses
   <https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass>`_.
+* 🔓 **Flexible Mutability**: Support for declaring specific attributes as
+  mutable, enabling selective modification while maintaining immutability for
+  other attributes.
+
+
+Installation 📦
+===============================================================================
+
+::
+
+    pip install frigid
 
 
 Note on Immutability 📢
@@ -78,14 +89,6 @@ Note on Immutability 📢
    circumvent the immutability. Use the library in the spirit of making
    programs safer, but understand that it cannot truly prevent unwanted state
    tampering.
-
-
-Installation 📦
-===============================================================================
-
-::
-
-    pip install frigid
 
 
 Examples 💡

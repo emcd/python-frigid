@@ -53,6 +53,8 @@
 '''
 # pylint: enable=line-too-long
 
+# TODO? Allow predicate functions and regex patterns as mutability checkers.
+
 
 from __future__ import annotations
 
@@ -70,18 +72,21 @@ class Class( type ):
     ''' Immutable class factory. '''
 
     def __new__(  # pylint: disable=too-many-arguments
-        clscls: type[ type ],
+        clscls: type[ Class ],
         name: str,
         bases: tuple[ type, ... ],
         namespace: dict[ str, __.typx.Any ], *,
         decorators: ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        mutables: __.cabc.Collection[ str ] = ( ),
         **args: __.typx.Any
     ) -> Class:
-        class_ = type.__new__(
-            clscls, name, bases, namespace, **args )
-        return _class__new__(  # type: ignore
-            class_, decorators = decorators, docstring = docstring )
+        class_ = type.__new__( clscls, name, bases, namespace, **args )
+        return _class__new__(
+            class_,
+            decorators = decorators,
+            docstring = docstring,
+            mutables = mutables )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -105,18 +110,21 @@ class ABCFactory( __.abc.ABCMeta ):
     ''' Immutable abstract base class factory. '''
 
     def __new__(  # pylint: disable=too-many-arguments
-        clscls: type[ type ],
+        clscls: type[ ABCFactory ],
         name: str,
         bases: tuple[ type, ... ],
         namespace: dict[ str, __.typx.Any ], *,
         decorators: ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        mutables: __.cabc.Collection[ str ] = ( ),
         **args: __.typx.Any
     ) -> ABCFactory:
         class_ = __.abc.ABCMeta.__new__(
             clscls, name, bases, namespace, **args )
         return _class__new__(
-            class_, decorators = decorators, docstring = docstring )
+            class_, decorators = decorators,
+            docstring = docstring,
+            mutables = mutables )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -141,19 +149,22 @@ class ProtocolClass( type( __.typx.Protocol ) ):
     ''' Immutable protocol class factory. '''
 
     def __new__(  # pylint: disable=too-many-arguments
-        clscls: type[ type ],
+        clscls: type[ ProtocolClass ],
         name: str,
         bases: tuple[ type, ... ],
         namespace: dict[ str, __.typx.Any ], *,
         decorators: ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        mutables: __.cabc.Collection[ str ] = ( ),
         **args: __.typx.Any
     ) -> ProtocolClass:
-        class_ = __.typx.Protocol.__class__.__new__(  # type: ignore
-            clscls, name, bases, namespace, **args )  # type: ignore
+        class_ = super( ProtocolClass, clscls ).__new__( # pylint: disable=too-many-function-args
+            clscls, name, bases, namespace, **args )
         return _class__new__(
-            class_,  # type: ignore
-            decorators = decorators, docstring = docstring )
+            class_,
+            decorators = decorators,
+            docstring = docstring,
+            mutables = mutables )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -174,18 +185,28 @@ ProtocolClass.__doc__ = __.generate_docstring(
     'class attributes immutability' )
 
 
+def _accumulate_mutables(
+    class_: type, mutables: __.cabc.Collection[ str ]
+) -> frozenset[ str ]:
+    return frozenset( mutables ).union( *(
+        frozenset( base.__dict__.get( '_class_mutables_', ( ) ) )
+        for base in class_.__mro__ ) )
+
+
+# pylint: disable=protected-access
 def _class__new__(
     original: type,
     decorators: ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+    mutables: __.cabc.Collection[ str ] = ( ),
 ) -> type:
-    # Handle decorators similar to accretive implementation.
     # Some decorators create new classes, which invokes this method again.
     # Short-circuit to prevent recursive decoration and other tangles.
     class_decorators_ = original.__dict__.get( '_class_decorators_', [ ] )
     if class_decorators_: return original
     if not __.is_absent( docstring ): original.__doc__ = docstring
-    setattr( original, '_class_decorators_', class_decorators_ )
+    original._class_mutables_ = _accumulate_mutables( original, mutables )
+    original._class_decorators_ = class_decorators_
     reproduction = original
     for decorator in decorators:
         class_decorators_.append( decorator )
@@ -195,29 +216,36 @@ def _class__new__(
         original = reproduction
     class_decorators_.clear( )  # Flag '__init__' to enable immutability
     return reproduction
+# pylint: enable=protected-access
 
 
+# pylint: disable=protected-access
 def _class__init__( class_: type ) -> None:
     # Some metaclasses add class attributes in '__init__' method.
     # So, we wait until last possible moment to set immutability.
-    if class_.__dict__.get( '_class_decorators_' ): return
+    # Consult class attributes dictionary to ignore immutable base classes.
+    cdict = class_.__dict__
+    if cdict.get( '_class_decorators_' ): return
     del class_._class_decorators_
-    if ( class_behaviors := class_.__dict__.get( '_class_behaviors_' ) ):
+    if ( class_behaviors := cdict.get( '_class_behaviors_' ) ):
         class_behaviors.add( _behavior )
-    else: setattr( class_, '_class_behaviors_', { _behavior } )
+    else: class_._class_behaviors_ = { _behavior }
+# pylint: enable=protected-access
 
 
 def _class__delattr__( class_: type, name: str ) -> bool:
     # Consult class attributes dictionary to ignore immutable base classes.
-    if _behavior not in class_.__dict__.get( '_class_behaviors_', ( ) ):
-        return False
+    cdict = class_.__dict__
+    if name in cdict.get( '_class_mutables_', ( ) ): return False
+    if _behavior not in cdict.get( '_class_behaviors_', ( ) ): return False
     from .exceptions import AttributeImmutabilityError
     raise AttributeImmutabilityError( name )
 
 
 def _class__setattr__( class_: type, name: str ) -> bool:
     # Consult class attributes dictionary to ignore immutable base classes.
-    if _behavior not in class_.__dict__.get( '_class_behaviors_', ( ) ):
-        return False
+    cdict = class_.__dict__
+    if name in cdict.get( '_class_mutables_', ( ) ): return False
+    if _behavior not in cdict.get( '_class_behaviors_', ( ) ): return False
     from .exceptions import AttributeImmutabilityError
     raise AttributeImmutabilityError( name )
