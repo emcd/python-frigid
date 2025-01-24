@@ -43,7 +43,7 @@ from .objects import *
 from .sequences import *
 
 
-__version__ = '2.0rc0'
+__version__ = '2.0'
 
 
 _attribute_visibility_includes_ = frozenset( ( '__version__', ) )

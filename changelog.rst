@@ -2,6 +2,25 @@
 
 .. towncrier release notes start
 
+Frigid 2.0 (2025-01-23)
+=======================
+
+Features
+--------
+
+- Add ``one`` function which produces 1-element tuples. Cleaner to read than the
+  1-element tuple syntax and is useful for some functional programming contexts.
+  Also, add ``install`` function to install ``one`` as a Python, if desired.
+- Support ``mutables`` argument when using metaclasses from ``frigid.classes``.
+  Allows for selective mutability of class attributes.
+- ⚠️  BREAKING CHANGES! ⚠️  Improve ``reclassify_modules`` to constrain
+  reclassification to only package modules and not other modules outside of
+  package. Alter interface to make recursion through subpackages optional. Accept
+  module objects and module names in addition to module attributes dictionaries.
+  Attributes dictionaries must contain ``__package__`` or ``__name__`` attribute
+  now.
+
+
 Frigid 1.0 (2024-12-04)
 =======================
 

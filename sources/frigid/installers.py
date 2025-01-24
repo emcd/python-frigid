@@ -33,17 +33,7 @@ def install(
             'Name to use for single function in builtins. ``None`` to skip.' )
     ] = 'one',
 ) -> None:
-    ''' Installs 1-element tuple constructor into builtins.
-
-        Example
-        -------
-        >>> install( )  # Installs as 'one'
-        >>> one( 42 )   # Now available in builtins
-        (42,)
-        >>> install( single_name = 'single' )  # Install with custom name
-        >>> single( 42 )
-        (42,)
-    '''
+    ''' Installs 1-element tuple constructor into builtins. '''
     builtins = __import__( 'builtins' )
     if single_name:
         from .sequences import one
