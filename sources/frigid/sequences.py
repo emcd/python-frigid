@@ -39,13 +39,5 @@ def one( value: _V ) -> tuple[ _V, ... ]:
 
         * List comprehensions and generator expressions
         * Situations where formatter behavior with trailing commas is undesired
-
-        Example
-        -------
-        >>> one( 42 )
-        (42,)
-        >>> result = [ one( x ) for x in range( 3 ) ]
-        >>> result
-        [(0,), (1,), (2,)]
     '''
     return value, # pylint: disable=trailing-comma-tuple
