@@ -77,6 +77,18 @@ Module ``frigid.objects``
 .. automodule:: frigid.objects
 
 
+Module ``frigid.sequences``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.sequences
+
+
+Module ``frigid.installers``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.installers
+
+
 Module ``frigid.exceptions``
 -------------------------------------------------------------------------------
 

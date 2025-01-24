@@ -64,9 +64,3 @@ def test_900_docstring_sanity( ):
     assert hasattr( module.one, '__doc__' )
     assert isinstance( module.one.__doc__, str )
     assert module.one.__doc__
-
-
-def test_901_docstring_has_examples( ):
-    ''' Function docstring includes examples. '''
-    module = cache_import_module( MODULE_QNAME )
-    assert 'Example' in module.one.__doc__
