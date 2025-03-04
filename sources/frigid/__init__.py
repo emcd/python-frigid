@@ -20,19 +20,12 @@
 
 ''' Immutable data structures. '''
 
-# ruff: noqa: F401,F403
-
 
 from . import __
-from . import classes
-from . import dictionaries
-from . import exceptions
-from . import installers
-from . import modules
-from . import namespaces
-from . import objects
 from . import qaliases
-from . import sequences
+# --- BEGIN: Injected by Copier ---
+from . import exceptions
+# --- END: Injected by Copier ---
 
 from .classes import *
 from .dictionaries import *
