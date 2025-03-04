@@ -38,15 +38,13 @@ from . import PACKAGE_NAME, cache_import_module
 
 MODULE_QNAME = f"{PACKAGE_NAME}.__"
 
-exceptions = cache_import_module( f"{PACKAGE_NAME}.exceptions" )
-module = cache_import_module( MODULE_QNAME )
-
 dictionary_posargs = ( ( ( 'foo', 1 ), ( 'bar', 2 ) ), { 'unicorn': True } )
 dictionary_nomargs = DictionaryProxy( dict( orb = False ) )
 
 
 def test_200_immutable_dictionary_instantiation( ):
     ''' Dictionary instantiates with various input types. '''
+    module = cache_import_module( MODULE_QNAME )
     factory = module.ImmutableDictionary
     dct1 = factory( )
     assert isinstance( dct1, factory )
@@ -62,6 +60,7 @@ def test_200_immutable_dictionary_instantiation( ):
 
 def test_201_immutable_dictionary_duplication( ):
     ''' Dictionary is duplicable. '''
+    module = cache_import_module( MODULE_QNAME )
     factory = module.ImmutableDictionary
     odct = factory( *dictionary_posargs, **dictionary_nomargs )
     ddct = odct.copy( )
@@ -71,12 +70,16 @@ def test_201_immutable_dictionary_duplication( ):
 
 def test_202_immutable_dictionary_prevents_key_overwrite( ):
     ''' Dictionary prevents overwriting existing keys during creation. '''
+    module = cache_import_module( MODULE_QNAME )
+    exceptions = cache_import_module( f"{PACKAGE_NAME}.__.exceptions" )
     with pytest.raises( exceptions.EntryImmutabilityError ):
         module.ImmutableDictionary( [ ( 'a', 1 ) ], { 'a': 2 } )
 
 
 def test_210_immutable_dictionary_entry_protection( ):
     ''' Dictionary prevents entry modification and deletion. '''
+    module = cache_import_module( MODULE_QNAME )
+    exceptions = cache_import_module( f"{PACKAGE_NAME}.__.exceptions" )
     factory = module.ImmutableDictionary
     dct = factory( *dictionary_posargs, **dictionary_nomargs )
     with pytest.raises( exceptions.EntryImmutabilityError ):
@@ -89,6 +92,8 @@ def test_210_immutable_dictionary_entry_protection( ):
 
 def test_211_immutable_dictionary_operation_prevention( ):
     ''' Dictionary prevents all mutating operations. '''
+    module = cache_import_module( MODULE_QNAME )
+    exceptions = cache_import_module( f"{PACKAGE_NAME}.__.exceptions" )
     factory = module.ImmutableDictionary
     dct = factory( *dictionary_posargs, **dictionary_nomargs )
     with pytest.raises( exceptions.OperationInvalidity ):
@@ -105,6 +110,7 @@ def test_211_immutable_dictionary_operation_prevention( ):
 
 def test_212_immutable_dictionary_initialization_validation( ):
     ''' Dictionary properly handles various input types during creation. '''
+    module = cache_import_module( MODULE_QNAME )
     factory = module.ImmutableDictionary
     dct1 = factory( { 'a': 1, 'b': 2 } )
     assert 1 == dct1[ 'a' ]
@@ -123,6 +129,7 @@ def test_212_immutable_dictionary_initialization_validation( ):
 
 def test_213_immutable_dictionary_behaviors( ):
     ''' Dictionary has proper immutability behavior. '''
+    module = cache_import_module( MODULE_QNAME )
     factory = module.ImmutableDictionary
     dct = factory( a = 1 )
     assert module.behavior_label in dct._behaviors_

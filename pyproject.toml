@@ -242,9 +242,12 @@ ignored-parents = [
   'builtins.TypeError',
   'builtins.ValueError',
   'builtins.type',
-  'frigid.__.ClassConcealerExtension',
+  'frigid.__.exceptions.Omnierror',
+  'frigid.__.exceptions.Omniexception',
   'frigid.objects.Class',
   'frigid.objects.Object',
+  'typing.Protocol',
+  'typing_extensions.Protocol',
   # --- BEGIN: Injected by Copier ---
   'frigid.exceptions.Omnierror',
   'frigid.exceptions.Omniexception',

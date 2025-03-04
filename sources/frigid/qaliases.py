@@ -60,5 +60,5 @@ from .namespaces import (
 )
 from .objects import (
     Object as               ImmutableObject,
-    immutable,
+                            immutable,
 )

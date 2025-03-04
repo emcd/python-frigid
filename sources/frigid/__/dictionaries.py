@@ -24,6 +24,10 @@
 # ruff: noqa: F401
 
 
+# TODO: Consider a dictionary factory to allow 'mutables' closure
+#       to be referenced in the '__setitem__' and '__delitem__' methods.
+
+
 from __future__ import annotations
 
 from . import imports as __
@@ -66,11 +70,11 @@ class ImmutableDictionary(
         self._behaviors_.add( _immutables.behavior_label )
 
     def __delitem__( self, key: _H ) -> None:
-        from ..exceptions import EntryImmutabilityError
+        from .exceptions import EntryImmutabilityError
         raise EntryImmutabilityError( key )
 
     def __setitem__( self, key: _H, value: _V ) -> None:
-        from ..exceptions import EntryImmutabilityError
+        from .exceptions import EntryImmutabilityError
         default: set[ str ] = set( )
         if _immutables.behavior_label in getattr(
             self, '_behaviors_', default
@@ -80,7 +84,7 @@ class ImmutableDictionary(
 
     def clear( self ) -> __.typx.Never:
         ''' Raises exception. Cannot clear immutable entries. '''
-        from ..exceptions import OperationInvalidity
+        from .exceptions import OperationInvalidity
         raise OperationInvalidity( 'clear' )
 
     def copy( self ) -> __.typx.Self:
@@ -91,12 +95,12 @@ class ImmutableDictionary(
         self, key: _H, default: __.Absential[ _V ] = __.absent
     ) -> __.typx.Never:
         ''' Raises exception. Cannot pop immutable entry. '''
-        from ..exceptions import OperationInvalidity
+        from .exceptions import OperationInvalidity
         raise OperationInvalidity( 'pop' )
 
     def popitem( self ) -> __.typx.Never:
         ''' Raises exception. Cannot pop immutable entry. '''
-        from ..exceptions import OperationInvalidity
+        from .exceptions import OperationInvalidity
         raise OperationInvalidity( 'popitem' )
 
     def update( # type: ignore
@@ -105,5 +109,5 @@ class ImmutableDictionary(
         **entries: __.DictionaryNominativeArgument[ _V ],
     ) -> None:
         ''' Raises exception. Cannot perform mass update. '''
-        from ..exceptions import OperationInvalidity
+        from .exceptions import OperationInvalidity
         raise OperationInvalidity( 'update' )
