@@ -2,6 +2,29 @@
 
 .. towncrier release notes start
 
+Frigid 3.0 (2025-03-04)
+=======================
+
+Documentation Improvements
+--------------------------
+
+- Improve organization of examples. Improve wording in various places.
+
+
+Features
+--------
+
+- Add metaclasses for immutable dataclasses including ``Dataclass``,
+  ``CompleteDataclass``, ``ProtocolDataclass``, and
+  ``CompleteProtocolDataclass``. These factory classes combine Python's dataclass
+  functionality with immutable behavior for type-safe, attribute-stable data
+  containers.
+- Enhance the ``immutable`` decorator to accept optional parameters including
+  ``docstring`` for setting or overriding class documentation and ``mutables``
+  for specifying attributes that should remain modifiable after initial
+  assignment.
+
+
 Frigid 2.0 (2025-01-23)
 =======================
 
