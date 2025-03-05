@@ -17,37 +17,40 @@
    +--------------------------------------------------------------------------+
 
 
-Module
+Modules
 ===============================================================================
+
+Module Objects
+-------------------------------------------------------------------------------
 
 Immutable modules prevent any modification of attributes after creation. This
 makes them useful for ensuring that module-level constants remain constant and
 that module interfaces remain stable during runtime.
 
-.. doctest:: Module
+.. doctest:: Modules
 
     >>> from frigid import Module
 
 Creation
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While modules are typically initialized during import of their sources, they
 may also be created dynamically. As with standard Python modules, a name is
 required when dynamically creating a module.
 
-.. doctest:: Module
+.. doctest:: Modules
 
     >>> constants = Module( 'constants' )
     >>> constants
     <module 'constants'>
 
 Immutability
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Once created, a module becomes completely immutable. Even built-in attributes
 cannot be modified:
 
-.. doctest:: Module
+.. doctest:: Modules
 
     >>> constants.__name__ = 'renamed'
     Traceback (most recent call last):
@@ -56,7 +59,7 @@ cannot be modified:
 
 Attributes cannot be deleted:
 
-.. doctest:: Module
+.. doctest:: Modules
 
     >>> del constants.__name__
     Traceback (most recent call last):
@@ -65,7 +68,7 @@ Attributes cannot be deleted:
 
 And new attributes cannot be added:
 
-.. doctest:: Module
+.. doctest:: Modules
 
     >>> constants.PI = 3.14159
     Traceback (most recent call last):
@@ -81,7 +84,7 @@ malicious.
 
 Here's an example of protecting a configuration module:
 
-.. doctest:: Module
+.. doctest:: Modules
 
     >>> import types
     >>> config = types.ModuleType( 'config' )

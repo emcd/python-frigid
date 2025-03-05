@@ -58,7 +58,7 @@ Key Features ⭐
   be modified or removed. Also has variant for validation on initialization.
   And provides set operations not found on `MappingProxyType
   <https://docs.python.org/3/library/types.html#types.MappingProxyType>`_.
-* 📇 **Immutable Namespace**: Similar to `SimpleNamespace
+* 🗃️ **Immutable Namespace**: Similar to `SimpleNamespace
   <https://docs.python.org/3/library/types.html#types.SimpleNamespace>`_, but
   attributes are immutable from creation.
 * 🧱 **Additional Types**: Classes (including abstract base classes), modules,
@@ -95,12 +95,12 @@ Examples 💡
 ===============================================================================
 
 
-Immutable Namespace 📇
+Immutable Namespaces 🗃️
 -------------------------------------------------------------------------------
 
 An immutable namespace, similar to ``types.SimpleNamespace``, is available.
-This namespace is initialized from keyword arguments and becomes completely
-immutable. (Keyword arguments shown below; see documentation for additional
+This namespace can be initialized from multiple iterables and from keyword
+arguments. (Keyword arguments shown below; see documentation for additional
 forms of initialization.)
 
 >>> from frigid import Namespace
@@ -117,13 +117,13 @@ frigid.exceptions.AttributeImmutabilityError: Cannot delete attribute 'apples'.
 frigid.namespaces.Namespace( apples = 12, bananas = 6 )
 
 
-Immutable Dictionary 📖
+Immutable Dictionaries 📖
 -------------------------------------------------------------------------------
 
-An immutable dictionary, similar to ``dict``, is available. This dictionary is
-initialized from iterables and keyword arguments and becomes completely
-immutable. (Keyword arguments shown below; see documentation for additional
-forms of initialization.)
+An immutable dictionary, similar to ``dict``, is available. This dictionary can
+be initialized from multiple iterables and from keyword arguments. (Keyword
+arguments shown below; see documentation for additional forms of
+initialization.)
 
 >>> from frigid import Dictionary
 >>> dct = Dictionary( apples = 12, bananas = 6)
@@ -137,6 +137,28 @@ Traceback (most recent call last):
 frigid.exceptions.EntryImmutabilityError: Cannot delete entry for 'bananas'.
 >>> dct
 frigid.dictionaries.Dictionary( {'apples': 12, 'bananas': 6} )
+
+
+Immutable Objects 🧱
+-------------------------------------------------------------------------------
+
+The ``immutable`` decorator can be applied to any class to make its instances fully immutable after initialization.
+
+>>> from frigid import immutable
+>>> @immutable
+... class Config:
+...     def __init__( self, debug = False ):
+...         self.debug = debug
+...
+>>> config = Config( debug = True )
+>>> config.verbose = True  # ❌ Attempted addition raises error
+Traceback (most recent call last):
+...
+frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'verbose'.
+>>> config.debug = False   # ❌ Attempted reassignment raises error
+Traceback (most recent call last):
+...
+frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'debug'.
 
 
 Use Cases 🎯

@@ -28,6 +28,7 @@ Module ``frigid.__.imports``
 -------------------------------------------------------------------------------
 
 .. automodule:: frigid.__.imports
+   :no-index:
 
 
 Module ``frigid.__.exceptions``

@@ -20,9 +20,8 @@
 
 ''' Assert correct function of objects. '''
 
-# mypy: ignore-errors
 # pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name,magic-value-comparison
+# pylint: disable=invalid-name,magic-value-comparison,no-member
 # pylint: disable=missing-class-docstring,protected-access,unused-variable
 
 
@@ -268,6 +267,152 @@ def test_207_immutable_decorator_initialization_deletion( ):
         _ = obj.x
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         del obj._behaviors_ # pylint: disable=no-member
+
+
+def test_210_immutable_decorator_with_parameters( ):
+    ''' Decorator accepts and applies parameters correctly. '''
+    module = cache_import_module( f"{PACKAGE_NAME}.objects" )
+
+    # Test with docstring parameter
+    custom_doc = 'This is a custom docstring'
+
+    @module.immutable( docstring = custom_doc )
+    class WithDocstring:
+        ''' Original docstring '''
+        def __init__( self ):
+            self.attr = 'test'
+
+    assert custom_doc == WithDocstring.__doc__
+
+    # Test with mutables parameter
+    @module.immutable( mutables = ( 'version', ) )
+    class WithMutables:
+        def __init__( self ):
+            self.name = 'test'
+            self.version = '1.0.0'
+
+    obj = WithMutables( )
+    # Mutable attribute can be changed
+    obj.version = '2.0.0'
+    assert '2.0.0' == obj.version
+
+    # Non-mutable attribute cannot be changed
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        obj.name = 'changed'
+
+
+def test_211_immutable_decorator_function_form( ):
+    ''' Decorator works when called as a function with parameters. '''
+    module = cache_import_module( f"{PACKAGE_NAME}.objects" )
+
+    # Create decorator with parameters
+    decorator = module.immutable(
+        mutables = ( 'version', ),
+        docstring = 'Decorated class'
+    )
+
+    # Apply it to a class
+    @decorator
+    class Config:
+        def __init__( self, name, version ):
+            self.name = name
+            self.version = version
+
+    # Test behavior
+    config = Config( 'TestApp', '1.0.0' )
+
+    # Mutable attribute
+    config.version = '2.0.0'
+    assert '2.0.0' == config.version
+
+    # Immutable attribute
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        config.name = 'NewName'
+
+    # Docstring set correctly
+    assert 'Decorated class' == Config.__doc__
+
+
+def test_212_immutable_with_nested_objects( ):
+    ''' Immutable decorator properly handles nested object attributes. '''
+    module = cache_import_module( f"{PACKAGE_NAME}.objects" )
+
+    class InnerClass:
+        def __init__( self ):
+            self.value = 42
+
+    @module.immutable
+    class OuterClass:
+        def __init__( self ):
+            self.inner = InnerClass( )
+            self.name = 'outer'
+
+    # Create instance
+    obj = OuterClass( )
+
+    # Outer object is immutable
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        obj.name = 'changed'
+
+    # Inner object's attributes can still be changed
+    # since the immutability is not recursive
+    obj.inner.value = 100
+    assert 100 == obj.inner.value
+
+    # But the inner object reference cannot be changed
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        obj.inner = InnerClass( )
+
+
+def test_213_immutable_initialization_edge_cases( ):
+    ''' Test edge cases for immutable object initialization. '''
+    module = cache_import_module( f"{PACKAGE_NAME}.objects" )
+
+    @module.immutable
+    class DynamicInit:
+        def __init__( self, **kwargs ):
+            for key, value in kwargs.items( ):
+                setattr( self, key, value )
+
+    # Test with various initialization patterns
+    obj1 = DynamicInit( a = 1, b = 2, c = 3 )
+    assert 1 == obj1.a
+    assert 2 == obj1.b
+    assert 3 == obj1.c
+
+    # Cannot modify after initialization
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        obj1.a = 10
+
+    # Another initialization pattern
+    obj2 = DynamicInit( **{ 'x': 100, 'y': 200 } )
+    assert 100 == obj2.x
+    assert 200 == obj2.y
+
+    # Cannot add new attributes
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        obj2.z = 300
+
+def test_214_immutable_decorator_delete_mutable( ):
+    ''' Test deletion of mutable attributes in immutable objects. '''
+    module = cache_import_module( f"{PACKAGE_NAME}.objects" )
+
+    @module.immutable( mutables = ( 'can_delete', ) )
+    class Example:
+        def __init__( self ):
+            self.value = 42
+            self.can_delete = 'temporary'
+
+    obj = Example( )
+
+    # Should be able to delete the mutable attribute
+    assert hasattr( obj, 'can_delete' )
+    del obj.can_delete
+    assert not hasattr( obj, 'can_delete' )
+
+    # Still can't delete immutable attributes
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
+        del obj.value
 
 
 @pytest.mark.parametrize(
