@@ -23,11 +23,6 @@
     Provides a hierarchy of exceptions that are raised when immutability is
     violated. The hierarchy is designed to allow both specific and general
     exception handling.
-
-    * ``Omniexception``: Base for all package exceptions
-    * ``Omnierror``: Base for all package errors
-    * ``AttributeImmutabilityError``: Raised for attribute modification
-    * ``EntryImmutabilityError``: Raised for dictionary entry modification
 '''
 
 
@@ -59,7 +54,7 @@ class DecoratorCompatibilityError( Omnierror, TypeError ):
     def __init__( self, class_name: str, method_name: str ) -> None:
         # TODO: Use helper function to extract class name from class.
         super( ).__init__(
-            f"Cannot apply immutable decorator to {class_name!r} "
+            f"Cannot apply immutability decorator to {class_name!r} "
             f"because it defines {method_name!r}.")
 
 
@@ -68,7 +63,7 @@ class EntryImmutabilityError( Omnierror, TypeError ):
 
     def __init__( self, key: __.cabc.Hashable ) -> None:
         super( ).__init__(
-            f"Cannot assign or delete entry for {key!r}." )
+            f"Cannot add, alter, or remove entry for {key!r}." )
 
 
 class EntryValidityError( Omnierror, ValueError ):
@@ -80,10 +75,3 @@ class EntryValidityError( Omnierror, ValueError ):
         super( ).__init__(
             f"Cannot add invalid entry with key, {indicator!r}, "
             f"and value, {value!r}, to dictionary." )
-
-
-class OperationInvalidity( Omnierror, RuntimeError, TypeError ):
-    ''' Attempt to perform invalid operation. '''
-
-    def __init__( self, name: str ) -> None:
-        super( ).__init__( f"Operation {name!r} is not valid on this object." )

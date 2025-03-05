@@ -38,13 +38,20 @@ collections with strong immutability guarantees.
 * ``Namespace``: Similar to :py:class:`types.SimpleNamespace` but completely
   immutable after creation.
 
+* ``Class``: Metaclass for producing classes with immutable class attributes.
+  Has variants which are compatible with :py:class:`abc.ABCMeta` and
+  :py:class:`typing.Protocol`.
+
 * ``Module``: A module type that enforces complete attribute immutability.
+
+* ``reclassify_modules``: Convenience function for making modules in a package
+  immutable.
 
 * ``Object``: Base class for objects with immutable attributes.
 
-* ``Class``: Metaclass for creating classes with immutable class attributes.
+* ``immutable``: Decorator for causing classes to produce immutable instances.
 
-* ``immutable``: Decorator for making classes produce immutable instances.
+* ``one``: Convenience function for producing single-element tuples.
 
 
 Module ``frigid.dictionaries``

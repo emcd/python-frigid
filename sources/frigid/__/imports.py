@@ -28,12 +28,16 @@ from __future__ import annotations
 
 import abc
 import collections.abc as cabc
+import dataclasses as dcls
 import types
 
 import typing_extensions as typx
+# --- BEGIN: Injected by Copier ---
+
+# --- END: Injected by Copier ---
 
 
-from absence import Absential, absent, is_absent
+from absence import AbsentSingleton, Absential, absent, is_absent
 
 
 C = typx.TypeVar( 'C' )  # Class

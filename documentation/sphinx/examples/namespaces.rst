@@ -17,21 +17,24 @@
    +--------------------------------------------------------------------------+
 
 
-Namespace
+Namespaces
 ===============================================================================
+
+Namespace Objects
+-------------------------------------------------------------------------------
 
 Immutable namespaces are similar to :py:class:`types.SimpleNamespace`, but
 prevent any modification of attributes after creation. This makes them ideal for
 configuration objects, settings, or any data structure that should remain
 completely unchanged after initialization.
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> from frigid import Namespace
 
 Let's illustrate this with a configuration namespace for a database connection:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> db_config = Namespace(
     ...     host = 'localhost',
@@ -44,12 +47,12 @@ Let's illustrate this with a configuration namespace for a database connection:
     ... )
 
 Initialization
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Immutable namespaces can be initialized from zero or more dictionaries or
 iterables over key-value pairs and zero or more keyword arguments.
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> # From key-value pairs
     >>> cache = Namespace(
@@ -68,12 +71,12 @@ iterables over key-value pairs and zero or more keyword arguments.
     ... )
 
 Immutability
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Once created, a namespace becomes completely immutable. Attempts to modify
 existing attributes will raise an error:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> db_config.port = 3306
     Traceback (most recent call last):
@@ -82,7 +85,7 @@ existing attributes will raise an error:
 
 Attempts to delete attributes are also prevented:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> del db_config.password
     Traceback (most recent call last):
@@ -92,7 +95,7 @@ Attempts to delete attributes are also prevented:
 Unlike :py:class:`types.SimpleNamespace`, new attributes cannot be added after
 creation:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> db_config.timeout = 30
     Traceback (most recent call last):
@@ -100,11 +103,11 @@ creation:
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'timeout'.
 
 Attribute Access
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Attributes can be accessed normally through dot notation:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> db_config.host
     'localhost'
@@ -113,7 +116,7 @@ Attributes can be accessed normally through dot notation:
 
 Attempting to access non-existent attributes raises an AttributeError:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> db_config.missing
     Traceback (most recent call last):
@@ -121,11 +124,11 @@ Attempting to access non-existent attributes raises an AttributeError:
     AttributeError: 'Namespace' object has no attribute 'missing'
 
 Representation
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Namespaces have a clear string representation that shows all their attributes:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> cache
     frigid.namespaces.Namespace( backend = 'redis', timeout = 300 )
@@ -134,20 +137,20 @@ Namespaces have a clear string representation that shows all their attributes:
 
 Empty namespaces are also represented appropriately:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> empty = Namespace()
     >>> empty
     frigid.namespaces.Namespace( )
 
 Comparison
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Namespaces can be compared with other namespaces or SimpleNamespaces. Two
 namespaces are considered equal if they have the same attributes with the same
 values:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> from types import SimpleNamespace
     >>> ns1 = Namespace( x = 1, y = 2 )
@@ -161,12 +164,12 @@ values:
     False
 
 Copying
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To create a copy of a namespace, access its underlying ``__dict__`` and use it
 to initialize a new namespace:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> original = Namespace( x = 1, y = 2 )
     >>> copy = Namespace( **original.__dict__ )  #**
@@ -176,7 +179,7 @@ to initialize a new namespace:
 This pattern is particularly useful when you need to create a modified version
 of an existing configuration:
 
-.. doctest:: Namespace
+.. doctest:: Namespaces
 
     >>> # Create new dict with overridden values
     >>> test_config = dict( db_config.__dict__ )

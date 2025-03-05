@@ -17,15 +17,19 @@
    +--------------------------------------------------------------------------+
 
 
-Single-Item Tuple Creation
+Sequences
 ===============================================================================
+
+
+``one`` Function (Single-Element Tuples)
+-------------------------------------------------------------------------------
 
 The ``one`` function provides a cleaner alternative to Python's comma-syntax
 for creating single-item tuples. It can be used directly from the package or
 installed into builtins.
 
 Basic Usage
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Import and use directly from the package:
 
@@ -45,7 +49,7 @@ contexts:
     True
 
 Common Use Cases
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Creating lists of single-item tuples is clearer with ``one``:
 
@@ -63,7 +67,7 @@ It works well with ``map`` and other higher-order functions:
     (('a',), ('b',), ('c',))
 
 Installation
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The function can be installed into builtins for easier access:
 

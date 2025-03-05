@@ -17,8 +17,11 @@
    +--------------------------------------------------------------------------+
 
 
-Standard Classes
+Classes
 ===============================================================================
+
+Standard Classes
+-------------------------------------------------------------------------------
 
 Immutable classes are similar to standard Python classes, but prevent any
 modification of class attributes after creation. This makes them ideal for
@@ -30,7 +33,7 @@ immutable.
     >>> from frigid import Class
 
 Basic Usage
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Immutable classes can be defined using the ``Class`` metaclass. Attributes must
 be defined during class creation.
@@ -70,7 +73,7 @@ And new attributes cannot be added after class creation:
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'SQRT2'.
 
 Mutable Attributes
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While classes are generally immutable, specific attributes can be marked as
 mutable via a metaclass argument:
@@ -108,7 +111,7 @@ Mutable attributes can also be added after class creation if they are listed in
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'another_setting'.
 
 Decorator Support
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Classes can be modified during creation using decorators. This allows for
 programmatic addition of attributes before the class becomes immutable.
@@ -134,7 +137,7 @@ The decorator-added attributes become part of the immutable class:
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'TAU'.
 
 Dynamic Docstrings
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Classes can be given docstrings dynamically at creation time, which can be
 useful for generating documentation programmatically:
@@ -150,7 +153,7 @@ useful for generating documentation programmatically:
     True
 
 Abstract Base Classes
-===============================================================================
+-------------------------------------------------------------------------------
 
 The ``ABCFactory`` metaclass creates immutable abstract base classes. This is
 particularly useful for defining stable interfaces that should not change after
@@ -188,7 +191,7 @@ The abstract methods and class attributes are protected:
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'ENCODING'.
 
 Protocol Classes
-===============================================================================
+-------------------------------------------------------------------------------
 
 The ``ProtocolClass`` metaclass creates immutable protocol classes, which is
 useful for defining static type interfaces. All of the behaviors, mentioned for

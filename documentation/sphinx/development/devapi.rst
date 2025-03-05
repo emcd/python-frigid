@@ -28,6 +28,13 @@ Module ``frigid.__.imports``
 -------------------------------------------------------------------------------
 
 .. automodule:: frigid.__.imports
+   :no-index:
+
+
+Module ``frigid.__.exceptions``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.exceptions
 
 
 Module ``frigid.__.immutables``

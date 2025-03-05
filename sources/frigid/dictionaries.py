@@ -82,8 +82,7 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
         after creation. This provides a clean interface for dictionaries
         that should never change.
 
-        Implementations must provide:
-        - __getitem__, __iter__, __len__
+        Implementations must provide __getitem__, __iter__, __len__.
     '''
 
     @__.abc.abstractmethod
@@ -109,6 +108,8 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
 
 class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
     ''' Mix-in providing additional dictionary operations. '''
+
+    # TODO? Common __init__.
 
     def __or__( self, other: __.cabc.Mapping[ __.H, __.V ] ) -> __.typx.Self:
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
@@ -170,6 +171,7 @@ class Dictionary( # pylint: disable=eq-without-hash
     _objects.Object, _DictionaryOperations[ __.H, __.V ]
 ):
     ''' Immutable dictionary. '''
+    # TODO: version 2.0: Do not subclass from 'Object'.
 
     __slots__ = ( '_data_', )
 
@@ -251,10 +253,6 @@ class Dictionary( # pylint: disable=eq-without-hash
 
 Dictionary.__doc__ = __.generate_docstring(
     Dictionary, 'dictionary entries immutability' )
-# Register as subclass of Mapping rather than use it as mixin.
-# We directly implement, for the sake of efficiency, the methods which the
-# mixin would provide.
-__.cabc.Mapping.register( Dictionary )  # type: ignore
 
 
 class ValidatorDictionary( Dictionary[ __.H, __.V ] ):

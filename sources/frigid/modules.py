@@ -66,18 +66,15 @@ def reclassify_modules(
 ) -> None:
     ''' Reclassifies modules to be immutable.
 
-        This function converts existing modules to immutable modules, enforcing
-        attribute immutability after conversion. It can operate on individual
-        modules or entire package hierarchies.
+        Can operate on individual modules or entire package hierarchies.
 
         Notes
         -----
         * Only converts modules within the same package to prevent unintended
-          modifications to external modules
+          modifications to external modules.
         * When used with a dictionary, converts any module objects found as
-          values if they belong to the same package
-        * Module conversion is permanent for the runtime session
-        * Has no effect on already-immutable modules
+          values if they belong to the same package.
+        * Has no effect on already-immutable modules.
     '''
     from inspect import ismodule
     from sys import modules

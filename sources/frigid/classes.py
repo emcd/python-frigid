@@ -22,7 +22,8 @@
 ''' Immutable classes.
 
     Provides metaclasses for creating classes with immutable attributes. Once a
-    class is initialized, its attributes cannot be reassigned or deleted.
+    class is initialized, new attributes may not be assigned to it and its
+    existing attributes cannot be reassigned or deleted.
 
     The implementation includes:
 
@@ -33,11 +34,7 @@
     * ``ProtocolClass``: Metaclass for protocol classes; derived from
       :py:class:`typing.Protocol`.
 
-    These metaclasses are particularly useful for:
-
-    * Creating classes with constant class attributes
-    * Defining stable abstract base classes
-    * Building protocol classes with fixed interfaces
+    Additionally, metaclasses for dataclasses are provided as a convenience.
 
     >>> from frigid import Class
     >>> class Example( metaclass = Class ):
@@ -102,6 +99,67 @@ class Class( type ):
 
 Class.__doc__ = __.generate_docstring(
     Class,
+    'description of class factory class',
+    'class attributes immutability' )
+
+
+@__.typx.dataclass_transform( kw_only_default = True )
+class Dataclass( Class ):
+    ''' Immutable dataclass factory. '''
+
+    def __new__( # pylint: disable=too-many-arguments
+        clscls: type[ Dataclass ],
+        name: str,
+        bases: tuple[ type, ... ],
+        namespace: dict[ str, __.typx.Any ], *,
+        decorators: ClassDecorators = ( ),
+        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        mutables: __.cabc.Collection[ str ] = ( ),
+        **args: __.typx.Any
+    ) -> Dataclass:
+        decorators_ = (
+            __.dcls.dataclass( kw_only = True, slots = True ),
+            *decorators )
+        return Class.__new__( # pyright: ignore
+            clscls, name, bases, namespace,
+            decorators = decorators_,
+            docstring = docstring,
+            mutables = mutables,
+            **args )
+
+Dataclass.__doc__ = __.generate_docstring(
+    Dataclass,
+    'description of class factory class',
+    'class attributes immutability' )
+
+
+@__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
+class CompleteDataclass( Class ):
+    ''' Immutable dataclass factory.
+
+        Dataclasses from this factory produce immutable instances. '''
+    def __new__( # pylint: disable=too-many-arguments
+        clscls: type[ CompleteDataclass ],
+        name: str,
+        bases: tuple[ type, ... ],
+        namespace: dict[ str, __.typx.Any ], *,
+        decorators: ClassDecorators = ( ),
+        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        mutables: __.cabc.Collection[ str ] = ( ),
+        **args: __.typx.Any
+    ) -> CompleteDataclass:
+        decorators_ = (
+            __.dcls.dataclass( frozen = True, kw_only = True, slots = True ),
+            *decorators )
+        return Class.__new__( # pyright: ignore
+            clscls, name, bases, namespace,
+            decorators = decorators_,
+            docstring = docstring,
+            mutables = mutables,
+            **args )
+
+CompleteDataclass.__doc__ = __.generate_docstring(
+    CompleteDataclass,
     'description of class factory class',
     'class attributes immutability' )
 
@@ -181,6 +239,70 @@ class ProtocolClass( type( __.typx.Protocol ) ):
 
 ProtocolClass.__doc__ = __.generate_docstring(
     ProtocolClass,
+    'description of class factory class',
+    'class attributes immutability' )
+
+
+# pylint: disable=bad-classmethod-argument,no-self-argument
+@__.typx.dataclass_transform( kw_only_default = True )
+class ProtocolDataclass( ProtocolClass ):
+    ''' Immutable protocol dataclass factory. '''
+    def __new__( # pylint: disable=too-many-arguments
+        clscls: type[ ProtocolDataclass ],
+        name: str,
+        bases: tuple[ type, ... ],
+        namespace: dict[ str, __.typx.Any ], *,
+        decorators: ClassDecorators = ( ),
+        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        mutables: __.cabc.Collection[ str ] = ( ),
+        **args: __.typx.Any
+    ) -> ProtocolDataclass:
+        decorators_ = (
+            __.dcls.dataclass( kw_only = True, slots = True ),
+            *decorators )
+        return ProtocolClass.__new__( # pyright: ignore
+            clscls, name, bases, namespace,
+            decorators = decorators_,
+            docstring = docstring,
+            mutables = mutables,
+            **args )
+# pylint: enable=bad-classmethod-argument,no-self-argument
+
+ProtocolDataclass.__doc__ = __.generate_docstring(
+    ProtocolDataclass,
+    'description of class factory class',
+    'class attributes immutability' )
+
+
+# pylint: disable=bad-classmethod-argument,no-self-argument
+@__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
+class CompleteProtocolDataclass( ProtocolClass ):
+    ''' Immutable protocol dataclass factory.
+
+        Dataclasses from this factory produce immutable instances. '''
+    def __new__( # pylint: disable=too-many-arguments
+        clscls: type[ CompleteProtocolDataclass ],
+        name: str,
+        bases: tuple[ type, ... ],
+        namespace: dict[ str, __.typx.Any ], *,
+        decorators: ClassDecorators = ( ),
+        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+        mutables: __.cabc.Collection[ str ] = ( ),
+        **args: __.typx.Any
+    ) -> CompleteProtocolDataclass:
+        decorators_ = (
+            __.dcls.dataclass( frozen = True, kw_only = True, slots = True ),
+            *decorators )
+        return ProtocolClass.__new__( # pyright: ignore
+            clscls, name, bases, namespace,
+            decorators = decorators_,
+            docstring = docstring,
+            mutables = mutables,
+            **args )
+# pylint: enable=bad-classmethod-argument,no-self-argument
+
+CompleteProtocolDataclass.__doc__ = __.generate_docstring(
+    CompleteProtocolDataclass,
     'description of class factory class',
     'class attributes immutability' )
 

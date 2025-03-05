@@ -20,82 +20,21 @@
 Objects
 ===============================================================================
 
-The ``frigid.objects`` module provides tools for creating objects with
-immutable attributes. This includes both a base class and a decorator that can
-be applied to existing classes.
+Immutable objects do not allow instance attributes to be assigned, reassigned,
+or deleted after instantiation. Immutable objects can be created via decoration
+(by ``@immutable``) or inheritance (from ``Object``).
 
-Base Class
--------------------------------------------------------------------------------
+.. doctest:: Objects
 
-The ``Object`` class serves as a base for creating immutable objects.
-Attributes must be set in the derived class's ``__init__`` method before
-calling ``super().__init__()``, after which the object becomes immutable.
+    >>> from frigid import Object, immutable
 
-.. doctest:: Object
-
-    >>> from frigid import Object
-
-Here's an example of a point class with immutable coordinates:
-
-.. doctest:: Object
-
-    >>> class Point( Object ):
-    ...     def __init__( self, x, y ):
-    ...         self.x = x
-    ...         self.y = y
-    ...         super( ).__init__( )
-
-The object behaves normally during initialization:
-
-.. doctest:: Object
-
-    >>> point = Point( 3, 4 )
-    >>> point.x
-    3
-
-After initialization, attributes cannot be modified:
-
-.. doctest:: Object
-
-    >>> point.x = 5
-    Traceback (most recent call last):
-    ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
-
-They cannot be deleted:
-
-.. doctest:: Object
-
-    >>> del point.y
-    Traceback (most recent call last):
-    ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'y'.
-
-And new attributes cannot be added:
-
-.. doctest:: Object
-
-    >>> point.z = 0
-    Traceback (most recent call last):
-    ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'z'.
-
-Immutable Decorator
+Decorator
 -------------------------------------------------------------------------------
 
 The ``@immutable`` decorator can be applied to existing classes to make their
-instances immutable after initialization. This is particularly useful for
-classes that need to be immutable but have specific initialization
-requirements.
+instances immutable after initialization:
 
-.. doctest:: Immutable
-
-    >>> from frigid import immutable
-
-Here's an example of a temperature class that validates its value during
-initialization:
-
-.. doctest:: Immutable
+.. doctest:: Objects
 
     >>> @immutable
     ... class Temperature:
@@ -108,7 +47,7 @@ initialization:
 
 The class works normally during initialization:
 
-.. doctest:: Immutable
+.. doctest:: Objects
 
     >>> water_boiling = Temperature( 373.15 )
     >>> water_boiling.celsius
@@ -116,47 +55,81 @@ The class works normally during initialization:
 
 But becomes immutable afterwards:
 
-.. doctest:: Immutable
+.. doctest:: Objects
 
     >>> water_boiling.kelvin = 0  # Attempt to modify
     Traceback (most recent call last):
     ...
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'kelvin'.
 
-The decorator preserves the class's validation logic:
+The decorator preserves the validation logic in the class:
 
-.. doctest:: Immutable
+.. doctest:: Objects
 
     >>> impossible = Temperature( -1 )  # Attempt invalid initialization
     Traceback (most recent call last):
     ...
     ValueError: Temperature cannot be below absolute zero
 
-Decorator Compatibility
--------------------------------------------------------------------------------
 
-The ``@immutable`` decorator cannot be applied to classes that define their own
-``__setattr__`` or ``__delattr__`` methods, as this would conflict with the
-immutability enforcement:
+Mutable Attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. doctest:: Immutable
+The ``mutables`` argument can allow some attributes to remain mutable after
+assignment.
 
-    >>> @immutable  # This will fail
-    ... class Mutable:
-    ...     def __setattr__( self, name, value ):
-    ...         # Custom attribute setting logic
-    ...         super().__setattr__( name, value )
-    Traceback (most recent call last):
+.. doctest:: Objects
+
+    >>> @immutable( mutables = ( 'version', ) )
+    ... class VersionedConfig:
+    ...     def __init__( self, name, version ):
+    ...         self.name = name
+    ...         self.version = version
     ...
-    frigid.exceptions.DecoratorCompatibilityError: Cannot decorate class 'Mutable' which defines '__setattr__'.
+    >>> config = VersionedConfig( 'MyApp', '1.0.0' )
 
-Slots Support
--------------------------------------------------------------------------------
+Reassignment of mutable attribute:
 
-The ``@immutable`` decorator works with classes that use ``__slots__`` for
+.. doctest:: Objects
+
+    >>> config.version = '1.0.1'  # This works fine
+    >>> config.version
+    '1.0.1'
+
+Deletion of mutable attribute:
+
+.. doctest:: Objects
+
+    >>> del config.version  # This works with mutable attributes
+    >>> hasattr( config, 'version' )
+    False
+
+
+Docstrings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``docstring`` argument can set or override the docstring of the decorated
+class. This is useful when docstrings need to be computed dynamically:
+
+.. doctest:: Objects
+
+    >>> @immutable( docstring = 'A configuration class with custom documentation.' )
+    ... class DocumentedConfig:
+    ...     '''Original docstring that will be replaced.'''
+    ...     def __init__( self, name ):
+    ...         self.name = name
+    ...
+    >>> print( DocumentedConfig.__doc__ )
+    A configuration class with custom documentation.
+
+
+Slotted Classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``@immutable`` decorator works with classes which use ``__slots__`` for
 attribute storage. Remember to include the ``_behaviors_`` slot:
 
-.. doctest:: Immutable
+.. doctest:: Objects
 
     >>> @immutable
     ... class Vector:
@@ -166,13 +139,117 @@ attribute storage. Remember to include the ``_behaviors_`` slot:
     ...         self.x = x
     ...         self.y = y
     ...         self.z = z
-
-The slots-based class behaves the same as one using ``__dict__``:
-
-.. doctest:: Immutable
-
+    ...
     >>> v = Vector( 1, 2, 3 )
     >>> v.x = 0  # Attempt to modify
     Traceback (most recent call last):
     ...
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
+
+
+Compatibility
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``@immutable`` decorator cannot be applied to classes that define their own
+``__setattr__`` or ``__delattr__`` methods, as this would conflict with the
+immutability enforcement:
+
+.. doctest:: Objects
+
+    >>> @immutable  # This will fail
+    ... class Mutable:
+    ...     def __setattr__( self, name, value ):
+    ...         # Custom attribute setting logic
+    ...         super( ).__setattr__( name, value )
+    Traceback (most recent call last):
+    ...
+    frigid.exceptions.DecoratorCompatibilityError: Cannot decorate class 'Mutable' which defines '__setattr__'.
+
+
+Base Class
+-------------------------------------------------------------------------------
+
+The ``Object`` class serves as a base for creating immutable objects.
+Attributes must be set in the ``__init__`` method of the derived class before
+calling ``super( ).__init__( )``, after which the object becomes immutable.
+
+Here's an example of a point class with immutable coordinates:
+
+.. doctest:: Objects
+
+    >>> class Point( Object ):
+    ...     def __init__( self, x, y ):
+    ...         self.x = x
+    ...         self.y = y
+    ...         super( ).__init__( )
+
+The object behaves normally during initialization:
+
+.. doctest:: Objects
+
+    >>> point = Point( 3, 4 )
+    >>> point.x
+    3
+
+After initialization, attributes cannot be modified:
+
+.. doctest:: Objects
+
+    >>> point.x = 5
+    Traceback (most recent call last):
+    ...
+    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
+
+Nor can they cannot be deleted:
+
+.. doctest:: Objects
+
+    >>> del point.y
+    Traceback (most recent call last):
+    ...
+    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'y'.
+
+And new attributes cannot be added:
+
+.. doctest:: Objects
+
+    >>> point.z = 0
+    Traceback (most recent call last):
+    ...
+    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'z'.
+
+.. warning::
+
+    When working with built-in types, such as exception types, in multiple
+    inheritance hierarchies, avoid using the ``Object`` base class which uses
+    ``__slots__``. Instead, apply the ``@accretive`` decorator directly to your
+    class.
+
+
+Multiple Inheritance Considerations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using the ``Object`` class with multiple inheritance, be aware of
+potential layout conflicts with built-in types that have their own memory
+layout:
+
+.. doctest:: Objects
+
+    >>> # This would raise a TypeError due to memory layout conflict
+    >>> # class InvalidCombination( BaseException, Object ):
+    >>> #     pass
+
+Instead, use the ``@immutable`` decorator directly:
+
+.. doctest:: Objects
+
+    >>> @immutable
+    ... class ValidException( BaseException ):
+    ...     ''' An exception with immutable behavior. '''
+    ...     pass
+    ...
+    >>> ex = ValidException( 'Something went wrong' )
+    >>> ex.context = 'Additional information'
+    Traceback (most recent call last):
+    ...
+    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'context'.

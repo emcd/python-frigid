@@ -17,8 +17,12 @@
    +--------------------------------------------------------------------------+
 
 
-Simple Dictionary
+Dictionaries
 ===============================================================================
+
+
+Simple Dictionary
+-------------------------------------------------------------------------------
 
 Simple immutable dictionaries have an interface similar to :py:class:`dict`,
 but prevent any modifications after creation. They are useful for configuration
@@ -48,7 +52,7 @@ application:
     ... )
 
 Initialization
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Immutable dictionaries can be initialized from zero or more other dictionaries
 or iterables over key-value pairs and zero or more keyword arguments.
@@ -65,7 +69,7 @@ or iterables over key-value pairs and zero or more keyword arguments.
     >>> d4 = Dictionary( { 'x': 1 }, [ ( 'y', 2 ) ], z = 3 )
 
 Immutability
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Once created, a namespace becomes completely immutable. Attempts to modify
 existing attributes will raise an error:
@@ -87,7 +91,7 @@ Attempts to delete attributes are also prevented:
     frigid.exceptions.EntryImmutabilityError: Cannot assign entry for 'cache'.
 
 Copies
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Copies can be made which preserve behavior and data.
 
@@ -110,7 +114,7 @@ dictionaries (see below) as it preserves their behavior:
     frigid.dictionaries.Dictionary( {'a': 3, 'b': 4} )
 
 Comparison
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The copies are equivalent to their originals.
 
@@ -128,7 +132,7 @@ And to instances of other registered subclasses of
     True
 
 Access of Absent Entries
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Like :py:class:`dict`, the ``get`` method allows for "soft" accesses which
 provide a default value if an entry is missing.
@@ -143,7 +147,7 @@ provide a default value if an entry is missing.
     'default'
 
 Views
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Standard dictionary views are available:
 
@@ -157,7 +161,7 @@ Standard dictionary views are available:
     [('x', 1), ('y', 2), ('z', 3)]
 
 Unions
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The union operator (``|``) combines entries from two dictionaries or a
 dictionary and a mapping, creating a new dictionary. The operation prevents
@@ -182,7 +186,7 @@ When operands have overlapping keys, an error is raised:
     frigid.exceptions.EntryImmutabilityError: Cannot assign entry for 'password'.
 
 Intersections
--------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The intersection operator (``&``) can be used in two ways:
 
@@ -204,7 +208,7 @@ The intersection operator (``&``) can be used in two ways:
 
 
 Validator Dictionary
-===============================================================================
+-------------------------------------------------------------------------------
 
 Validator dictionaries ensure that all entries satisfy specified criteria at
 creation time. The first argument must be a callable which accepts a key and

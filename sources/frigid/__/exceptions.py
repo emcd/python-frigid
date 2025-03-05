@@ -18,26 +18,36 @@
 #============================================================================#
 
 
-''' Immutable data structures. '''
+''' Family of exceptions for package internals. '''
 
 
-from . import __
-from . import qaliases
-# --- BEGIN: Injected by Copier ---
-from . import exceptions
-# --- END: Injected by Copier ---
+from __future__ import annotations
 
-from .classes import *
-from .dictionaries import *
-from .installers import *
-from .modules import *
-from .namespaces import *
-from .objects import *
-from .sequences import *
+from . import imports as __
+from . import immutables as _immutables
 
 
-__version__ = '3.0rc0'
+class Omniexception( _immutables.ImmutableObject, BaseException ):
+    ''' Base for all exceptions raised internally. '''
+
+    _attribute_visibility_includes_: __.cabc.Collection[ str ] = (
+        frozenset( ( '__cause__', '__context__', ) ) )
 
 
-_attribute_visibility_includes_ = frozenset( ( '__version__', ) )
-__.reclassify_modules( __name__, recursive = True )
+class Omnierror( Omniexception, Exception ):
+    ''' Base for error exceptions raised internally. '''
+
+
+class EntryImmutabilityError( Omnierror, TypeError ):
+    ''' Attempt to update or remove immutable dictionary entry. '''
+
+    def __init__( self, indicator: __.cabc.Hashable ) -> None:
+        super( ).__init__(
+            f"Cannot alter or remove existing entry for {indicator!r}." )
+
+
+class OperationInvalidity( Omnierror, RuntimeError, TypeError ):
+    ''' Attempt to perform invalid operation. '''
+
+    def __init__( self, name: str ) -> None:
+        super( ).__init__( f"Operation {name!r} is not valid on this object." )
