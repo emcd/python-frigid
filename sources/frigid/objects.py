@@ -115,12 +115,14 @@ def immutable( # pylint: disable=too-complex,too-many-statements
 
         1. Simple decorator:
 
+           >>> from frigid import immutable
            >>> @immutable
            ... class Config:
            ...     pass
 
         2. With parameters:
 
+           >>> from frigid import immutable
            >>> @immutable( mutables = ( 'version', ) )
            ... class Config:
            ...     pass
