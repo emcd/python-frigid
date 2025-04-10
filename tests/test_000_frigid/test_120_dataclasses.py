@@ -20,9 +20,6 @@
 
 ''' Assert correct function of dataclass factory classes. '''
 
-# pylint: disable=invalid-field-call,no-member,unused-variable
-# pylint: disable=magic-value-comparison,protected-access
-
 
 import pytest
 
@@ -100,8 +97,6 @@ def test_201_dataclass_features( module_qname, class_name ):
 
     # Test that class variables are accessible
     assert 'class_level' == TestDataclass.cls_var
-    # In this implementation, ClassVar fields may still be accessible on instances
-    # but they should be the same value as the class attribute
     if hasattr(instance, 'cls_var'):
         assert TestDataclass.cls_var == instance.cls_var
 
@@ -122,7 +117,7 @@ def test_202_kw_only( module_qname, class_name ):
 
     # Test that positional arguments are not allowed
     with pytest.raises( TypeError ):
-        TestDataclass( 'test' )  # type: ignore
+        TestDataclass( 'test' )
 
 
 @pytest.mark.parametrize(
@@ -259,13 +254,8 @@ def test_207_dataclass_field_features( module_qname, class_name ):
             metadata = { 'description': 'A field with metadata' } )
 
     instance = TestDataclass( value = 'test' )
-
-    # Test default_factory works
     assert isinstance( instance.default_factory, list )
     assert len( instance.default_factory ) == 0
-
-    # Mutating the default_factory instance shouldn't affect other instances
-    # Since we're using frozen dataclasses, we need to check if it's allowed first
     if class_name not in FROZEN_DATACLASS_METACLASSES:
         try:
             instance.default_factory.append( 'item' )
@@ -273,7 +263,7 @@ def test_207_dataclass_field_features( module_qname, class_name ):
             assert len( instance2.default_factory ) == 0
         except (
             AttributeError, exceptions.AttributeImmutabilityError
-        ): pass  # Some implementations might make the list itself immutable
+        ): pass
 
 
 @pytest.mark.parametrize(
@@ -318,7 +308,7 @@ def test_209_protocol_dataclass_behavior( module_qname ):
             ''' Protocol for testing. '''
             value: str
 
-            def get_value( self ) -> str: # pylint: disable=no-self-use
+            def get_value( self ) -> str:
                 ''' Protocol method. '''
 
         # Create a class that matches the protocol

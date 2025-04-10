@@ -20,10 +20,6 @@
 
 ''' Assert correct function of objects. '''
 
-# pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name,magic-value-comparison,no-member
-# pylint: disable=missing-class-docstring,protected-access,unused-variable
-
 
 import pytest
 
@@ -179,7 +175,7 @@ def test_204_immutable_decorator_slots( ):
 
     @module.immutable
     class Example:
-        __slots__ = ( 'x', 'y', '_behaviors_' )
+        __slots__ = ( '_behaviors_', 'x', 'y' )
 
         def __init__( self ):
             self.x = 1
@@ -233,7 +229,7 @@ def test_206_immutable_decorator_mixed_slots_dict( ):
 
     @module.immutable
     class Example:
-        __slots__ = ( 'x', 'y', '__dict__' )
+        __slots__ = ( '__dict__', 'x', 'y' )
 
         def __init__( self ):
             self.x = 1
@@ -243,7 +239,7 @@ def test_206_immutable_decorator_mixed_slots_dict( ):
     obj = Example( )
     assert 1 == obj.x
     assert 2 == obj.y
-    assert 3 == obj.z # pylint: disable=no-member
+    assert 3 == obj.z
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         obj.x = 4
     with pytest.raises( exceptions.AttributeImmutabilityError ):
@@ -256,7 +252,7 @@ def test_207_immutable_decorator_initialization_deletion( ):
 
     @module.immutable
     class Example:
-        __slots__ = ( 'x', '_behaviors_' )
+        __slots__ = ( '_behaviors_', 'x' )
 
         def __init__( self ):
             self.x = 1
@@ -266,7 +262,7 @@ def test_207_immutable_decorator_initialization_deletion( ):
     with pytest.raises( AttributeError ):
         _ = obj.x
     with pytest.raises( exceptions.AttributeImmutabilityError ):
-        del obj._behaviors_ # pylint: disable=no-member
+        del obj._behaviors_
 
 
 def test_210_immutable_decorator_with_parameters( ):

@@ -20,7 +20,6 @@
 
 ''' Assert correct function of installers. '''
 
-# pylint: disable=no-member,undefined-variable
 # ruff: noqa: F821
 
 

@@ -20,7 +20,6 @@
 
 ''' Internal dictionary. '''
 
-# pylint: disable=unused-import
 # ruff: noqa: F401
 
 
@@ -59,14 +58,14 @@ class ImmutableDictionary(
         super( ).__init__( )
         from itertools import chain
         # Add values in order received, enforcing no alteration.
-        for indicator, value in chain.from_iterable( map( # type: ignore
-            lambda element: ( # type: ignore
+        for indicator, value in chain.from_iterable( map( # pyright: ignore
+            lambda element: ( # pyright: ignore
                 element.items( )
                 if isinstance( element, __.cabc.Mapping )
                 else element
             ),
             ( *iterables, entries )
-        ) ): self[ indicator ] = value # type: ignore
+        ) ): self[ indicator ] = value # pyright: ignore
         self._behaviors_.add( _immutables.behavior_label )
 
     def __delitem__( self, key: _H ) -> None:
@@ -91,7 +90,7 @@ class ImmutableDictionary(
         ''' Provides fresh copy of dictionary. '''
         return type( self )( self )
 
-    def pop( # pylint: disable=unused-argument
+    def pop( # pyright: ignore
         self, key: _H, default: __.Absential[ _V ] = __.absent
     ) -> __.typx.Never:
         ''' Raises exception. Cannot pop immutable entry. '''
@@ -103,8 +102,8 @@ class ImmutableDictionary(
         from .exceptions import OperationInvalidity
         raise OperationInvalidity( 'popitem' )
 
-    def update( # type: ignore
-        self, # pylint: disable=unused-argument
+    def update( # pyright: ignore
+        self,
         *iterables: __.DictionaryPositionalArgument[ _H, _V ],
         **entries: __.DictionaryNominativeArgument[ _V ],
     ) -> None:

@@ -40,4 +40,4 @@ def one( value: _V ) -> tuple[ _V, ... ]:
         * List comprehensions and generator expressions
         * Situations where formatter behavior with trailing commas is undesired
     '''
-    return value, # pylint: disable=trailing-comma-tuple
+    return value,

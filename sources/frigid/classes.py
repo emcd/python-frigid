@@ -18,7 +18,6 @@
 #============================================================================#
 
 
-# pylint: disable=line-too-long
 ''' Immutable classes.
 
     Provides metaclasses for creating classes with immutable attributes. Once a
@@ -47,8 +46,7 @@
     Traceback (most recent call last):
         ...
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
-'''
-# pylint: enable=line-too-long
+''' # noqa: E501
 
 # TODO? Allow predicate functions and regex patterns as mutability checkers.
 
@@ -68,7 +66,7 @@ _behavior = 'immutability'
 class Class( type ):
     ''' Immutable class factory. '''
 
-    def __new__(  # pylint: disable=too-many-arguments
+    def __new__( # noqa: PLR0913
         clscls: type[ Class ],
         name: str,
         bases: tuple[ type, ... ],
@@ -107,7 +105,7 @@ Class.__doc__ = __.generate_docstring(
 class Dataclass( Class ):
     ''' Immutable dataclass factory. '''
 
-    def __new__( # pylint: disable=too-many-arguments
+    def __new__( # noqa: PLR0913
         clscls: type[ Dataclass ],
         name: str,
         bases: tuple[ type, ... ],
@@ -138,7 +136,7 @@ class CompleteDataclass( Class ):
     ''' Immutable dataclass factory.
 
         Dataclasses from this factory produce immutable instances. '''
-    def __new__( # pylint: disable=too-many-arguments
+    def __new__( # noqa: PLR0913
         clscls: type[ CompleteDataclass ],
         name: str,
         bases: tuple[ type, ... ],
@@ -167,7 +165,7 @@ CompleteDataclass.__doc__ = __.generate_docstring(
 class ABCFactory( __.abc.ABCMeta ):
     ''' Immutable abstract base class factory. '''
 
-    def __new__(  # pylint: disable=too-many-arguments
+    def __new__( # noqa: PLR0913
         clscls: type[ ABCFactory ],
         name: str,
         bases: tuple[ type, ... ],
@@ -202,11 +200,10 @@ ABCFactory.__doc__ = __.generate_docstring(
     'class attributes immutability' )
 
 
-# pylint: disable=bad-classmethod-argument,no-self-argument
 class ProtocolClass( type( __.typx.Protocol ) ):
     ''' Immutable protocol class factory. '''
 
-    def __new__(  # pylint: disable=too-many-arguments
+    def __new__( # noqa: PLR0913
         clscls: type[ ProtocolClass ],
         name: str,
         bases: tuple[ type, ... ],
@@ -216,7 +213,7 @@ class ProtocolClass( type( __.typx.Protocol ) ):
         mutables: __.cabc.Collection[ str ] = ( ),
         **args: __.typx.Any
     ) -> ProtocolClass:
-        class_ = super( ProtocolClass, clscls ).__new__( # pylint: disable=too-many-function-args
+        class_ = super( ProtocolClass, clscls ).__new__(
             clscls, name, bases, namespace, **args )
         return _class__new__(
             class_,
@@ -235,7 +232,6 @@ class ProtocolClass( type( __.typx.Protocol ) ):
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not _class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
-# pylint: enable=bad-classmethod-argument,no-self-argument
 
 ProtocolClass.__doc__ = __.generate_docstring(
     ProtocolClass,
@@ -243,11 +239,10 @@ ProtocolClass.__doc__ = __.generate_docstring(
     'class attributes immutability' )
 
 
-# pylint: disable=bad-classmethod-argument,no-self-argument
 @__.typx.dataclass_transform( kw_only_default = True )
 class ProtocolDataclass( ProtocolClass ):
     ''' Immutable protocol dataclass factory. '''
-    def __new__( # pylint: disable=too-many-arguments
+    def __new__( # noqa: PLR0913
         clscls: type[ ProtocolDataclass ],
         name: str,
         bases: tuple[ type, ... ],
@@ -266,7 +261,6 @@ class ProtocolDataclass( ProtocolClass ):
             docstring = docstring,
             mutables = mutables,
             **args )
-# pylint: enable=bad-classmethod-argument,no-self-argument
 
 ProtocolDataclass.__doc__ = __.generate_docstring(
     ProtocolDataclass,
@@ -274,13 +268,12 @@ ProtocolDataclass.__doc__ = __.generate_docstring(
     'class attributes immutability' )
 
 
-# pylint: disable=bad-classmethod-argument,no-self-argument
 @__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
 class CompleteProtocolDataclass( ProtocolClass ):
     ''' Immutable protocol dataclass factory.
 
         Dataclasses from this factory produce immutable instances. '''
-    def __new__( # pylint: disable=too-many-arguments
+    def __new__( # noqa: PLR0913
         clscls: type[ CompleteProtocolDataclass ],
         name: str,
         bases: tuple[ type, ... ],
@@ -299,7 +292,6 @@ class CompleteProtocolDataclass( ProtocolClass ):
             docstring = docstring,
             mutables = mutables,
             **args )
-# pylint: enable=bad-classmethod-argument,no-self-argument
 
 CompleteProtocolDataclass.__doc__ = __.generate_docstring(
     CompleteProtocolDataclass,
@@ -315,7 +307,6 @@ def _accumulate_mutables(
         for base in class_.__mro__ ) )
 
 
-# pylint: disable=protected-access
 def _class__new__(
     original: type,
     decorators: ClassDecorators = ( ),
@@ -338,10 +329,8 @@ def _class__new__(
         original = reproduction
     class_decorators_.clear( )  # Flag '__init__' to enable immutability
     return reproduction
-# pylint: enable=protected-access
 
 
-# pylint: disable=protected-access
 def _class__init__( class_: type ) -> None:
     # Some metaclasses add class attributes in '__init__' method.
     # So, we wait until last possible moment to set immutability.
@@ -352,7 +341,6 @@ def _class__init__( class_: type ) -> None:
     if ( class_behaviors := cdict.get( '_class_behaviors_' ) ):
         class_behaviors.add( _behavior )
     else: class_._class_behaviors_ = { _behavior }
-# pylint: enable=protected-access
 
 
 def _class__delattr__( class_: type, name: str ) -> bool:

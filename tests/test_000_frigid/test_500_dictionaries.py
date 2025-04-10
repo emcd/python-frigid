@@ -20,13 +20,6 @@
 
 ''' Assert correct function of dictionaries. '''
 
-# mypy: ignore-errors
-# pylint: disable=attribute-defined-outside-init
-# pylint: disable=invalid-name,magic-value-comparison
-# pylint: disable=pointless-statement,protected-access
-# pylint: disable=too-many-locals,too-many-statements,unnecessary-dunder-call
-# pylint: disable=unused-argument,unused-variable
-
 
 import pytest
 
@@ -446,7 +439,7 @@ def test_225_dictionary_equality( module_qname, class_name ):
     assert dct2 == dct1
     assert dct1 == dct3
     assert dct3 == dct1
-    assert not ( dct1 == -1 ) # pylint: disable=superfluous-parens
+    assert not ( dct1 == -1 ) # noqa: SIM201
     assert dct1 != -1
     assert dct1 != ( )
 

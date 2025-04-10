@@ -18,7 +18,7 @@
 
 
 *******************************************************************************
-                                  frigid
+                                     frigid
 *******************************************************************************
 
 .. image:: https://img.shields.io/pypi/v/frigid
@@ -191,14 +191,6 @@ Use Cases 🎯
    :alt: pre-commit
    :target: https://github.com/pre-commit/pre-commit
 
-.. image:: https://img.shields.io/badge/security-bandit-yellow.svg
-   :alt: Bandit
-   :target: https://github.com/PyCQA/bandit
-
-.. image:: https://img.shields.io/badge/linting-pylint-yellowgreen
-   :alt: Pylint
-   :target: https://github.com/pylint-dev/pylint
-
 .. image:: https://microsoft.github.io/pyright/img/pyright_badge.svg
    :alt: Pyright
    :target: https://microsoft.github.io/pyright
@@ -207,10 +199,6 @@ Use Cases 🎯
    :alt: Ruff
    :target: https://github.com/astral-sh/ruff
 
-.. image:: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
-   :alt: Hypothesis
-   :target: https://hypothesis.readthedocs.io/en/latest/
-
 .. image:: https://img.shields.io/pypi/implementation/frigid
    :alt: PyPI - Implementation
    :target: https://pypi.org/project/frigid/
@@ -218,3 +206,29 @@ Use Cases 🎯
 .. image:: https://img.shields.io/pypi/wheel/frigid
    :alt: PyPI - Wheel
    :target: https://pypi.org/project/frigid/
+
+
+Other Projects by This Author 🌟
+===============================================================================
+
+
+* `python-absence <https://github.com/emcd/python-absence>`_
+    - PyPI: `absence <https://pypi.org/project/absence/>`_
+
+    🕳️ A Python library package which provides a **sentinel for absent values** - a falsey, immutable singleton that represents the absence of a value in contexts where ``None`` or ``False`` may be valid values.
+* `python-accretive <https://github.com/emcd/python-accretive>`_
+    - PyPI: `accretive <https://pypi.org/project/accretive/>`_
+
+    🌌 A Python library package which provides **accretive data structures** - collections which can grow but never shrink.
+* `python-falsifier <https://github.com/emcd/python-falsifier>`_
+    - PyPI: `falsifier <https://pypi.org/project/falsifier/>`_
+
+    🎭 A very simple Python library package which provides a **base class for falsey objects** - objects that evaluate to ``False`` in boolean contexts.
+* `python-icecream-truck <https://github.com/emcd/python-icecream-truck>`_
+    - PyPI: `icecream-truck <https://pypi.org/project/icecream-truck/>`_
+
+    🍦 **Flavorful Debugging** - A Python library which enhances the powerful and well-known ``icecream`` package with flavored traces, configuration hierarchies, customized outputs, ready-made recipes, and more.
+* `python-mimeogram <https://github.com/emcd/python-mimeogram>`_
+    - PyPI: `mimeogram <https://pypi.org/project/mimeogram/>`_
+
+    📨 A command-line tool for **exchanging collections of files with Large Language Models** - bundle multiple files into a single clipboard-ready document while preserving directory structure and metadata... good for code reviews, project sharing, and LLM interactions.

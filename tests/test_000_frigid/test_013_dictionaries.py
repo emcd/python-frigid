@@ -20,12 +20,6 @@
 
 ''' Assert correct function of internal dictionaries. '''
 
-# mypy: ignore-errors
-# pylint: disable=attribute-defined-outside-init
-# pylint: disable=magic-value-comparison
-# pylint: disable=missing-class-docstring
-# pylint: disable=protected-access
-# pylint: disable=unexpected-keyword-arg
 # ruff: noqa: E711,E712
 
 

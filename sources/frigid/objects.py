@@ -21,7 +21,6 @@
 # ruff: noqa: F811
 
 
-# pylint: disable=line-too-long
 ''' Immutable objects.
 
     Provides a base class and decorator for creating objects with immutable
@@ -58,8 +57,7 @@
     Traceback (most recent call last):
         ...
     frigid.exceptions.AttributeImmutabilityError: ...
-'''
-# pylint: enable=line-too-long
+''' # noqa: E501
 
 
 from . import __
@@ -99,7 +97,7 @@ def immutable( # pragma: no branch
 ) -> __.typx.Callable[ [ type[ __.C ] ], type[ __.C ] ]: ...
 
 
-def immutable( # pylint: disable=too-complex,too-many-statements
+def immutable( # noqa: C901,PLR0915
     class_: __.Absential[ type[ __.C ] ] = __.absent, *,
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
     mutables: __.cabc.Collection[ str ] = ( )
@@ -127,7 +125,7 @@ def immutable( # pylint: disable=too-complex,too-many-statements
            ... class Config:
            ...     pass
     '''
-    def decorator( cls: type[ __.C ] ) -> type[ __.C ]: # pylint: disable=too-many-statements
+    def decorator( cls: type[ __.C ] ) -> type[ __.C ]: # noqa: C901,PLR0915
         if not __.is_absent( docstring ): cls.__doc__ = docstring
         for method in ( '__setattr__', '__delattr__' ):
             if method in cls.__dict__:
@@ -135,7 +133,7 @@ def immutable( # pylint: disable=too-complex,too-many-statements
                 raise DecoratorCompatibilityError( cls.__name__, method )
         original_init = next(
             base.__dict__[ '__init__' ] for base in cls.__mro__
-            if '__init__' in base.__dict__ ) # pylint: disable=magic-value-comparison
+            if '__init__' in base.__dict__ )
         mutables_ = frozenset( mutables )
 
         def __init__(

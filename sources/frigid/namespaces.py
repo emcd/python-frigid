@@ -18,7 +18,6 @@
 #============================================================================#
 
 
-# pylint: disable=line-too-long
 ''' Immutable namespaces.
 
     Provides a namespace type with immutable attributes. Similar to
@@ -42,15 +41,14 @@
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
     >>> ns
     frigid.namespaces.Namespace( x = 1, y = 2 )
-'''
-# pylint: enable=line-too-long
+''' # noqa: E501
 
 
 from . import __
 from . import objects as _objects
 
 
-class Namespace( _objects.Object ):  # pylint: disable=eq-without-hash
+class Namespace( _objects.Object ):
     ''' Immutable namespaces. '''
 
     def __init__(
@@ -59,7 +57,8 @@ class Namespace( _objects.Object ):  # pylint: disable=eq-without-hash
         **attributes: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
         self.__dict__.update(
-            __.ImmutableDictionary( *iterables, **attributes ) ) # type: ignore
+            __.ImmutableDictionary(
+                *iterables, **attributes ) ) # pyright: ignore
         super( ).__init__( )
 
     def __repr__( self ) -> str:

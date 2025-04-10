@@ -18,7 +18,6 @@
 #============================================================================#
 
 
-# pylint: disable=line-too-long
 ''' Immutable dictionaries.
 
     Dictionaries which cannot be modified after creation.
@@ -66,8 +65,7 @@
     Traceback (most recent call last):
         ...
     frigid.exceptions.EntryImmutabilityError: Cannot assign or delete entry for 'y'.
-'''
-# pylint: enable=line-too-long
+''' # noqa: E501
 
 
 from . import __
@@ -167,7 +165,7 @@ class _Dictionary(
 ): pass
 
 
-class Dictionary( # pylint: disable=eq-without-hash
+class Dictionary(
     _objects.Object, _DictionaryOperations[ __.H, __.V ]
 ):
     ''' Immutable dictionary. '''
@@ -219,7 +217,7 @@ class Dictionary( # pylint: disable=eq-without-hash
         ''' Provides fresh copy of dictionary. '''
         return type( self )( self )
 
-    def get(
+    def get( # pyright: ignore
         self, key: __.H, default: __.Absential[ __.V ] = __.absent
     ) -> __.typx.Annotated[
         __.V,
@@ -229,7 +227,7 @@ class Dictionary( # pylint: disable=eq-without-hash
     ]:
         ''' Retrieves entry associated with key, if it exists. '''
         if __.is_absent( default ):
-            return self._data_.get( key )  # type: ignore
+            return self._data_.get( key ) # pyright: ignore
         return self._data_.get( key, default )
 
     def keys( self ) -> __.cabc.KeysView[ __.H ]:
@@ -274,18 +272,18 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
         from itertools import chain
         # Collect entries in case an iterable is a generator
         # which would be consumed during validation, before initialization.
-        for key, value in chain.from_iterable( map( # type: ignore
-            lambda element: ( # type: ignore
+        for key, value in chain.from_iterable( map( # pyright: ignore
+            lambda element: ( # pyright: ignore
                 element.items( )
                 if isinstance( element, __.cabc.Mapping )
                 else element
             ),
             ( *iterables, entries )
         ) ):
-            if not self._validator_( key, value ): # type: ignore
+            if not self._validator_( key, value ): # pyright: ignore
                 from .exceptions import EntryValidityError
                 raise EntryValidityError( key, value )
-            entries_.append( ( key, value ) ) # type: ignore
+            entries_.append( ( key, value ) ) # pyright: ignore
         super( ).__init__( entries_ )
 
     def __repr__( self ) -> str:

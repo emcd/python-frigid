@@ -1,5 +1,5 @@
-.. vim: set fileencoding=utf-8:
-.. -*- coding: utf-8 -*-
+.. vim: set filetype=rst fileencoding=utf-8:
+.. -*- mode: rst ; coding: utf-8 -*-
 .. +--------------------------------------------------------------------------+
    |                                                                          |
    | Licensed under the Apache License, Version 2.0 (the "License");          |
@@ -17,10 +17,44 @@
    +--------------------------------------------------------------------------+
 
 
+:tocdepth: 3
+
+
 *******************************************************************************
-License
+Internal Development Interface
 *******************************************************************************
 
 
-.. include:: ../../LICENSE.txt
-   :literal:
+Package ``frigid.__``
+===============================================================================
+
+
+Module ``frigid.__.imports``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.imports
+   :no-index:
+
+
+Module ``frigid.__.exceptions``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.exceptions
+
+
+Module ``frigid.__.immutables``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.immutables
+
+
+Module ``frigid.__.dictionaries``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.dictionaries
+
+
+Module ``frigid.__.docstrings``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.docstrings
