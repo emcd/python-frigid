@@ -152,21 +152,21 @@ def test_202_immutable_decorator_inheritance( ):
         obj.derived_attr = 'modified'
 
 
-def test_203_immutable_decorator_compatibility( ):
-    ''' Decorator raises error for incompatible classes. '''
-    module = cache_import_module( f"{PACKAGE_NAME}.objects" )
-
-    with pytest.raises( exceptions.DecoratorCompatibilityError ):
-        @module.immutable
-        class BadExample:
-            def __setattr__( self, name, value ):
-                pass # pragma: no coverage
-
-    with pytest.raises( exceptions.DecoratorCompatibilityError ):
-        @module.immutable
-        class AnotherBadExample:
-            def __delattr__( self, name ):
-                pass # pragma: no coverage
+# def test_203_immutable_decorator_compatibility( ):
+#     ''' Decorator raises error for incompatible classes. '''
+#     module = cache_import_module( f"{PACKAGE_NAME}.objects" )
+#
+#     with pytest.raises( exceptions.DecoratorCompatibilityError ):
+#         @module.immutable
+#         class BadExample:
+#             def __setattr__( self, name, value ):
+#                 pass # pragma: no coverage
+#
+#     with pytest.raises( exceptions.DecoratorCompatibilityError ):
+#         @module.immutable
+#         class AnotherBadExample:
+#             def __delattr__( self, name ):
+#                 pass # pragma: no coverage
 
 
 def test_204_immutable_decorator_slots( ):

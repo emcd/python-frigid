@@ -23,9 +23,9 @@
 
 import pytest
 
-from dataclasses import field, FrozenInstanceError
+from dataclasses import field
 from itertools import product
-from typing import ClassVar
+from typing_extensions import ClassVar
 
 from . import (
     MODULES_QNAMES,
@@ -35,19 +35,23 @@ from . import (
 
 
 THESE_MODULE_QNAMES = tuple(
-    name for name in MODULES_QNAMES if name.endswith( '.classes' ) )
+    name for name in MODULES_QNAMES if name.endswith( '.dataclasses' ) )
 
 DATACLASS_METACLASSES = (
     'Dataclass',
+    'DataclassI',
     'CompleteDataclass',
 )
 PROTOCOL_DATACLASS_METACLASSES = (
     'ProtocolDataclass',
+    'ProtocolDataclassI',
     'CompleteProtocolDataclass',
 )
 ALL_DATACLASS_METACLASSES = (
     DATACLASS_METACLASSES + PROTOCOL_DATACLASS_METACLASSES )
 FROZEN_DATACLASS_METACLASSES = (
+    'DataclassI',
+    'ProtocolDataclassI',
     'CompleteDataclass',
     'CompleteProtocolDataclass',
 )
@@ -63,7 +67,6 @@ def test_200_instantiation( module_qname, class_name ):
     class_factory_class = getattr( module, class_name )
 
     class TestDataclass( metaclass = class_factory_class ):
-        ''' test '''
         value: str
         optional: int = 42
 
@@ -80,22 +83,16 @@ def test_201_dataclass_features( module_qname, class_name ):
     class_factory_class = getattr( module, class_name )
 
     class TestDataclass( metaclass = class_factory_class ):
-        ''' test '''
         value: str
         optional: int = 42
         cls_var: ClassVar[str] = 'class_level'
 
-    # Test instantiation with required arguments
     instance = TestDataclass( value = 'test' )
     assert 'test' == instance.value
     assert 42 == instance.optional
-
-    # Test instantiation with all arguments
     instance2 = TestDataclass( value = 'test2', optional = 100 )
     assert 'test2' == instance2.value
     assert 100 == instance2.optional
-
-    # Test that class variables are accessible
     assert 'class_level' == TestDataclass.cls_var
     if hasattr(instance, 'cls_var'):
         assert TestDataclass.cls_var == instance.cls_var
@@ -111,11 +108,9 @@ def test_202_kw_only( module_qname, class_name ):
     class_factory_class = getattr( module, class_name )
 
     class TestDataclass( metaclass = class_factory_class ):
-        ''' test '''
         value: str
         optional: int = 42
 
-    # Test that positional arguments are not allowed
     with pytest.raises( TypeError ):
         TestDataclass( 'test' )
 
@@ -127,21 +122,17 @@ def test_202_kw_only( module_qname, class_name ):
 def test_203_frozen_instance( module_qname, class_name ):
     ''' Complete dataclasses create frozen instances. '''
     module = cache_import_module( module_qname )
+    exceptions = cache_import_module( f"{PACKAGE_NAME}.exceptions" )
     class_factory_class = getattr( module, class_name )
 
     class TestDataclass( metaclass = class_factory_class ):
-        ''' test '''
         value: str
         optional: int = 42
 
     instance = TestDataclass( value = 'test' )
-
-    # Test that attributes cannot be modified
-    with pytest.raises( FrozenInstanceError ):
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
         instance.value = 'modified'
-
-    # Test that attributes cannot be deleted
-    with pytest.raises( FrozenInstanceError ):
+    with pytest.raises( exceptions.AttributeImmutabilityError ):
         del instance.value
 
 
@@ -159,21 +150,14 @@ def test_204_standard_dataclass_behavior( module_qname, class_name ):
     class_factory_class = getattr( module, class_name )
 
     class TestDataclass( metaclass = class_factory_class ):
-        ''' test '''
         value: str
         optional: int = 42
 
     instance = TestDataclass( value = 'test' )
-
-    # Test that attributes can be modified (non-frozen dataclasses)
     instance.value = 'modified'
     assert 'modified' == instance.value
-
-    # Test that attributes can be deleted
     del instance.value
     assert not hasattr( instance, 'value' )
-
-    # Because of slots=True, new attributes cannot be added
     with pytest.raises( AttributeError ):
         instance.new_attr = 'value'
 
@@ -188,19 +172,12 @@ def test_205_slots( module_qname, class_name ):
     class_factory_class = getattr( module, class_name )
 
     class TestDataclass( metaclass = class_factory_class ):
-        ''' test '''
         value: str
         optional: int = 42
 
     instance = TestDataclass( value = 'test' )
-
-    # Test that __slots__ exists (though it might be in a parent class)
     assert '__slots__' in dir( TestDataclass )
-
-    # Test that __dict__ is not available on instance (effect of slots)
     assert '__dict__' not in dir( instance )
-
-    # Check that the instance was created successfully
     assert instance.value == 'test'
     assert instance.optional == 42
 
@@ -216,20 +193,14 @@ def test_206_immutable_class_attrs( module_qname, class_name ):
     class_factory_class = getattr( module, class_name )
 
     class TestDataclass( metaclass = class_factory_class ):
-        ''' test '''
         value: str
         optional: int = 42
         CLASS_CONSTANT: ClassVar[str] = 'constant'
 
-    # Test that class attributes cannot be modified
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         TestDataclass.CLASS_CONSTANT = 'modified'
-
-    # Test that class attributes cannot be deleted
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         del TestDataclass.CLASS_CONSTANT
-
-    # Test that new class attributes cannot be added
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         TestDataclass.NEW_ATTR = 'new'
 
@@ -245,12 +216,11 @@ def test_207_dataclass_field_features( module_qname, class_name ):
     class_factory_class = getattr( module, class_name )
 
     class TestDataclass( metaclass = class_factory_class ):
-        ''' test '''
         value: str
         optional: int = 42
         default_factory: list = field( default_factory = list )
         metadata_field: str = field(
-            default="test",
+            default = 'test',
             metadata = { 'description': 'A field with metadata' } )
 
     instance = TestDataclass( value = 'test' )
@@ -280,17 +250,13 @@ def test_208_dataclass_with_mutable_class_attrs( module_qname, class_name ):
         metaclass = class_factory_class,
         mutables = ( 'MUTABLE_CLASS_VAR', )
     ):
-        ''' test '''
         value: str
         optional: int = 42
         MUTABLE_CLASS_VAR: ClassVar[int] = 100
         IMMUTABLE_CLASS_VAR: ClassVar[int] = 200
 
-    # Test that mutable class attributes can be modified
     TestDataclass.MUTABLE_CLASS_VAR = 150
     assert 150 == TestDataclass.MUTABLE_CLASS_VAR
-
-    # Test that immutable class attributes cannot be modified
     with pytest.raises( exceptions.AttributeImmutabilityError ):
         TestDataclass.IMMUTABLE_CLASS_VAR = 250
 
@@ -311,7 +277,6 @@ def test_209_protocol_dataclass_behavior( module_qname ):
             def get_value( self ) -> str:
                 ''' Protocol method. '''
 
-        # Create a class that matches the protocol
         class ImplementsProtocol:
             ''' Implements TestProtocolDataclass protocol. '''
             def __init__( self, value: str ):
@@ -321,24 +286,19 @@ def test_209_protocol_dataclass_behavior( module_qname ):
                 ''' Returns the value. '''
                 return self.value
 
-        # Create a class that doesn't match the protocol
         class DoesNotImplementProtocol:
             ''' Doesn't implement TestProtocolDataclass protocol. '''
             def __init__( self, data: str ):
                 self.data = data
 
-        # Test structural compatibility
         compliant = ImplementsProtocol( "test" )
         assert hasattr(compliant, "value")
         assert hasattr(compliant, "get_value")
         assert callable(compliant.get_value)
-
         non_compliant = DoesNotImplementProtocol( "test" )
         assert not hasattr(non_compliant, "value")
         assert not hasattr(non_compliant, "get_value")
-
     except (ImportError, AttributeError):
-        # Skip if ProtocolDataclass isn't available
         pytest.skip("ProtocolDataclass not available")
 
 
@@ -363,11 +323,9 @@ def test_210_custom_decorators( module_qname, class_name ):
         metaclass = class_factory_class,
         decorators = ( custom_decorator, )
     ):
-        ''' test '''
         value: str
         optional: int = 42
 
-    # Test that custom decorator was applied
     assert decorator_applied
     assert hasattr( TestDataclass, 'DECORATOR_ATTR' )
     assert 'was_applied' == TestDataclass.DECORATOR_ATTR
@@ -392,12 +350,10 @@ def test_211_inheritance( module_qname, class_name ):
         child_value: str
         child_optional: int = 100
 
-    # Test that child inherits parent fields
     instance = ChildDataclass(
         parent_value = 'parent',
         child_value = 'child'
     )
-
     assert 'parent' == instance.parent_value
     assert 42 == instance.parent_optional
     assert 'child' == instance.child_value

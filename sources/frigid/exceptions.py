@@ -48,16 +48,6 @@ class AttributeImmutabilityError( Omnierror, AttributeError, TypeError ):
             f"Cannot assign or delete attribute {name!r}." )
 
 
-class DecoratorCompatibilityError( Omnierror, TypeError ):
-    ''' Attempt to apply decorator to incompatible class. '''
-
-    def __init__( self, class_name: str, method_name: str ) -> None:
-        # TODO: Use helper function to extract class name from class.
-        super( ).__init__(
-            f"Cannot apply immutability decorator to {class_name!r} "
-            f"because it defines {method_name!r}.")
-
-
 class EntryImmutabilityError( Omnierror, TypeError ):
     ''' Attempt to modify immutable dictionary entry. '''
 

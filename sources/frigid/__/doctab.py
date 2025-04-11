@@ -34,6 +34,13 @@ TABLE: types.MappingProxyType[ str, str ] = types.MappingProxyType( {
 Prevents assignment or deletion of class attributes after class creation.
 ''',
 
+    'dataclass production': '''
+Produces class which is decorated by :py:func:`dataclasses.dataclass`.
+
+Dataclass has ``kw_only`` active to allow inheritance.
+Dataclass has ``slots`` active for additional safety and performance.
+''',
+
     'description of class factory class': '''
 Derived from :py:class:`type`, this is a metaclass. A metaclass is a class
 factory class. I.e., it is a class that produces other classes as its

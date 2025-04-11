@@ -78,6 +78,12 @@ Module ``frigid.classes``
 .. automodule:: frigid.classes
 
 
+Module ``frigid.dataclasses``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.dataclasses
+
+
 Module ``frigid.objects``
 -------------------------------------------------------------------------------
 

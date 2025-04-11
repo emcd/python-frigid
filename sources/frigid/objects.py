@@ -18,9 +18,6 @@
 #============================================================================#
 
 
-# ruff: noqa: F811
-
-
 ''' Immutable objects.
 
     Provides a base class and decorator for creating objects with immutable
@@ -60,54 +57,82 @@
 ''' # noqa: E501
 
 
+# ruff: noqa: F811
+
+
+from __future__ import annotations
+
 from . import __
+from . import classes as _classes
 
 
 _behavior = 'immutability'
+_behaviors_name = '_behaviors_'
+_empty_dictproxy: __.types.MappingProxyType[ str, __.typx.Any ] = (
+    __.types.MappingProxyType( { } ) )
 
 
-def _check_behavior( obj: object ) -> bool:
-    behaviors: __.cabc.MutableSet[ str ]
-    if _check_dict( obj ):
-        attributes = getattr( obj, '__dict__' )
-        behaviors = attributes.get( '_behaviors_', set( ) )
-    else: behaviors = getattr( obj, '_behaviors_', set( ) )
-    return _behavior in behaviors
+DecoratorInitNomargsArgument: __.typx.TypeAlias = __.typx.Annotated[
+    __.typx.Union[
+        __.cabc.Mapping[ str, __.typx.Any ],
+        __.cabc.Callable[
+            [ type[ __.C ] ], __.cabc.Mapping[ str, __.typx.Any ] ],
+    ],
+    __.typx.Doc(
+        ''' Nominative arguments to inject on ``__init__`` invocation.
 
+            May be either a mapping or a function which produces a mapping.
+            If absent, then no nominative arguments are injected.
+        ''' ),
+]
+DecoratorInitPosargsArgument: __.typx.TypeAlias = __.typx.Annotated[
+    __.typx.Union[
+        __.cabc.Sequence[ __.typx.Any ],
+        __.cabc.Callable[
+            [ type[ __.C ] ], __.cabc.Sequence[ __.typx.Any ] ],
+    ],
+    __.typx.Doc(
+        ''' Positional arguments to inject on ``__init__`` invocation.
 
-def _check_dict( obj: object ) -> bool:
-    # Return False even if '__dict__' in '__slots__'.
-    if hasattr( obj, '__slots__' ): return False
-    return hasattr( obj, '__dict__' )
+            May be either a sequence or a function which produces a sequence.
+            If absent, then no positional arguments are injected.
+        ''' ),
+]
 
 
 @__.typx.overload
-def immutable( # pragma: no branch
+def immutable( # noqa: PLR0913 # pragma: no branch
     class_: type[ __.C ], *,
+    decorators: _classes.ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+    init_nomargs: DecoratorInitNomargsArgument[ __.C ] = _empty_dictproxy,
+    init_posargs: DecoratorInitPosargsArgument[ __.C ] = ( ),
     mutables: __.cabc.Collection[ str ] = ( )
 ) -> type[ __.C ]: ...
 
 
 @__.typx.overload
-def immutable( # pragma: no branch
+def immutable( # noqa: PLR0913 # pragma: no branch
     class_: __.AbsentSingleton, *,
+    decorators: _classes.ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+    init_nomargs: DecoratorInitNomargsArgument[ __.C ] = _empty_dictproxy,
+    init_posargs: DecoratorInitPosargsArgument[ __.C ] = ( ),
     mutables: __.cabc.Collection[ str ] = ( )
-) -> __.typx.Callable[ [ type[ __.C ] ], type[ __.C ] ]: ...
+) -> _classes.ClassDecoratorTp[ __.C ]: ...
 
 
-def immutable( # noqa: C901,PLR0915
+def immutable( # noqa: PLR0913
     class_: __.Absential[ type[ __.C ] ] = __.absent, *,
+    decorators: _classes.ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+    init_nomargs: DecoratorInitNomargsArgument[ __.C ] = _empty_dictproxy,
+    init_posargs: DecoratorInitPosargsArgument[ __.C ] = ( ),
     mutables: __.cabc.Collection[ str ] = ( )
-) -> __.typx.Union[
-    type[ __.C ], __.typx.Callable[ [ type[ __.C ] ], type[ __.C ] ]
-]:
-    ''' Decorator which makes class immutable after initialization.
+) -> type[ __.C ] | _classes.ClassDecoratorTp[ __.C ]:
+    ''' Decorator which makes class instances immutable.
 
-        Cannot be applied to classes which define their own __setattr__
-        or __delattr__ methods.
+        Immutability is enforced after initialization.
 
         This decorator can be used in different ways:
 
@@ -118,73 +143,167 @@ def immutable( # noqa: C901,PLR0915
            ... class Config:
            ...     pass
 
-        2. With parameters:
+        2. With arguments:
 
            >>> from frigid import immutable
            >>> @immutable( mutables = ( 'version', ) )
            ... class Config:
            ...     pass
     '''
-    def decorator( cls: type[ __.C ] ) -> type[ __.C ]: # noqa: C901,PLR0915
+    def decorate( cls: type[ __.C ] ) -> type[ __.C ]:
+        cls.__annotations__[ _behaviors_name ] = set[ str ]
+        for decorator in decorators:
+            cls_ = decorator( cls )
+            if cls is cls_: continue # pragma: no branch
+            __.repair_class_reproduction( cls, cls_ )
+            cls = cls_
         if not __.is_absent( docstring ): cls.__doc__ = docstring
-        for method in ( '__setattr__', '__delattr__' ):
-            if method in cls.__dict__:
-                from .exceptions import DecoratorCompatibilityError
-                raise DecoratorCompatibilityError( cls.__name__, method )
-        original_init = next(
-            base.__dict__[ '__init__' ] for base in cls.__mro__
-            if '__init__' in base.__dict__ )
+        _associate_init( cls, init_nomargs, init_posargs )
         mutables_ = frozenset( mutables )
-
-        def __init__(
-            self: object, *posargs: __.typx.Any, **nomargs: __.typx.Any
-        ) -> None:
-            original_init( self, *posargs, **nomargs )
-            behaviors: __.cabc.MutableSet[ str ]
-            if _check_dict( self ):
-                attributes = getattr( self, '__dict__' )
-                behaviors = attributes.get( '_behaviors_', set( ) )
-                if not behaviors: attributes[ '_behaviors_' ] = behaviors
-            else:
-                behaviors = getattr( self, '_behaviors_', set( ) )
-                if not behaviors: setattr( self, '_behaviors_', behaviors )
-            behaviors.add( _behavior )
-
-        def __delattr__( self: object, name: str ) -> None:
-            if name in mutables_:
-                super( cls, self ).__delattr__( name )
-                return
-            if _check_behavior( self ): # pragma: no branch
-                from .exceptions import AttributeImmutabilityError
-                raise AttributeImmutabilityError( name )
-            super( cls, self ).__delattr__( name ) # pragma: no cover
-
-        def __setattr__( self: object, name: str, value: __.typx.Any ) -> None:
-            if name in mutables_:
-                super( cls, self ).__setattr__( name, value )
-                return
-            if _check_behavior( self ):
-                from .exceptions import AttributeImmutabilityError
-                raise AttributeImmutabilityError( name )
-            super( cls, self ).__setattr__( name, value )
-
-        cls.__init__ = __init__
-        cls.__delattr__ = __delattr__
-        cls.__setattr__ = __setattr__
+        _associate_delattr( cls, mutables_ )
+        _associate_setattr( cls, mutables_ )
         return cls
 
-    if not __.is_absent( class_ ): return decorator( class_ )
-    return decorator # No class to decorate; keyword arguments only.
+    if not __.is_absent( class_ ): return decorate( class_ )
+    return decorate # No class to decorate; keyword arguments only.
+
+
+@__.typx.overload
+def immutable_dataclass( # pragma: no branch
+    class_: type[ __.C ], *,
+    decorators: _classes.ClassDecorators = ( ),
+    docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+    mutables: __.cabc.Collection[ str ] = ( )
+) -> type[ __.C ]: ...
+
+
+@__.typx.overload
+def immutable_dataclass( # pragma: no branch
+    class_: __.AbsentSingleton, *,
+    decorators: _classes.ClassDecorators = ( ),
+    docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+    mutables: __.cabc.Collection[ str ] = ( )
+) -> _classes.ClassDecoratorTp[ __.C ]: ...
+
+
+def immutable_dataclass(
+    class_: __.Absential[ type[ __.C ] ] = __.absent, *,
+    decorators: _classes.ClassDecorators = ( ),
+    docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
+    mutables: __.cabc.Collection[ str ] = ( )
+) -> type[ __.C ] | _classes.ClassDecoratorTp[ __.C ]:
+    ''' Decorator which makes dataclass instances immutable.
+
+        Immutability is enforced after complete initialization.
+        Unlike ``dataclasses.dataclass( frozen = True )``, this decorator
+        allows for ``__post_init__`` to execute before immutability is
+        enforced.
+
+        Dataclass instances are slotted for performance and extra safety.
+
+        Dataclass instances can only be initialized from keyword arguments;
+        this allows for dataclass inheritance with indeterminate argument
+        order.
+    '''
+    dcls_decorator = __.dcls.dataclass( kw_only = True, slots = True )
+    dcls_nomargs: dict[ str, __.typx.Any ] = { _behaviors_name: set( ) }
+    return immutable(
+        class_ = class_,
+        decorators = ( *decorators, dcls_decorator ),
+        docstring = docstring,
+        init_nomargs = dcls_nomargs,
+        mutables = mutables )
+
+
+def _associate_init(
+    cls: type[ __.C ],
+    init_nomargs: DecoratorInitNomargsArgument[ __.C ],
+    init_posargs: DecoratorInitPosargsArgument[ __.C ],
+) -> None:
+    original_init = getattr( cls, '__init__' )
+    init_nomargs_ = (
+        init_nomargs( cls ) if callable( init_nomargs ) else init_nomargs )
+    init_posargs_ = (
+        init_posargs( cls ) if callable( init_posargs ) else init_posargs )
+
+    @__.funct.wraps( original_init )
+    def __init__(
+        self: object, *posargs: __.typx.Any, **nomargs: __.typx.Any
+    ) -> None:
+        original_init(
+            self,
+            *( *init_posargs_, *posargs ),
+            **{ **init_nomargs_, **nomargs } )
+        behaviors: __.cabc.MutableSet[ str ]
+        if _check_dict( self ):
+            attributes = getattr( self, '__dict__' )
+            behaviors = attributes.get( _behaviors_name, set( ) )
+            if not behaviors: attributes[ _behaviors_name ] = behaviors
+        else:
+            behaviors = getattr( self, _behaviors_name, set( ) )
+            if not behaviors: setattr( self, _behaviors_name, behaviors )
+        behaviors.add( _behavior )
+
+    cls.__init__ = __init__
+
+
+def _associate_delattr(
+    cls: type[ __.C ], mutables: __.cabc.Collection[ str ]
+) -> None:
+    original_delattr = getattr( cls, '__delattr__' )
+
+    def __delattr__( self: object, name: str ) -> None:
+        if name in mutables:
+            original_delattr( self, name )
+            return
+        if _check_behavior( self ): # pragma: no branch
+            from .exceptions import AttributeImmutabilityError
+            raise AttributeImmutabilityError( name )
+        original_delattr( self, name ) # pragma: no cover
+
+    cls.__delattr__ = __delattr__
+
+
+def _associate_setattr(
+    cls: type[ __.C ], mutables: __.cabc.Collection[ str ]
+) -> None:
+    original_setattr = getattr( cls, '__setattr__' )
+
+    def __setattr__( self: object, name: str, value: __.typx.Any ) -> None:
+        if name in mutables:
+            original_setattr( self, name, value )
+            return
+        if _check_behavior( self ):
+            from .exceptions import AttributeImmutabilityError
+            raise AttributeImmutabilityError( name )
+        original_setattr( self, name, value )
+
+    cls.__setattr__ = __setattr__
 
 
 @immutable
 class Object:
     ''' Immutable objects. '''
 
-    __slots__ = ( '__dict__', '_behaviors_' )
+    __slots__ = ( '__dict__', _behaviors_name )
 
     def __repr__( self ) -> str:
         return "{fqname}( )".format( fqname = __.calculate_fqname( self ) )
 
 Object.__doc__ = __.generate_docstring(
     Object, 'instance attributes immutability' )
+
+
+def _check_behavior( obj: object ) -> bool:
+    behaviors: __.cabc.MutableSet[ str ]
+    if _check_dict( obj ):
+        attributes = getattr( obj, '__dict__' )
+        behaviors = attributes.get( _behaviors_name, set( ) )
+    else: behaviors = getattr( obj, _behaviors_name, set( ) )
+    return _behavior in behaviors
+
+
+def _check_dict( obj: object ) -> bool:
+    # Return False even if '__dict__' in '__slots__'.
+    if hasattr( obj, '__slots__' ): return False
+    return hasattr( obj, '__dict__' )

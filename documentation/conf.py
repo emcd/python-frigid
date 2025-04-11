@@ -101,9 +101,9 @@ nitpick_ignore = [
     ( 'py:class', "types.NoneType" ),
     ( 'py:obj', "frigid.__.dictionaries._H" ),
     ( 'py:obj', "frigid.__.dictionaries._V" ),
+    ( 'py:obj', "frigid.__.imports.C" ),
     ( 'py:obj', "frigid.__.imports.H" ),
     ( 'py:obj', "frigid.__.imports.V" ),
-    ( 'py:class', "typing_extensions.Any" ),
 ]
 
 # -- Options for linkcheck builder -------------------------------------------
