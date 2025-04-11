@@ -56,15 +56,19 @@ from __future__ import annotations
 from . import __
 
 
-ClassDecorators: __.typx.TypeAlias = (
-    __.cabc.Iterable[ __.cabc.Callable[ [ type ], type ] ] )
+ClassDecorator: __.typx.TypeAlias = __.cabc.Callable[ [ type ], type ]
+ClassDecorators: __.typx.TypeAlias = __.cabc.Sequence[ ClassDecorator ]
+ClassDecoratorTp: __.typx.TypeAlias = (
+    __.cabc.Callable[ [ type[ __.C ] ], type[ __.C ] ] )
+ClassDecoratorsTp: __.typx.TypeAlias = (
+    __.cabc.Sequence[ ClassDecoratorTp[ __.C ] ] )
 
 
 _behavior = 'immutability'
 
 
 class Class( type ):
-    ''' Immutable class factory. '''
+    ''' Metaclass which produces immutable classes. '''
 
     def __new__( # noqa: PLR0913
         clscls: type[ Class ],
@@ -77,7 +81,7 @@ class Class( type ):
         **args: __.typx.Any
     ) -> Class:
         class_ = type.__new__( clscls, name, bases, namespace, **args )
-        return _class__new__(
+        return class__new__(
             class_,
             decorators = decorators,
             docstring = docstring,
@@ -85,14 +89,14 @@ class Class( type ):
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
-        _class__init__( selfclass )
+        class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not _class__delattr__( selfclass, name ):
+        if not class__delattr__( selfclass, name ):
             super( ).__delattr__( name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not _class__setattr__( selfclass, name ):
+        if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
 Class.__doc__ = __.generate_docstring(
@@ -101,69 +105,8 @@ Class.__doc__ = __.generate_docstring(
     'class attributes immutability' )
 
 
-@__.typx.dataclass_transform( kw_only_default = True )
-class Dataclass( Class ):
-    ''' Immutable dataclass factory. '''
-
-    def __new__( # noqa: PLR0913
-        clscls: type[ Dataclass ],
-        name: str,
-        bases: tuple[ type, ... ],
-        namespace: dict[ str, __.typx.Any ], *,
-        decorators: ClassDecorators = ( ),
-        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
-        mutables: __.cabc.Collection[ str ] = ( ),
-        **args: __.typx.Any
-    ) -> Dataclass:
-        decorators_ = (
-            __.dcls.dataclass( kw_only = True, slots = True ),
-            *decorators )
-        return Class.__new__( # pyright: ignore
-            clscls, name, bases, namespace,
-            decorators = decorators_,
-            docstring = docstring,
-            mutables = mutables,
-            **args )
-
-Dataclass.__doc__ = __.generate_docstring(
-    Dataclass,
-    'description of class factory class',
-    'class attributes immutability' )
-
-
-@__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
-class CompleteDataclass( Class ):
-    ''' Immutable dataclass factory.
-
-        Dataclasses from this factory produce immutable instances. '''
-    def __new__( # noqa: PLR0913
-        clscls: type[ CompleteDataclass ],
-        name: str,
-        bases: tuple[ type, ... ],
-        namespace: dict[ str, __.typx.Any ], *,
-        decorators: ClassDecorators = ( ),
-        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
-        mutables: __.cabc.Collection[ str ] = ( ),
-        **args: __.typx.Any
-    ) -> CompleteDataclass:
-        decorators_ = (
-            __.dcls.dataclass( frozen = True, kw_only = True, slots = True ),
-            *decorators )
-        return Class.__new__( # pyright: ignore
-            clscls, name, bases, namespace,
-            decorators = decorators_,
-            docstring = docstring,
-            mutables = mutables,
-            **args )
-
-CompleteDataclass.__doc__ = __.generate_docstring(
-    CompleteDataclass,
-    'description of class factory class',
-    'class attributes immutability' )
-
-
 class ABCFactory( __.abc.ABCMeta ):
-    ''' Immutable abstract base class factory. '''
+    ''' Metaclass which produces immutable abstract base classes. '''
 
     def __new__( # noqa: PLR0913
         clscls: type[ ABCFactory ],
@@ -177,21 +120,21 @@ class ABCFactory( __.abc.ABCMeta ):
     ) -> ABCFactory:
         class_ = __.abc.ABCMeta.__new__(
             clscls, name, bases, namespace, **args )
-        return _class__new__(
+        return class__new__(
             class_, decorators = decorators,
             docstring = docstring,
             mutables = mutables )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
-        _class__init__( selfclass )
+        class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not _class__delattr__( selfclass, name ):
+        if not class__delattr__( selfclass, name ):
             super( ).__delattr__( name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not _class__setattr__( selfclass, name ):
+        if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
 ABCFactory.__doc__ = __.generate_docstring(
@@ -201,7 +144,7 @@ ABCFactory.__doc__ = __.generate_docstring(
 
 
 class ProtocolClass( type( __.typx.Protocol ) ):
-    ''' Immutable protocol class factory. '''
+    ''' Metaclass which produces immutable protocol classes. '''
 
     def __new__( # noqa: PLR0913
         clscls: type[ ProtocolClass ],
@@ -215,7 +158,7 @@ class ProtocolClass( type( __.typx.Protocol ) ):
     ) -> ProtocolClass:
         class_ = super( ProtocolClass, clscls ).__new__(
             clscls, name, bases, namespace, **args )
-        return _class__new__(
+        return class__new__(
             class_,
             decorators = decorators,
             docstring = docstring,
@@ -223,14 +166,14 @@ class ProtocolClass( type( __.typx.Protocol ) ):
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
-        _class__init__( selfclass )
+        class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not _class__delattr__( selfclass, name ):
+        if not class__delattr__( selfclass, name ):
             super( ).__delattr__( name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not _class__setattr__( selfclass, name ):
+        if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
 ProtocolClass.__doc__ = __.generate_docstring(
@@ -239,76 +182,8 @@ ProtocolClass.__doc__ = __.generate_docstring(
     'class attributes immutability' )
 
 
-@__.typx.dataclass_transform( kw_only_default = True )
-class ProtocolDataclass( ProtocolClass ):
-    ''' Immutable protocol dataclass factory. '''
-    def __new__( # noqa: PLR0913
-        clscls: type[ ProtocolDataclass ],
-        name: str,
-        bases: tuple[ type, ... ],
-        namespace: dict[ str, __.typx.Any ], *,
-        decorators: ClassDecorators = ( ),
-        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
-        mutables: __.cabc.Collection[ str ] = ( ),
-        **args: __.typx.Any
-    ) -> ProtocolDataclass:
-        decorators_ = (
-            __.dcls.dataclass( kw_only = True, slots = True ),
-            *decorators )
-        return ProtocolClass.__new__( # pyright: ignore
-            clscls, name, bases, namespace,
-            decorators = decorators_,
-            docstring = docstring,
-            mutables = mutables,
-            **args )
-
-ProtocolDataclass.__doc__ = __.generate_docstring(
-    ProtocolDataclass,
-    'description of class factory class',
-    'class attributes immutability' )
-
-
-@__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
-class CompleteProtocolDataclass( ProtocolClass ):
-    ''' Immutable protocol dataclass factory.
-
-        Dataclasses from this factory produce immutable instances. '''
-    def __new__( # noqa: PLR0913
-        clscls: type[ CompleteProtocolDataclass ],
-        name: str,
-        bases: tuple[ type, ... ],
-        namespace: dict[ str, __.typx.Any ], *,
-        decorators: ClassDecorators = ( ),
-        docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
-        mutables: __.cabc.Collection[ str ] = ( ),
-        **args: __.typx.Any
-    ) -> CompleteProtocolDataclass:
-        decorators_ = (
-            __.dcls.dataclass( frozen = True, kw_only = True, slots = True ),
-            *decorators )
-        return ProtocolClass.__new__( # pyright: ignore
-            clscls, name, bases, namespace,
-            decorators = decorators_,
-            docstring = docstring,
-            mutables = mutables,
-            **args )
-
-CompleteProtocolDataclass.__doc__ = __.generate_docstring(
-    CompleteProtocolDataclass,
-    'description of class factory class',
-    'class attributes immutability' )
-
-
-def _accumulate_mutables(
-    class_: type, mutables: __.cabc.Collection[ str ]
-) -> frozenset[ str ]:
-    return frozenset( mutables ).union( *(
-        frozenset( base.__dict__.get( '_class_mutables_', ( ) ) )
-        for base in class_.__mro__ ) )
-
-
-def _class__new__(
-    original: type,
+def class__new__(
+    original: type, *,
     decorators: ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
     mutables: __.cabc.Collection[ str ] = ( ),
@@ -331,7 +206,7 @@ def _class__new__(
     return reproduction
 
 
-def _class__init__( class_: type ) -> None:
+def class__init__( class_: type ) -> None:
     # Some metaclasses add class attributes in '__init__' method.
     # So, we wait until last possible moment to set immutability.
     # Consult class attributes dictionary to ignore immutable base classes.
@@ -343,7 +218,7 @@ def _class__init__( class_: type ) -> None:
     else: class_._class_behaviors_ = { _behavior }
 
 
-def _class__delattr__( class_: type, name: str ) -> bool:
+def class__delattr__( class_: type, name: str ) -> bool:
     # Consult class attributes dictionary to ignore immutable base classes.
     cdict = class_.__dict__
     if name in cdict.get( '_class_mutables_', ( ) ): return False
@@ -352,10 +227,18 @@ def _class__delattr__( class_: type, name: str ) -> bool:
     raise AttributeImmutabilityError( name )
 
 
-def _class__setattr__( class_: type, name: str ) -> bool:
+def class__setattr__( class_: type, name: str ) -> bool:
     # Consult class attributes dictionary to ignore immutable base classes.
     cdict = class_.__dict__
     if name in cdict.get( '_class_mutables_', ( ) ): return False
     if _behavior not in cdict.get( '_class_behaviors_', ( ) ): return False
     from .exceptions import AttributeImmutabilityError
     raise AttributeImmutabilityError( name )
+
+
+def _accumulate_mutables(
+    class_: type, mutables: __.cabc.Collection[ str ]
+) -> frozenset[ str ]:
+    return frozenset( mutables ).union( *(
+        frozenset( base.__dict__.get( '_class_mutables_', ( ) ) )
+        for base in class_.__mro__ ) )

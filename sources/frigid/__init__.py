@@ -28,6 +28,7 @@ from . import exceptions
 # --- END: Injected by Copier ---
 
 from .classes import *
+from .dataclasses import *
 from .dictionaries import *
 from .installers import *
 from .modules import *

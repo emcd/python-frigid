@@ -147,25 +147,6 @@ attribute storage. Remember to include the ``_behaviors_`` slot:
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
 
 
-Compatibility
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The ``@immutable`` decorator cannot be applied to classes that define their own
-``__setattr__`` or ``__delattr__`` methods, as this would conflict with the
-immutability enforcement:
-
-.. doctest:: Objects
-
-    >>> @immutable  # This will fail
-    ... class Mutable:
-    ...     def __setattr__( self, name, value ):
-    ...         # Custom attribute setting logic
-    ...         super( ).__setattr__( name, value )
-    Traceback (most recent call last):
-    ...
-    frigid.exceptions.DecoratorCompatibilityError: Cannot decorate class 'Mutable' which defines '__setattr__'.
-
-
 Base Class
 -------------------------------------------------------------------------------
 

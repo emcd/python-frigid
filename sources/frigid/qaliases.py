@@ -43,11 +43,14 @@ from . import __
 from .classes import (
     ABCFactory as                   ImmutableABCFactory,
     Class as                        ImmutableClass,
+    ProtocolClass as                ImmutableProtocolClass,
+)
+from .dataclasses import (
+    Dataclass as                    ImmutableDataclass,
+    ProtocolDataclass as            ImmutableProtocolDataclass,
+    # deprecated
     CompleteDataclass as            ImmutableCompleteDataclass,
     CompleteProtocolDataclass as    ImmutableCompleteProtocolDataclass,
-    Dataclass as                    ImmutableDataclass,
-    ProtocolClass as                ImmutableProtocolClass,
-    ProtocolDataclass as            ImmutableProtocolDataclass,
 )
 from .dictionaries import (
     AbstractDictionary as   AbstractImmutableDictionary,
