@@ -48,6 +48,7 @@
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
 ''' # noqa: E501
 
+# TODO: Pass dynamic docstrings as metaclass argument.
 # TODO? Allow predicate functions and regex patterns as mutability checkers.
 
 
@@ -56,6 +57,11 @@ from __future__ import annotations
 from . import __
 
 
+AttributesSurveyorLigation: __.typx.TypeAlias = (
+    __.cabc.Callable[ [ ], __.cabc.Iterable[ str ] ] )
+AttributesSurveyor: __.typx.TypeAlias = (
+    __.cabc.Callable[
+        [ object, AttributesSurveyorLigation ], __.cabc.Iterable[ str ] ] )
 ClassDecorator: __.typx.TypeAlias = __.cabc.Callable[ [ type ], type ]
 ClassDecorators: __.typx.TypeAlias = __.cabc.Sequence[ ClassDecorator ]
 ClassDecoratorTp: __.typx.TypeAlias = (
@@ -65,6 +71,10 @@ ClassDecoratorsTp: __.typx.TypeAlias = (
 
 
 _behavior = 'immutability'
+_behaviors_name = '_class_behaviors_'
+_decorators_name = '_class_decorators_'
+_mutables_name = '_class_mutables_'
+_surveyor_name = '_class_surveyor_'
 
 
 class Class( type ):
@@ -78,6 +88,7 @@ class Class( type ):
         decorators: ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
         mutables: __.cabc.Collection[ str ] = ( ),
+        surveyor: __.Absential[ AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> Class:
         class_ = type.__new__( clscls, name, bases, namespace, **args )
@@ -85,7 +96,8 @@ class Class( type ):
             class_,
             decorators = decorators,
             docstring = docstring,
-            mutables = mutables )
+            mutables = mutables,
+            surveyor = surveyor )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -98,6 +110,9 @@ class Class( type ):
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
+
+    def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
+        return class__dir__( selfclass, super( ).__dir__ )
 
 Class.__doc__ = __.generate_docstring(
     Class,
@@ -116,14 +131,17 @@ class ABCFactory( __.abc.ABCMeta ):
         decorators: ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
         mutables: __.cabc.Collection[ str ] = ( ),
+        surveyor: __.Absential[ AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> ABCFactory:
         class_ = __.abc.ABCMeta.__new__(
             clscls, name, bases, namespace, **args )
         return class__new__(
-            class_, decorators = decorators,
+            class_,
+            decorators = decorators,
             docstring = docstring,
-            mutables = mutables )
+            mutables = mutables,
+            surveyor = surveyor )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -136,6 +154,9 @@ class ABCFactory( __.abc.ABCMeta ):
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
+
+    def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
+        return class__dir__( selfclass, super( ).__dir__ )
 
 ABCFactory.__doc__ = __.generate_docstring(
     ABCFactory,
@@ -154,6 +175,7 @@ class ProtocolClass( type( __.typx.Protocol ) ):
         decorators: ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
         mutables: __.cabc.Collection[ str ] = ( ),
+        surveyor: __.Absential[ AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> ProtocolClass:
         class_ = super( ProtocolClass, clscls ).__new__(
@@ -162,7 +184,8 @@ class ProtocolClass( type( __.typx.Protocol ) ):
             class_,
             decorators = decorators,
             docstring = docstring,
-            mutables = mutables )
+            mutables = mutables,
+            surveyor = surveyor )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -176,6 +199,9 @@ class ProtocolClass( type( __.typx.Protocol ) ):
         if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
+    def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
+        return class__dir__( selfclass, super( ).__dir__ )
+
 ProtocolClass.__doc__ = __.generate_docstring(
     ProtocolClass,
     'description of class factory class',
@@ -187,23 +213,27 @@ def class__new__(
     decorators: ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
     mutables: __.cabc.Collection[ str ] = ( ),
+    surveyor: __.Absential[ AttributesSurveyor ] = __.absent,
 ) -> type:
     # Some decorators create new classes, which invokes this method again.
     # Short-circuit to prevent recursive decoration and other tangles.
-    class_decorators_ = original.__dict__.get( '_class_decorators_', [ ] )
+    class_decorators_ = original.__dict__.get( _decorators_name, [ ] )
     if class_decorators_: return original
     if not __.is_absent( docstring ): original.__doc__ = docstring
-    original._class_mutables_ = _accumulate_mutables( original, mutables )
-    original._class_decorators_ = class_decorators_
+    mutables_ = _accumulate_mutables( original, mutables )
+    if not __.is_absent( surveyor ):
+        setattr( original, _surveyor_name, surveyor )
+    setattr( original, _mutables_name, mutables_ )
+    setattr( original, _decorators_name, class_decorators_ )
     reproduction = original
     for decorator in decorators:
         class_decorators_.append( decorator )
         reproduction = decorator( original )
-        if original is not reproduction:
-            __.repair_class_reproduction( original, reproduction )
+        if original is reproduction: continue
+        __.repair_class_reproduction( original, reproduction )
         original = reproduction
     class_decorators_.clear( )  # Flag '__init__' to enable immutability
-    return reproduction
+    return original
 
 
 def class__init__( class_: type ) -> None:
@@ -211,9 +241,9 @@ def class__init__( class_: type ) -> None:
     # So, we wait until last possible moment to set immutability.
     # Consult class attributes dictionary to ignore immutable base classes.
     cdict = class_.__dict__
-    if cdict.get( '_class_decorators_' ): return
+    if cdict.get( _decorators_name ): return
     del class_._class_decorators_
-    if ( class_behaviors := cdict.get( '_class_behaviors_' ) ):
+    if ( class_behaviors := cdict.get( _behaviors_name ) ):
         class_behaviors.add( _behavior )
     else: class_._class_behaviors_ = { _behavior }
 
@@ -221,8 +251,8 @@ def class__init__( class_: type ) -> None:
 def class__delattr__( class_: type, name: str ) -> bool:
     # Consult class attributes dictionary to ignore immutable base classes.
     cdict = class_.__dict__
-    if name in cdict.get( '_class_mutables_', ( ) ): return False
-    if _behavior not in cdict.get( '_class_behaviors_', ( ) ): return False
+    if name in cdict.get( _mutables_name, ( ) ): return False
+    if _behavior not in cdict.get( _behaviors_name, ( ) ): return False
     from .exceptions import AttributeImmutabilityError
     raise AttributeImmutabilityError( name )
 
@@ -230,15 +260,34 @@ def class__delattr__( class_: type, name: str ) -> bool:
 def class__setattr__( class_: type, name: str ) -> bool:
     # Consult class attributes dictionary to ignore immutable base classes.
     cdict = class_.__dict__
-    if name in cdict.get( '_class_mutables_', ( ) ): return False
-    if _behavior not in cdict.get( '_class_behaviors_', ( ) ): return False
+    if name in cdict.get( _mutables_name, ( ) ): return False
+    if _behavior not in cdict.get( _behaviors_name, ( ) ): return False
     from .exceptions import AttributeImmutabilityError
     raise AttributeImmutabilityError( name )
+
+
+def class__dir__(
+    class_: type, superf: AttributesSurveyorLigation
+) -> __.cabc.Iterable[ str ]:
+    surveyor: __.typx.Optional[ AttributesSurveyor ] = (
+        getattr( class_, _surveyor_name, None ) )
+    if callable( surveyor ): return surveyor( class_, superf )
+    return superf( )
+
+
+def survey_attributes(
+    class_: type, superf: AttributesSurveyorLigation
+) -> tuple[ str, ... ]:
+    # TODO: Move to 'standard' subpackage.
+    # TODO: Optional sequence or set of includes.
+    # TODO? Predicate function or regex includes.
+    ''' Surveys public attributes on object and returns tuple of names. '''
+    return tuple( name for name in superf( ) if not name.startswith( '_' ) )
 
 
 def _accumulate_mutables(
     class_: type, mutables: __.cabc.Collection[ str ]
 ) -> frozenset[ str ]:
     return frozenset( mutables ).union( *(
-        frozenset( base.__dict__.get( '_class_mutables_', ( ) ) )
+        frozenset( base.__dict__.get( _mutables_name, ( ) ) )
         for base in class_.__mro__ ) )

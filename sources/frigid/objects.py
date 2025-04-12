@@ -107,7 +107,8 @@ def immutable( # noqa: PLR0913 # pragma: no branch
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
     init_nomargs: DecoratorInitNomargsArgument[ __.C ] = _empty_dictproxy,
     init_posargs: DecoratorInitPosargsArgument[ __.C ] = ( ),
-    mutables: __.cabc.Collection[ str ] = ( )
+    mutables: __.cabc.Collection[ str ] = ( ),
+    surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
 ) -> type[ __.C ]: ...
 
 
@@ -118,7 +119,8 @@ def immutable( # noqa: PLR0913 # pragma: no branch
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
     init_nomargs: DecoratorInitNomargsArgument[ __.C ] = _empty_dictproxy,
     init_posargs: DecoratorInitPosargsArgument[ __.C ] = ( ),
-    mutables: __.cabc.Collection[ str ] = ( )
+    mutables: __.cabc.Collection[ str ] = ( ),
+    surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
 ) -> _classes.ClassDecoratorTp[ __.C ]: ...
 
 
@@ -128,7 +130,8 @@ def immutable( # noqa: PLR0913
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
     init_nomargs: DecoratorInitNomargsArgument[ __.C ] = _empty_dictproxy,
     init_posargs: DecoratorInitPosargsArgument[ __.C ] = ( ),
-    mutables: __.cabc.Collection[ str ] = ( )
+    mutables: __.cabc.Collection[ str ] = ( ),
+    surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
 ) -> type[ __.C ] | _classes.ClassDecoratorTp[ __.C ]:
     ''' Decorator which makes class instances immutable.
 
@@ -154,11 +157,12 @@ def immutable( # noqa: PLR0913
         cls.__annotations__[ _behaviors_name ] = set[ str ]
         for decorator in decorators:
             cls_ = decorator( cls )
-            if cls is cls_: continue # pragma: no branch
+            if cls is cls_: continue
             __.repair_class_reproduction( cls, cls_ )
             cls = cls_
         if not __.is_absent( docstring ): cls.__doc__ = docstring
         _associate_init( cls, init_nomargs, init_posargs )
+        if not __.is_absent( surveyor ): _associate_dir( cls, surveyor )
         mutables_ = frozenset( mutables )
         _associate_delattr( cls, mutables_ )
         _associate_setattr( cls, mutables_ )
@@ -173,7 +177,8 @@ def immutable_dataclass( # pragma: no branch
     class_: type[ __.C ], *,
     decorators: _classes.ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
-    mutables: __.cabc.Collection[ str ] = ( )
+    mutables: __.cabc.Collection[ str ] = ( ),
+    surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
 ) -> type[ __.C ]: ...
 
 
@@ -182,7 +187,8 @@ def immutable_dataclass( # pragma: no branch
     class_: __.AbsentSingleton, *,
     decorators: _classes.ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
-    mutables: __.cabc.Collection[ str ] = ( )
+    mutables: __.cabc.Collection[ str ] = ( ),
+    surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
 ) -> _classes.ClassDecoratorTp[ __.C ]: ...
 
 
@@ -190,7 +196,8 @@ def immutable_dataclass(
     class_: __.Absential[ type[ __.C ] ] = __.absent, *,
     decorators: _classes.ClassDecorators = ( ),
     docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
-    mutables: __.cabc.Collection[ str ] = ( )
+    mutables: __.cabc.Collection[ str ] = ( ),
+    surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
 ) -> type[ __.C ] | _classes.ClassDecoratorTp[ __.C ]:
     ''' Decorator which makes dataclass instances immutable.
 
@@ -212,7 +219,8 @@ def immutable_dataclass(
         decorators = ( *decorators, dcls_decorator ),
         docstring = docstring,
         init_nomargs = dcls_nomargs,
-        mutables = mutables )
+        mutables = mutables,
+        surveyor = surveyor )
 
 
 def _associate_init(
@@ -279,6 +287,17 @@ def _associate_setattr(
         original_setattr( self, name, value )
 
     cls.__setattr__ = __setattr__
+
+
+def _associate_dir(
+    cls: type[ __.C ], surveyor: _classes.AttributesSurveyor
+) -> None:
+    original_dir = getattr( cls, '__dir__' )
+
+    def __dir__( self: object ) -> __.cabc.Iterable[ str ]:
+        return surveyor( self, __.funct.partial( original_dir, self ) )
+
+    cls.__dir__ = __dir__
 
 
 @immutable

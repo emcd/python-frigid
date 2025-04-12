@@ -41,6 +41,7 @@ class Dataclass( type ):
         decorators: _classes.ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
         mutables: __.cabc.Collection[ str ] = ( ),
+        surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> Dataclass:
         class_ = super( ).__new__( clscls, name, bases, namespace, **args )
@@ -50,7 +51,8 @@ class Dataclass( type ):
             class_,
             decorators = decorators_,
             docstring = docstring,
-            mutables = mutables )
+            mutables = mutables,
+            surveyor = surveyor )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -63,6 +65,9 @@ class Dataclass( type ):
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not _classes.class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
+
+    def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
+        return _classes.class__dir__( selfclass, super( ).__dir__ )
 
 Dataclass.__doc__ = __.generate_docstring(
     Dataclass,
@@ -83,6 +88,7 @@ class DataclassI( type ):
         decorators: _classes.ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
         mutables: __.cabc.Collection[ str ] = ( ),
+        surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
         # TODO? Instance mutables.
         **args: __.typx.Any
     ) -> DataclassI:
@@ -92,7 +98,8 @@ class DataclassI( type ):
             class_,
             decorators = decorators_,
             docstring = docstring,
-            mutables = mutables )
+            mutables = mutables,
+            surveyor = surveyor )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -105,6 +112,9 @@ class DataclassI( type ):
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not _classes.class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
+
+    def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
+        return _classes.class__dir__( selfclass, super( ).__dir__ )
 
 DataclassI.__doc__ = __.generate_docstring(
     DataclassI,
@@ -125,6 +135,7 @@ class ProtocolDataclass( type( __.typx.Protocol ) ):
         decorators: _classes.ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
         mutables: __.cabc.Collection[ str ] = ( ),
+        surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> ProtocolDataclass:
         class_ = super( ProtocolDataclass, clscls ).__new__(
@@ -135,7 +146,8 @@ class ProtocolDataclass( type( __.typx.Protocol ) ):
             class_,
             decorators = decorators_,
             docstring = docstring,
-            mutables = mutables )
+            mutables = mutables,
+            surveyor = surveyor )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -148,6 +160,9 @@ class ProtocolDataclass( type( __.typx.Protocol ) ):
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not _classes.class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
+
+    def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
+        return _classes.class__dir__( selfclass, super( ).__dir__ )
 
 ProtocolDataclass.__doc__ = __.generate_docstring(
     ProtocolDataclass,
@@ -168,6 +183,7 @@ class ProtocolDataclassI( type( __.typx.Protocol ) ):
         decorators: _classes.ClassDecorators = ( ),
         docstring: __.Absential[ __.typx.Optional[ str ] ] = __.absent,
         mutables: __.cabc.Collection[ str ] = ( ),
+        surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
         # TODO? Instance mutables.
         **args: __.typx.Any
     ) -> ProtocolDataclassI:
@@ -178,7 +194,8 @@ class ProtocolDataclassI( type( __.typx.Protocol ) ):
             class_,
             decorators = decorators_,
             docstring = docstring,
-            mutables = mutables )
+            mutables = mutables,
+            surveyor = surveyor )
 
     def __init__( selfclass, *posargs: __.typx.Any, **nomargs: __.typx.Any ):
         super( ).__init__( *posargs, **nomargs )
@@ -191,6 +208,9 @@ class ProtocolDataclassI( type( __.typx.Protocol ) ):
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not _classes.class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
+
+    def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
+        return _classes.class__dir__( selfclass, super( ).__dir__ )
 
 ProtocolDataclassI.__doc__ = __.generate_docstring(
     ProtocolDataclassI,
