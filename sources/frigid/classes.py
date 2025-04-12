@@ -48,6 +48,7 @@
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
 ''' # noqa: E501
 
+# TODO: Pass dynamic docstrings as metaclass argument.
 # TODO? Allow predicate functions and regex patterns as mutability checkers.
 
 
@@ -99,6 +100,9 @@ class Class( type ):
         if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
+    def __dir__( selfclass ) -> list[ str ]:
+        return class__dir__( selfclass )
+
 Class.__doc__ = __.generate_docstring(
     Class,
     'description of class factory class',
@@ -136,6 +140,9 @@ class ABCFactory( __.abc.ABCMeta ):
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
         if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
+
+    def __dir__( selfclass ) -> list[ str ]:
+        return class__dir__( selfclass )
 
 ABCFactory.__doc__ = __.generate_docstring(
     ABCFactory,
@@ -176,6 +183,9 @@ class ProtocolClass( type( __.typx.Protocol ) ):
         if not class__setattr__( selfclass, name ):
             super( ).__setattr__( name, value )
 
+    def __dir__( selfclass ) -> list[ str ]:
+        return class__dir__( selfclass )
+
 ProtocolClass.__doc__ = __.generate_docstring(
     ProtocolClass,
     'description of class factory class',
@@ -199,8 +209,8 @@ def class__new__(
     for decorator in decorators:
         class_decorators_.append( decorator )
         reproduction = decorator( original )
-        if original is not reproduction:
-            __.repair_class_reproduction( original, reproduction )
+        if original is reproduction: continue
+        __.repair_class_reproduction( original, reproduction )
         original = reproduction
     class_decorators_.clear( )  # Flag '__init__' to enable immutability
     return reproduction
@@ -234,6 +244,14 @@ def class__setattr__( class_: type, name: str ) -> bool:
     if _behavior not in cdict.get( '_class_behaviors_', ( ) ): return False
     from .exceptions import AttributeImmutabilityError
     raise AttributeImmutabilityError( name )
+
+
+def class__dir__( class_: type ) -> list[ str ]:
+    # Consult class attributes dictionary to ignore immutable base classes.
+    cdict = class_.__dict__
+    if ( directory := cdict.get( '_class_directory_' ) ):
+        return directory( class_ )
+    return dir( class_ )
 
 
 def _accumulate_mutables(
