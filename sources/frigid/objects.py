@@ -100,6 +100,9 @@ DecoratorInitPosargsArgument: __.typx.TypeAlias = __.typx.Annotated[
 ]
 
 
+dataclass_core = __.dcls.dataclass( kw_only = True, slots = True )
+
+
 @__.typx.overload
 def immutable( # noqa: PLR0913 # pragma: no branch
     class_: type[ __.C ], *,
@@ -212,7 +215,7 @@ def immutable_dataclass(
         this allows for dataclass inheritance with indeterminate argument
         order.
     '''
-    dcls_decorator = __.dcls.dataclass( kw_only = True, slots = True )
+    dcls_decorator = dataclass_core
     dcls_nomargs: dict[ str, __.typx.Any ] = { _behaviors_name: set( ) }
     return immutable(
         class_ = class_,

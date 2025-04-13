@@ -91,7 +91,7 @@ class Class( type ):
         surveyor: __.Absential[ AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> Class:
-        class_ = type.__new__( clscls, name, bases, namespace, **args )
+        class_ = super( ).__new__( clscls, name, bases, namespace, **args )
         return class__new__(
             class_,
             decorators = decorators,
@@ -134,8 +134,7 @@ class ABCFactory( __.abc.ABCMeta ):
         surveyor: __.Absential[ AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> ABCFactory:
-        class_ = __.abc.ABCMeta.__new__(
-            clscls, name, bases, namespace, **args )
+        class_ = super( ).__new__( clscls, name, bases, namespace, **args )
         return class__new__(
             class_,
             decorators = decorators,
@@ -178,8 +177,7 @@ class ProtocolClass( type( __.typx.Protocol ) ):
         surveyor: __.Absential[ AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> ProtocolClass:
-        class_ = super( ProtocolClass, clscls ).__new__(
-            clscls, name, bases, namespace, **args )
+        class_ = super( ).__new__( clscls, name, bases, namespace, **args )
         return class__new__(
             class_,
             decorators = decorators,

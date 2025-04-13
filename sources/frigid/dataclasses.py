@@ -45,8 +45,7 @@ class Dataclass( type ):
         **args: __.typx.Any
     ) -> Dataclass:
         class_ = super( ).__new__( clscls, name, bases, namespace, **args )
-        decorators_ = (
-            *decorators, __.dcls.dataclass( kw_only = True, slots = True ) )
+        decorators_ = ( *decorators, _objects.dataclass_core )
         return _classes.class__new__(
             class_,
             decorators = decorators_,
@@ -138,10 +137,8 @@ class ProtocolDataclass( type( __.typx.Protocol ) ):
         surveyor: __.Absential[ _classes.AttributesSurveyor ] = __.absent,
         **args: __.typx.Any
     ) -> ProtocolDataclass:
-        class_ = super( ProtocolDataclass, clscls ).__new__(
-            clscls, name, bases, namespace, **args )
-        decorators_ = (
-            *decorators, __.dcls.dataclass( kw_only = True, slots = True ) )
+        class_ = super( ).__new__( clscls, name, bases, namespace, **args )
+        decorators_ = ( *decorators, _objects.dataclass_core )
         return _classes.class__new__(
             class_,
             decorators = decorators_,
@@ -187,8 +184,7 @@ class ProtocolDataclassI( type( __.typx.Protocol ) ):
         # TODO? Instance mutables.
         **args: __.typx.Any
     ) -> ProtocolDataclassI:
-        class_ = super( ProtocolDataclassI, clscls ).__new__(
-            clscls, name, bases, namespace, **args )
+        class_ = super( ).__new__( clscls, name, bases, namespace, **args )
         decorators_ = ( *decorators, _objects.immutable_dataclass )
         return _classes.class__new__(
             class_,
