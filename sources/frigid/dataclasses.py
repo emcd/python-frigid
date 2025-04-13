@@ -58,12 +58,12 @@ class Dataclass( type ):
         _classes.class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not _classes.class__delattr__( selfclass, name ):
-            super( ).__delattr__( name )
+        _classes.class__delattr__(
+            selfclass, super( ).__delattr__, name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not _classes.class__setattr__( selfclass, name ):
-            super( ).__setattr__( name, value )
+        _classes.class__setattr__(
+            selfclass, super( ).__setattr__, name, value )
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return _classes.class__dir__( selfclass, super( ).__dir__ )
@@ -105,12 +105,12 @@ class DataclassI( type ):
         _classes.class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not _classes.class__delattr__( selfclass, name ):
-            super( ).__delattr__( name )
+        _classes.class__delattr__(
+            selfclass, super( ).__delattr__, name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not _classes.class__setattr__( selfclass, name ):
-            super( ).__setattr__( name, value )
+        _classes.class__setattr__(
+            selfclass, super( ).__setattr__, name, value )
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return _classes.class__dir__( selfclass, super( ).__dir__ )
@@ -151,12 +151,12 @@ class ProtocolDataclass( type( __.typx.Protocol ) ):
         _classes.class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not _classes.class__delattr__( selfclass, name ):
-            super( ).__delattr__( name )
+        _classes.class__delattr__(
+            selfclass, super( ).__delattr__, name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not _classes.class__setattr__( selfclass, name ):
-            super( ).__setattr__( name, value )
+        _classes.class__setattr__(
+            selfclass, super( ).__setattr__, name, value )
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return _classes.class__dir__( selfclass, super( ).__dir__ )
@@ -198,12 +198,12 @@ class ProtocolDataclassI( type( __.typx.Protocol ) ):
         _classes.class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not _classes.class__delattr__( selfclass, name ):
-            super( ).__delattr__( name )
+        _classes.class__delattr__(
+            selfclass, super( ).__delattr__, name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not _classes.class__setattr__( selfclass, name ):
-            super( ).__setattr__( name, value )
+        _classes.class__setattr__(
+            selfclass, super( ).__setattr__, name, value )
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return _classes.class__dir__( selfclass, super( ).__dir__ )

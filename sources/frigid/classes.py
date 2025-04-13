@@ -55,8 +55,13 @@
 from __future__ import annotations
 
 from . import __
+from . import exceptions as _exceptions
 
 
+AttributesAssignerLigation: __.typx.TypeAlias = (
+    __.cabc.Callable[ [ str, __.typx.Any ], None ] )
+AttributesDeleterLigation: __.typx.TypeAlias = (
+    __.cabc.Callable[ [ str ], None ] )
 AttributesSurveyorLigation: __.typx.TypeAlias = (
     __.cabc.Callable[ [ ], __.cabc.Iterable[ str ] ] )
 AttributesSurveyor: __.typx.TypeAlias = (
@@ -104,12 +109,10 @@ class Class( type ):
         class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not class__delattr__( selfclass, name ):
-            super( ).__delattr__( name )
+        class__delattr__( selfclass, super( ).__delattr__, name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not class__setattr__( selfclass, name ):
-            super( ).__setattr__( name, value )
+        class__setattr__( selfclass, super( ).__setattr__, name, value )
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return class__dir__( selfclass, super( ).__dir__ )
@@ -147,12 +150,10 @@ class ABCFactory( __.abc.ABCMeta ):
         class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not class__delattr__( selfclass, name ):
-            super( ).__delattr__( name )
+        class__delattr__( selfclass, super( ).__delattr__, name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not class__setattr__( selfclass, name ):
-            super( ).__setattr__( name, value )
+        class__setattr__( selfclass, super( ).__setattr__, name, value )
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return class__dir__( selfclass, super( ).__dir__ )
@@ -190,12 +191,10 @@ class ProtocolClass( type( __.typx.Protocol ) ):
         class__init__( selfclass )
 
     def __delattr__( selfclass, name: str ) -> None:
-        if not class__delattr__( selfclass, name ):
-            super( ).__delattr__( name )
+        class__delattr__( selfclass, super( ).__delattr__, name )
 
     def __setattr__( selfclass, name: str, value: __.typx.Any ) -> None:
-        if not class__setattr__( selfclass, name ):
-            super( ).__setattr__( name, value )
+        class__setattr__( selfclass, super( ).__setattr__, name, value )
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return class__dir__( selfclass, super( ).__dir__ )
@@ -246,30 +245,41 @@ def class__init__( class_: type ) -> None:
     else: class_._class_behaviors_ = { _behavior }
 
 
-def class__delattr__( class_: type, name: str ) -> bool:
+def class__delattr__(
+    selfclass: type,
+    superf: AttributesDeleterLigation,
+    name: str,
+) -> None:
     # Consult class attributes dictionary to ignore immutable base classes.
-    cdict = class_.__dict__
-    if name in cdict.get( _mutables_name, ( ) ): return False
-    if _behavior not in cdict.get( _behaviors_name, ( ) ): return False
-    from .exceptions import AttributeImmutabilityError
-    raise AttributeImmutabilityError( name )
+    cdict = selfclass.__dict__
+    if name in cdict.get( _mutables_name, ( ) ):
+        return superf( name )
+    if _behavior not in cdict.get( _behaviors_name, ( ) ):
+        return superf( name )
+    raise _exceptions.AttributeImmutabilityError( name )
 
 
-def class__setattr__( class_: type, name: str ) -> bool:
+def class__setattr__(
+    selfclass: type,
+    superf: AttributesAssignerLigation,
+    name: str,
+    value: __.typx.Any,
+) -> None:
     # Consult class attributes dictionary to ignore immutable base classes.
-    cdict = class_.__dict__
-    if name in cdict.get( _mutables_name, ( ) ): return False
-    if _behavior not in cdict.get( _behaviors_name, ( ) ): return False
-    from .exceptions import AttributeImmutabilityError
-    raise AttributeImmutabilityError( name )
+    cdict = selfclass.__dict__
+    if name in cdict.get( _mutables_name, ( ) ):
+        return superf( name, value )
+    if _behavior not in cdict.get( _behaviors_name, ( ) ):
+        return superf( name, value )
+    raise _exceptions.AttributeImmutabilityError( name )
 
 
 def class__dir__(
-    class_: type, superf: AttributesSurveyorLigation
+    selfclass: type, superf: AttributesSurveyorLigation
 ) -> __.cabc.Iterable[ str ]:
     surveyor: __.typx.Optional[ AttributesSurveyor ] = (
-        getattr( class_, _surveyor_name, None ) )
-    if callable( surveyor ): return surveyor( class_, superf )
+        getattr( selfclass, _surveyor_name, None ) )
+    if callable( surveyor ): return surveyor( selfclass, superf )
     return superf( )
 
 
