@@ -48,8 +48,8 @@
     frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
 ''' # noqa: E501
 
-# TODO: Pass dynamic docstrings as metaclass argument.
 # TODO? Allow predicate functions and regex patterns as mutability checkers.
+#       Will probably bake this into custom-supplied delattr and setattr.
 
 
 from __future__ import annotations
@@ -74,15 +74,39 @@ ClassDecoratorTp: __.typx.TypeAlias = (
 ClassDecoratorsTp: __.typx.TypeAlias = (
     __.cabc.Sequence[ ClassDecoratorTp[ __.C ] ] )
 
-
 _behavior = 'immutability'
 _behaviors_name = '_class_behaviors_'
 _decorators_name = '_class_decorators_'
 _mutables_name = '_class_mutables_'
 _surveyor_name = '_class_surveyor_'
 
+_docstring_fragments_core = (
+    'description of class factory class',
+    'class attributes immutability',
+)
 
-class Class( type ):
+doctab: __.DocstringFragmentsTable = __.types.MappingProxyType( {
+
+    'class attributes immutability': '''
+Prevents assignment or deletion of class attributes after class creation.
+''',
+
+    'description of class factory class': '''
+Derived from :py:class:`type`, this is a metaclass. A metaclass is a class
+factory class. I.e., it is a class that produces other classes as its
+instances.
+''',
+
+} )
+
+
+_with_docstring = __.funct.partial(
+    __.with_docstring, doctab, *_docstring_fragments_core )
+
+
+class Class(
+    type, metaclass = __.ImmutableClass, decorators = ( _with_docstring( ), )
+):
     ''' Metaclass which produces immutable classes. '''
 
     def __new__( # noqa: PLR0913
@@ -117,13 +141,12 @@ class Class( type ):
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return class__dir__( selfclass, super( ).__dir__ )
 
-Class.__doc__ = __.generate_docstring(
-    Class,
-    'description of class factory class',
-    'class attributes immutability' )
 
-
-class ABCFactory( __.abc.ABCMeta ):
+class ABCFactory(
+    __.abc.ABCMeta,
+    metaclass = __.ImmutableClass,
+    decorators = ( _with_docstring( ), ),
+ ):
     ''' Metaclass which produces immutable abstract base classes. '''
 
     def __new__( # noqa: PLR0913
@@ -158,13 +181,12 @@ class ABCFactory( __.abc.ABCMeta ):
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return class__dir__( selfclass, super( ).__dir__ )
 
-ABCFactory.__doc__ = __.generate_docstring(
-    ABCFactory,
-    'description of class factory class',
-    'class attributes immutability' )
 
-
-class ProtocolClass( type( __.typx.Protocol ) ):
+class ProtocolClass(
+    type( __.typx.Protocol ),
+    metaclass = __.ImmutableClass,
+    decorators = ( _with_docstring( ), ),
+ ):
     ''' Metaclass which produces immutable protocol classes. '''
 
     def __new__( # noqa: PLR0913
@@ -198,11 +220,6 @@ class ProtocolClass( type( __.typx.Protocol ) ):
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return class__dir__( selfclass, super( ).__dir__ )
-
-ProtocolClass.__doc__ = __.generate_docstring(
-    ProtocolClass,
-    'description of class factory class',
-    'class attributes immutability' )
 
 
 def class__new__(

@@ -360,40 +360,41 @@ def test_211_inheritance( module_qname, class_name ):
     assert 100 == instance.child_optional
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, ALL_DATACLASS_METACLASSES )
-)
-def test_900_docstring_sanity( module_qname, class_name ):
-    ''' Dataclass has valid docstring. '''
-    module = cache_import_module( module_qname )
-    class_factory_class = getattr( module, class_name )
-    assert hasattr( class_factory_class, '__doc__' )
-    assert isinstance( class_factory_class.__doc__, str )
-    assert class_factory_class.__doc__
+# @pytest.mark.parametrize(
+#     'module_qname, class_name',
+#     product( THESE_MODULE_QNAMES, ALL_DATACLASS_METACLASSES )
+# )
+# def test_900_docstring_sanity( module_qname, class_name ):
+#     ''' Dataclass has valid docstring. '''
+#     module = cache_import_module( module_qname )
+#     class_factory_class = getattr( module, class_name )
+#     assert hasattr( class_factory_class, '__doc__' )
+#     assert isinstance( class_factory_class.__doc__, str )
+#     assert class_factory_class.__doc__
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, ALL_DATACLASS_METACLASSES )
-)
-def test_901_docstring_describes_cfc( module_qname, class_name ):
-    ''' Dataclass docstring describes class factory class. '''
-    module = cache_import_module( module_qname )
-    base = cache_import_module( f"{PACKAGE_NAME}.__" )
-    class_factory_class = getattr( module, class_name )
-    fragment = base.generate_docstring( 'description of class factory class' )
-    assert fragment in class_factory_class.__doc__
+# @pytest.mark.parametrize(
+#     'module_qname, class_name',
+#     product( THESE_MODULE_QNAMES, ALL_DATACLASS_METACLASSES )
+# )
+# def test_901_docstring_describes_cfc( module_qname, class_name ):
+#     ''' Dataclass docstring describes class factory class. '''
+#     module = cache_import_module( module_qname )
+#     base = cache_import_module( f"{PACKAGE_NAME}.__" )
+#     class_factory_class = getattr( module, class_name )
+#     fragment = base.generate_docstring(
+#         'description of class factory class' )
+#     assert fragment in class_factory_class.__doc__
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, ALL_DATACLASS_METACLASSES )
-)
-def test_902_docstring_mentions_immutability( module_qname, class_name ):
-    ''' Dataclass docstring mentions immutability. '''
-    module = cache_import_module( module_qname )
-    base = cache_import_module( f"{PACKAGE_NAME}.__" )
-    class_factory_class = getattr( module, class_name )
-    fragment = base.generate_docstring( 'class attributes immutability' )
-    assert fragment in class_factory_class.__doc__
+# @pytest.mark.parametrize(
+#     'module_qname, class_name',
+#     product( THESE_MODULE_QNAMES, ALL_DATACLASS_METACLASSES )
+# )
+# def test_902_docstring_mentions_immutability( module_qname, class_name ):
+#     ''' Dataclass docstring mentions immutability. '''
+#     module = cache_import_module( module_qname )
+#     base = cache_import_module( f"{PACKAGE_NAME}.__" )
+#     class_factory_class = getattr( module, class_name )
+#     fragment = base.generate_docstring( 'class attributes immutability' )
+#     assert fragment in class_factory_class.__doc__

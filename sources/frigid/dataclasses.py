@@ -18,8 +18,11 @@
 #============================================================================#
 
 
+# TODO: Once foundational ImmutableClass supports mutables,
+#       then enable dynamic docstring generation on classes.
+
+
 ''' Immutable dataclasses. '''
-# TODO: Enhance docstrings specifically for dataclasses.
 
 
 from __future__ import annotations
@@ -29,8 +32,40 @@ from . import classes as _classes
 from . import objects as _objects
 
 
+_docstring_fragments_core = (
+    'description of class factory class',
+    'class attributes immutability',
+    'dataclass production',
+)
+
+doctab: __.DocstringFragmentsTable = __.types.MappingProxyType( {
+
+    'dataclass production': '''
+Produces class which is decorated by :py:func:`dataclasses.dataclass`.
+
+Dataclass has ``kw_only`` active to allow inheritance.
+Dataclass has ``slots`` active for additional safety and performance.
+''',
+
+    'instance attributes immutability': '''
+Prevents assignment or deletion of instance attributes after instance creation.
+''',
+
+    **_classes.doctab,
+
+} )
+
+
+_with_docstring = __.funct.partial(
+    __.with_docstring, doctab, *_docstring_fragments_core )
+
+
 @__.typx.dataclass_transform( kw_only_default = True )
-class Dataclass( type ):
+class Dataclass(
+    type,
+    # metaclass = __.ImmutableClass,
+    # decorators = ( _with_docstring( ), )
+):
     ''' Metaclass which produces immutable dataclasses. '''
 
     def __new__( # noqa: PLR0913
@@ -68,15 +103,13 @@ class Dataclass( type ):
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return _classes.class__dir__( selfclass, super( ).__dir__ )
 
-Dataclass.__doc__ = __.generate_docstring(
-    Dataclass,
-    'description of class factory class',
-    'class attributes immutability',
-    'dataclass production' )
-
 
 @__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
-class DataclassI( type ):
+class DataclassI(
+    type,
+    # metaclass = __.ImmutableClass,
+    # decorators = ( _with_docstring( 'instance attributes immutability' ), ),
+):
     ''' Metaclass which produces immutable dataclasses. '''
 
     def __new__( # noqa: PLR0913
@@ -115,15 +148,13 @@ class DataclassI( type ):
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return _classes.class__dir__( selfclass, super( ).__dir__ )
 
-DataclassI.__doc__ = __.generate_docstring(
-    DataclassI,
-    'description of class factory class',
-    'class attributes immutability',
-    'dataclass production' )
-
 
 @__.typx.dataclass_transform( kw_only_default = True )
-class ProtocolDataclass( type( __.typx.Protocol ) ):
+class ProtocolDataclass(
+    type( __.typx.Protocol ),
+    # metaclass = __.ImmutableClass,
+    # decorators = ( _with_docstring( ), ),
+):
     ''' Metaclass which produces immutable protocol dataclasses. '''
 
     def __new__( # noqa: PLR0913
@@ -161,15 +192,13 @@ class ProtocolDataclass( type( __.typx.Protocol ) ):
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return _classes.class__dir__( selfclass, super( ).__dir__ )
 
-ProtocolDataclass.__doc__ = __.generate_docstring(
-    ProtocolDataclass,
-    'description of class factory class',
-    'class attributes immutability',
-    'dataclass production' )
-
 
 @__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
-class ProtocolDataclassI( type( __.typx.Protocol ) ):
+class ProtocolDataclassI(
+    type( __.typx.Protocol ),
+    # metaclass = __.ImmutableClass,
+    # decorators = ( _with_docstring( 'instance attributes immutability' ), ),
+):
     ''' Metaclass which produces immutable protocol dataclasses. '''
 
     def __new__( # noqa: PLR0913
@@ -207,12 +236,6 @@ class ProtocolDataclassI( type( __.typx.Protocol ) ):
 
     def __dir__( selfclass ) -> __.cabc.Iterable[ str ]:
         return _classes.class__dir__( selfclass, super( ).__dir__ )
-
-ProtocolDataclassI.__doc__ = __.generate_docstring(
-    ProtocolDataclassI,
-    'description of class factory class',
-    'class attributes immutability',
-    'dataclass production' )
 
 
 ## Deprecated Classes

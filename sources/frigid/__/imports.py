@@ -29,6 +29,7 @@ import                      abc
 import collections.abc as   cabc
 import dataclasses as       dcls
 import functools as         funct
+import                      inspect
 import                      types
 
 import typing_extensions as typx
