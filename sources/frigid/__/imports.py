@@ -18,51 +18,25 @@
 #============================================================================#
 
 
-''' Common imports and type aliases used throughout the package. '''
+''' Common imports used throughout the package. '''
 
 # ruff: noqa: F401
 
 
-from __future__ import annotations
+import                          abc
+import collections.abc as       cabc
+import dataclasses as           dcls
+import functools as             funct
+import                          inspect
+import                          sys
+import                          types
 
-import                      abc
-import collections.abc as   cabc
-import dataclasses as       dcls
-import functools as         funct
-import                      inspect
-import                      types
-
-import typing_extensions as typx
+import classcore.standard as    ccstd
+import classcore.utilities as   ccutils
+import dynadoc as               ddoc
+import typing_extensions as     typx
 # --- BEGIN: Injected by Copier ---
 # --- END: Injected by Copier ---
 
 
 from absence import AbsentSingleton, Absential, absent, is_absent
-
-
-C = typx.TypeVar( 'C' )  # Class
-H = typx.TypeVar( 'H', bound = cabc.Hashable )  # Hash Key
-V = typx.TypeVar( 'V' )  # Value
-
-
-ComparisonResult: typx.TypeAlias = bool | types.NotImplementedType
-DictionaryNominativeArgument: typx.TypeAlias = typx.Annotated[
-    V,
-    typx.Doc(
-        'Zero or more keyword arguments from which to initialize '
-        'dictionary data.' ),
-]
-DictionaryPositionalArgument: typx.TypeAlias = typx.Annotated[
-    cabc.Mapping[ H, V ] | cabc.Iterable[ tuple[ H, V ] ],
-    typx.Doc(
-        'Zero or more iterables from which to initialize dictionary data. '
-        'Each iterable must be dictionary or sequence of key-value pairs. '
-        'Duplicate keys will result in an error.' ),
-]
-DictionaryValidator: typx.TypeAlias = typx.Annotated[
-    cabc.Callable[ [ H, V ], bool ],
-    typx.Doc(
-        'Callable which validates entries before addition to dictionary.' ),
-]
-ModuleReclassifier: typx.TypeAlias = cabc.Callable[
-    [ cabc.Mapping[ str, typx.Any ] ], None ]

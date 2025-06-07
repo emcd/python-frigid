@@ -21,11 +21,19 @@
 ''' Common constants, imports, and utilities. '''
 
 
-# Expose everything from internal modules.
-from .docstrings import *  # Managed by Copier.
 from .dictionaries import *
-from .immutables import *  # Managed by Copier.
+from .doctab import *
 from .imports import *
+from .nomina import *
 
 
-__all__ = ( )
+dynadoc_introspection_limiter = (
+    ccstd.dynadoc.produce_dynadoc_introspection_limiter(
+        attributes_namer = calculate_attrname ) )
+dynadoc_introspection_control_on_class = (
+    ccstd.dynadoc.produce_dynadoc_introspection_control(
+        limiters = ( dynadoc_introspection_limiter, ) ) )
+dynadoc_introspection_control_on_package = (
+    ccstd.dynadoc.produce_dynadoc_introspection_control(
+        limiters = ( dynadoc_introspection_limiter, ),
+        targets = ddoc.IntrospectionTargetsOmni ) )

@@ -28,12 +28,20 @@ Internal Development Interface
 Package ``frigid.__``
 ===============================================================================
 
+.. automodule:: frigid.__
+
 
 Module ``frigid.__.imports``
 -------------------------------------------------------------------------------
 
 .. automodule:: frigid.__.imports
    :no-index:
+
+
+Module ``frigid.__.nomina``
+-------------------------------------------------------------------------------
+
+.. automodule:: frigid.__.nomina
 
 
 Module ``frigid.__.exceptions``

@@ -62,12 +62,12 @@ def test_101_immutability( module_qname, class_name ):
     module = cache_import_module( module_qname )
     Module = getattr( module, class_name )
     obj = Module( 'foo' )
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         obj.attr = 42
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         obj.__name__ = 'bar'
     assert 'foo' == obj.__name__
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         del obj.__name__
 
 
@@ -93,13 +93,13 @@ def test_500_module_reclassification_by_dict( module_qname, class_name ):
     assert not isinstance( m1, Module )
     assert not isinstance( m2, Module )
     assert not isinstance( m3, Module )
-    module.reclassify_modules( attrs )
+    module.reclassify_modules( attrs, recursive = True )
     assert isinstance( m1, Module )
     assert isinstance( m2, Module )
     assert not isinstance( m3, Module )
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         m1.new_attr = 42
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         m2.new_attr = 42
     m3.new_attr = 42  # Should work
 
@@ -120,7 +120,7 @@ def test_501_module_reclassification_by_name( module_qname, class_name ):
     assert not isinstance( test_module, Module )
     module.reclassify_modules( test_module.__name__ )
     assert isinstance( test_module, Module )
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         test_module.new_attr = 42
     modules.pop( test_module.__name__ )  # Cleanup
 
@@ -139,7 +139,7 @@ def test_502_module_reclassification_by_object( module_qname, class_name ):
     assert not isinstance( test_module, Module )
     module.reclassify_modules( test_module )
     assert isinstance( test_module, Module )
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         test_module.new_attr = 42
 
 
@@ -165,11 +165,11 @@ def test_503_recursive_module_reclassification( module_qname, class_name ):
     assert isinstance( root, Module )
     assert isinstance( sub1, Module )
     assert isinstance( sub2, Module )
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         root.new_attr = 42
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         sub1.new_attr = 42
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         sub2.new_attr = 42
 
 
@@ -193,7 +193,7 @@ def test_504_module_reclassification_respects_package(
     module.reclassify_modules( root )
     assert isinstance( root, Module )
     assert not isinstance( external, Module )
-    with pytest.raises( exceptions.AttributeImmutabilityError ):
+    with pytest.raises( exceptions.AttributeImmutability ):
         root.new_attr = 42
     external.new_attr = 42  # Should work
     assert 42 == external.new_attr
@@ -230,27 +230,3 @@ def test_900_docstring_sanity( module_qname, class_name ):
     assert hasattr( Object, '__doc__' )
     assert isinstance( Object.__doc__, str )
     assert Object.__doc__
-
-
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
-def test_901_docstring_describes_module( module_qname, class_name ):
-    ''' Class docstring describes module. '''
-    module = cache_import_module( module_qname )
-    Object = getattr( module, class_name )
-    fragment = base.generate_docstring( 'description of module' )
-    assert fragment in Object.__doc__
-
-
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
-def test_902_docstring_mentions_immutability( module_qname, class_name ):
-    ''' Class docstring mentions immutability. '''
-    module = cache_import_module( module_qname )
-    Object = getattr( module, class_name )
-    fragment = base.generate_docstring( 'module attributes immutability' )
-    assert fragment in Object.__doc__

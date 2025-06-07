@@ -23,28 +23,57 @@
 # ruff: noqa: F403,F405
 
 
-from __future__ import annotations
-
-from .imports import *
+from . import imports as __
 
 
-TABLE: types.MappingProxyType[ str, str ] = types.MappingProxyType( {
+fragments: __.cabc.Mapping[ str, str ] = __.types.MappingProxyType( {
+
+    'cfc class conceal':
+    ''' By default, conceals non-public class attributes. ''',
+
+    'cfc class protect':
+    ''' By default, protects class attributes. ''',
+
+    'cfc dynadoc': ''' Applies Dynadoc decoration to classes. ''',
+
+    'cfc instance conceal':
+    ''' Produces classes which can conceal instance attributes. ''',
+
+    'cfc instance protect':
+    ''' Produces classes which can protect instance attributes. ''',
+
+    'cfc produce abstract base class':
+    ''' Produces abstract base classes compatible with :py:class:`abc.ABCMeta`.
+    ''',
+
+    'cfc produce dataclass':
+    ''' Produces inheritable dataclasses with keyword-only instantiation. ''',
+
+    'cfc produce protocol class':
+    ''' Produces :pep:`544` protocol classes. ''',
+
+    'class concealment':
+    ''' By default, non-public class attributes are invisible. ''',
+
+    'class protection':
+    ''' By default, class attributes are immutable. ''',
+
+    'class instance conceal':
+    ''' By default, conceals non-public instance attributes. ''',
+
+    'class instance protect':
+    ''' By default, protects instance attributes. ''',
+
+    'dataclass':
+    ''' Inheritable dataclass with keyword-only instantiation. ''',
+
+    'protocol class':
+    ''' Protocol class (:pep:`544`). Nominal and structural subtyping. ''',
+
+    'class dynadoc': ''' Is decorated by Dynadoc. ''',
 
     'class attributes immutability': '''
 Prevents assignment or deletion of class attributes after class creation.
-''',
-
-    'dataclass production': '''
-Produces class which is decorated by :py:func:`dataclasses.dataclass`.
-
-Dataclass has ``kw_only`` active to allow inheritance.
-Dataclass has ``slots`` active for additional safety and performance.
-''',
-
-    'description of class factory class': '''
-Derived from :py:class:`type`, this is a metaclass. A metaclass is a class
-factory class. I.e., it is a class that produces other classes as its
-instances.
 ''',
 
     'description of module': '''

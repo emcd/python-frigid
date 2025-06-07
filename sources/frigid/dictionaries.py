@@ -70,7 +70,6 @@
 
 from . import __
 from . import classes as _classes
-from . import objects as _objects
 
 
 class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
@@ -160,27 +159,23 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
         raise NotImplementedError # pragma: no coverage
 
 
-class _Dictionary(
-    __.ImmutableDictionary[ __.H, __.V ], metaclass = _classes.Class
-): pass
-
-
 class Dictionary(
-    _objects.Object, _DictionaryOperations[ __.H, __.V ]
+    _DictionaryOperations[ __.H, __.V ],
+    metaclass = _classes.AbstractBaseClass,
 ):
+    # TODO: Dynadoc fragments.
     ''' Immutable dictionary. '''
-    # TODO: version 2.0: Do not subclass from 'Object'.
 
     __slots__ = ( '_data_', )
 
-    _data_: _Dictionary[ __.H, __.V ]
+    _data_: __.ImmutableDictionary[ __.H, __.V ]
 
     def __init__(
         self,
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **entries: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
-        self._data_ = _Dictionary( *iterables, **entries )
+        self._data_ = __.ImmutableDictionary( *iterables, **entries )
         super( ).__init__( )
 
     def __iter__( self ) -> __.cabc.Iterator[ __.H ]:
@@ -191,7 +186,7 @@ class Dictionary(
 
     def __repr__( self ) -> str:
         return "{fqname}( {contents} )".format(
-            fqname = __.calculate_fqname( self ),
+            fqname = __.ccutils.qualify_class_name( type( self ) ),
             contents = self._data_.__repr__( ) )
 
     def __str__( self ) -> str:
@@ -249,11 +244,9 @@ class Dictionary(
     ) -> __.typx.Self:
         return type( self )( *iterables, **entries )
 
-Dictionary.__doc__ = __.generate_docstring(
-    Dictionary, 'dictionary entries immutability' )
-
 
 class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
+    # TODO: Dynadoc fragments.
     ''' Immutable dictionary with validation of entries on initialization. '''
 
     __slots__ = ( '_validator_', )
@@ -288,7 +281,7 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
 
     def __repr__( self ) -> str:
         return "{fqname}( {validator}, {contents} )".format(
-            fqname = __.calculate_fqname( self ),
+            fqname = __.ccutils.qualify_class_name( type( self ) ),
             validator = self._validator_.__repr__( ),
             contents = self._data_.__repr__( ) )
 
@@ -303,9 +296,3 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
     ) -> __.typx.Self:
         ''' Creates new dictionary with same behavior but different data. '''
         return type( self )( self._validator_, *iterables, **entries )
-
-ValidatorDictionary.__doc__ = __.generate_docstring(
-    ValidatorDictionary,
-    'dictionary entries immutability',
-    'dictionary entries validation',
-)

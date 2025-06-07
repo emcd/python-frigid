@@ -108,11 +108,11 @@ forms of initialization.)
 >>> ns.cherries = 42    # ❌ Attempted assignment raises error.
 Traceback (most recent call last):
 ...
-frigid.exceptions.AttributeImmutabilityError: Cannot assign attribute 'cherries'.
+frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'cherries'.
 >>> del ns.apples       # ❌ Attempted deletion raises error.
 Traceback (most recent call last):
 ...
-frigid.exceptions.AttributeImmutabilityError: Cannot delete attribute 'apples'.
+frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'apples'.
 >>> ns
 frigid.namespaces.Namespace( apples = 12, bananas = 6 )
 
@@ -142,10 +142,11 @@ frigid.dictionaries.Dictionary( {'apples': 12, 'bananas': 6} )
 Immutable Objects 🧱
 -------------------------------------------------------------------------------
 
-The ``immutable`` decorator can be applied to any class to make its instances fully immutable after initialization.
+The ``with_standard_behaviors`` decorator can be applied to any class to make
+its instances fully immutable after initialization.
 
->>> from frigid import immutable
->>> @immutable
+>>> from frigid import with_standard_behaviors
+>>> @with_standard_behaviors( )
 ... class Config:
 ...     def __init__( self, debug = False ):
 ...         self.debug = debug
@@ -154,11 +155,11 @@ The ``immutable`` decorator can be applied to any class to make its instances fu
 >>> config.verbose = True  # ❌ Attempted addition raises error
 Traceback (most recent call last):
 ...
-frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'verbose'.
+frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'verbose'.
 >>> config.debug = False   # ❌ Attempted reassignment raises error
 Traceback (most recent call last):
 ...
-frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'debug'.
+frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'debug'.
 
 
 Use Cases 🎯
@@ -212,23 +213,24 @@ Other Projects by This Author 🌟
 ===============================================================================
 
 
-* `python-absence <https://github.com/emcd/python-absence>`_
-    - PyPI: `absence <https://pypi.org/project/absence/>`_
+* `python-absence <https://github.com/emcd/python-absence>`_ (`absence <https://pypi.org/project/absence/>`_ on PyPI)
 
-    🕳️ A Python library package which provides a **sentinel for absent values** - a falsey, immutable singleton that represents the absence of a value in contexts where ``None`` or ``False`` may be valid values.
-* `python-accretive <https://github.com/emcd/python-accretive>`_
-    - PyPI: `accretive <https://pypi.org/project/accretive/>`_
+  🕳️ A Python library package which provides a **sentinel for absent values** - a falsey, immutable singleton that represents the absence of a value in contexts where ``None`` or ``False`` may be valid values.
+* `python-accretive <https://github.com/emcd/python-accretive>`_ (`accretive <https://pypi.org/project/accretive/>`_ on PyPI)
 
-    🌌 A Python library package which provides **accretive data structures** - collections which can grow but never shrink.
-* `python-falsifier <https://github.com/emcd/python-falsifier>`_
-    - PyPI: `falsifier <https://pypi.org/project/falsifier/>`_
+  🌌 A Python library package which provides **accretive data structures** - collections which can grow but never shrink.
+* `python-classcore <https://github.com/emcd/python-classcore>`_ (`classcore <https://pypi.org/project/classcore/>`_ on PyPI)
 
-    🎭 A very simple Python library package which provides a **base class for falsey objects** - objects that evaluate to ``False`` in boolean contexts.
-* `python-icecream-truck <https://github.com/emcd/python-icecream-truck>`_
-    - PyPI: `icecream-truck <https://pypi.org/project/icecream-truck/>`_
+  🏭 A Python library package which provides **foundational class factories and decorators** for providing classes with attributes immutability and concealment and other custom behaviors.
+* `python-dynadoc <https://github.com/emcd/python-dynadoc>`_ (`dynadoc <https://pypi.org/project/dynadoc/>`_ on PyPI)
 
-    🍦 **Flavorful Debugging** - A Python library which enhances the powerful and well-known ``icecream`` package with flavored traces, configuration hierarchies, customized outputs, ready-made recipes, and more.
-* `python-mimeogram <https://github.com/emcd/python-mimeogram>`_
-    - PyPI: `mimeogram <https://pypi.org/project/mimeogram/>`_
+  📝 A Python library package which bridges the gap between **rich annotations** and **automatic documentation generation** with configurable renderers and support for reusable fragments.
+* `python-falsifier <https://github.com/emcd/python-falsifier>`_ (`falsifier <https://pypi.org/project/falsifier/>`_ on PyPI)
 
-    📨 A command-line tool for **exchanging collections of files with Large Language Models** - bundle multiple files into a single clipboard-ready document while preserving directory structure and metadata... good for code reviews, project sharing, and LLM interactions.
+  🎭 A very simple Python library package which provides a **base class for falsey objects** - objects that evaluate to ``False`` in boolean contexts.
+* `python-icecream-truck <https://github.com/emcd/python-icecream-truck>`_ (`icecream-truck <https://pypi.org/project/icecream-truck/>`_ on PyPI)
+
+  🍦 **Flavorful Debugging** - A Python library which enhances the powerful and well-known ``icecream`` package with flavored traces, configuration hierarchies, customized outputs, ready-made recipes, and more.
+* `python-mimeogram <https://github.com/emcd/python-mimeogram>`_ (`mimeogram <https://pypi.org/project/mimeogram/>`_ on PyPI)
+
+  📨 A command-line tool for **exchanging collections of files with Large Language Models** - bundle multiple files into a single clipboard-ready document while preserving directory structure and metadata... good for code reviews, project sharing, and LLM interactions.

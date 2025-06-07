@@ -81,7 +81,7 @@ existing attributes will raise an error:
     >>> db_config.port = 3306
     Traceback (most recent call last):
     ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'port'.
+    frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'port'.
 
 Attempts to delete attributes are also prevented:
 
@@ -90,7 +90,7 @@ Attempts to delete attributes are also prevented:
     >>> del db_config.password
     Traceback (most recent call last):
     ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'password'.
+    frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'password'.
 
 Unlike :py:class:`types.SimpleNamespace`, new attributes cannot be added after
 creation:
@@ -100,7 +100,7 @@ creation:
     >>> db_config.timeout = 30
     Traceback (most recent call last):
     ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'timeout'.
+    frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'timeout'.
 
 Attribute Access
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

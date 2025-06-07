@@ -27,19 +27,20 @@
 #       to be referenced in the '__setitem__' and '__delitem__' methods.
 
 
-from __future__ import annotations
-
 from . import imports as __
-from . import immutables as _immutables
+from . import nomina as _nomina
 
 
 _H = __.typx.TypeVar( '_H' )
 _V = __.typx.TypeVar( '_V' )
 
 
+_immutability_label = 'immutability'
+
+
 class ImmutableDictionary(
-    _immutables.ConcealerExtension,
     dict[ _H, _V ],
+    __.ccstd.Object,
     __.typx.Generic[ _H, _V ],
 ):
     ''' Immutable subclass of :py:class:`dict`.
@@ -51,8 +52,8 @@ class ImmutableDictionary(
 
     def __init__(
         self,
-        *iterables: __.DictionaryPositionalArgument[ _H, _V ],
-        **entries: __.DictionaryNominativeArgument[ _V ],
+        *iterables: _nomina.DictionaryPositionalArgument[ _H, _V ],
+        **entries: _nomina.DictionaryNominativeArgument[ _V ],
     ):
         self._behaviors_: set[ str ] = set( )
         super( ).__init__( )
@@ -66,19 +67,19 @@ class ImmutableDictionary(
             ),
             ( *iterables, entries )
         ) ): self[ indicator ] = value # pyright: ignore
-        self._behaviors_.add( _immutables.behavior_label )
+        self._behaviors_.add( _immutability_label )
 
     def __delitem__( self, key: _H ) -> None:
-        from .exceptions import EntryImmutabilityError
-        raise EntryImmutabilityError( key )
+        from .exceptions import EntryImmutability
+        raise EntryImmutability( key )
 
     def __setitem__( self, key: _H, value: _V ) -> None:
-        from .exceptions import EntryImmutabilityError
+        from .exceptions import EntryImmutability
         default: set[ str ] = set( )
-        if _immutables.behavior_label in getattr(
+        if _immutability_label in getattr(
             self, '_behaviors_', default
-        ): raise EntryImmutabilityError( key )
-        if key in self: raise EntryImmutabilityError( key )
+        ): raise EntryImmutability( key )
+        if key in self: raise EntryImmutability( key )
         super( ).__setitem__( key, value )
 
     def clear( self ) -> __.typx.Never:
@@ -104,8 +105,8 @@ class ImmutableDictionary(
 
     def update( # pyright: ignore
         self,
-        *iterables: __.DictionaryPositionalArgument[ _H, _V ],
-        **entries: __.DictionaryNominativeArgument[ _V ],
+        *iterables: _nomina.DictionaryPositionalArgument[ _H, _V ],
+        **entries: _nomina.DictionaryNominativeArgument[ _V ],
     ) -> None:
         ''' Raises exception. Cannot perform mass update. '''
         from .exceptions import OperationInvalidity
