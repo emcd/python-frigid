@@ -95,7 +95,7 @@ def test_102_instantiation( module_qname, class_name ):
     posargs, nomargs = select_arguments( class_name )
     dct = factory( *posargs, **nomargs )
     assert isinstance( dct, factory )
-    with pytest.raises( exceptions.EntryValidityError ):
+    with pytest.raises( exceptions.EntryInvalidity ):
         dct = factory( *posargs, invalid = 'str' )
 
 
@@ -124,11 +124,11 @@ def test_200_dictionary_entry_immutability( module_qname, class_name ):
     posargs, nomargs = select_arguments( class_name )
     simple_posargs, simple_nomargs = select_simple_arguments( class_name )
     dct = factory( *posargs, *simple_posargs, **simple_nomargs )
-    with pytest.raises( exceptions.EntryImmutabilityError ):
+    with pytest.raises( exceptions.EntryImmutability ):
         del dct[ 'foo' ]
-    with pytest.raises( exceptions.EntryImmutabilityError ):
+    with pytest.raises( exceptions.EntryImmutability ):
         dct[ 'foo' ] = 666
-    with pytest.raises( exceptions.EntryImmutabilityError ):
+    with pytest.raises( exceptions.EntryImmutability ):
         dct[ 'baz' ] = 43
 
 
@@ -185,13 +185,13 @@ def test_162_or_prevents_key_conflicts( module_qname, class_name ):
     d1 = factory( *posargs, conflict_key = 1, unique1 = 2 )
     d2 = factory( *posargs, conflict_key = 3, unique2 = 4 )
     d3 = { 'conflict_key': 2, 'unique3': 5 }
-    with pytest.raises( exceptions.EntryImmutabilityError ) as excinfo:
+    with pytest.raises( exceptions.EntryImmutability ) as excinfo:
         d1 | d2
     assert "entry for 'conflict_key'" in str( excinfo.value )
-    with pytest.raises( exceptions.EntryImmutabilityError ) as excinfo:
+    with pytest.raises( exceptions.EntryImmutability ) as excinfo:
         d1 | d3
     assert "entry for 'conflict_key'" in str( excinfo.value )
-    with pytest.raises( exceptions.EntryImmutabilityError ) as excinfo:
+    with pytest.raises( exceptions.EntryImmutability ) as excinfo:
         d3 | d1
     assert "entry for 'conflict_key'" in str( excinfo.value )
 
@@ -264,7 +264,7 @@ def test_202_validator_dictionary_validation( module_qname, class_name ):
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
     posargs, nomargs = select_arguments( class_name )
-    with pytest.raises( exceptions.EntryValidityError ):
+    with pytest.raises( exceptions.EntryInvalidity ):
         factory( *posargs, invalid = 'str' )
 
 
@@ -299,7 +299,7 @@ def test_203_validator_dictionary_generator_handling(
         'k1': 100, 'k2': 200,
     }
     gen = ( ( str( i ), 'bad' if i == 1 else i ) for i in range( 3 ) )
-    with pytest.raises( exceptions.EntryValidityError ):
+    with pytest.raises( exceptions.EntryInvalidity ):
         factory( int_validator, gen )
 
 
@@ -363,11 +363,11 @@ def test_205_validator_dictionary_complex_validation(
 
     d1 = factory( complex_validator, a = 1, bb = 2, ccc = 3 )
     assert d1 == { 'a': 1, 'bb': 2, 'ccc': 3 }
-    with pytest.raises( exceptions.EntryValidityError ):
+    with pytest.raises( exceptions.EntryInvalidity ):
         factory( complex_validator, a = 2 )  # Value doesn't match key length
-    with pytest.raises( exceptions.EntryValidityError ):
+    with pytest.raises( exceptions.EntryInvalidity ):
         factory( complex_validator, bb = 'x' )  # Value not int
-    with pytest.raises( exceptions.EntryValidityError ):
+    with pytest.raises( exceptions.EntryInvalidity ):
         factory( complex_validator, { 123: 3 } )  # Key not string
     d2 = factory( complex_validator, bb = 2, xxx = 3 )
     d3 = d1 & d2
@@ -496,7 +496,7 @@ def test_250_with_data( module_qname, class_name ):
     assert d1 != d2
     assert d2 == { 'c': 3, 'd': 4 }
     if class_name in VALIDATOR_NAMES:
-        with pytest.raises( exceptions.EntryValidityError ):
+        with pytest.raises( exceptions.EntryInvalidity ):
             d2 = d1.with_data( invalid = 'str' )
 
 

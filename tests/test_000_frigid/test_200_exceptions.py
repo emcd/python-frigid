@@ -29,8 +29,8 @@ from . import PACKAGE_NAME, cache_import_module
 CLASS_NAMES = (
     'Omniexception', 'Omnierror',
     'AttributeImmutability',
-    'EntryImmutabilityError',
-    'EntryValidityError',
+    'EntryImmutability',
+    'EntryInvalidity',
     'ErrorProvideFailure',
 )
 MODULE_QNAME = f"{PACKAGE_NAME}.exceptions"

@@ -49,14 +49,14 @@ class AttributeImmutability( Omnierror, AttributeError ):
             f"Could not assign or delete attribute {name!r} on {target}." )
 
 
-class EntryImmutabilityError( Omnierror, TypeError ):
+class EntryImmutability( Omnierror, TypeError ):
 
     def __init__( self, key: __.cabc.Hashable ) -> None:
         super( ).__init__(
             f"Cannot add, alter, or remove entry for {key!r}." )
 
 
-class EntryValidityError( Omnierror, ValueError ):
+class EntryInvalidity( Omnierror, ValueError ):
 
     def __init__(
         self, indicator: __.cabc.Hashable, value: __.typx.Any

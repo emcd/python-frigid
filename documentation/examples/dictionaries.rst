@@ -79,7 +79,7 @@ existing attributes will raise an error:
     >>> config['debug'] = True  # Attempt to modify
     Traceback (most recent call last):
     ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign entry for 'debug'.
+    frigid.exceptions.EntryImmutability: Cannot assign entry for 'debug'.
 
 Attempts to delete attributes are also prevented:
 
@@ -88,7 +88,7 @@ Attempts to delete attributes are also prevented:
     >>> del config['cache']  # Attempt to delete
     Traceback (most recent call last):
     ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign entry for 'cache'.
+    frigid.exceptions.EntryImmutability: Cannot assign entry for 'cache'.
 
 Copies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -183,7 +183,7 @@ When operands have overlapping keys, an error is raised:
     >>> auth | extra
     Traceback (most recent call last):
     ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign entry for 'password'.
+    frigid.exceptions.EntryImmutability: Cannot assign entry for 'password'.
 
 Intersections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -242,12 +242,12 @@ Invalid entries are rejected during creation:
     >>> ValidatorDictionary( validate_int_values, count = '42' )
     Traceback (most recent call last):
     ...
-    frigid.exceptions.EntryValidityError: Cannot add invalid entry with key, 'count', and value, '42', to dictionary.
+    frigid.exceptions.EntryInvalidity: Cannot add invalid entry with key, 'count', and value, '42', to dictionary.
     >>> # Invalid key type
     >>> ValidatorDictionary( validate_int_values, { 42: 42 } )
     Traceback (most recent call last):
     ...
-    frigid.exceptions.EntryValidityError: Cannot add invalid entry with key, 42, and value, 42, to dictionary.
+    frigid.exceptions.EntryInvalidity: Cannot add invalid entry with key, 42, and value, 42, to dictionary.
 
 When copying validator dictionaries, both ``copy`` and ``with_data`` preserve
 the validator:
@@ -261,4 +261,4 @@ the validator:
     >>> numbers.with_data( total = '100' )
     Traceback (most recent call last):
     ...
-    frigid.exceptions.EntryValidityError: Cannot add invalid entry with key, 'total', and value, '100', to dictionary.
+    frigid.exceptions.EntryInvalidity: Cannot add invalid entry with key, 'total', and value, '100', to dictionary.

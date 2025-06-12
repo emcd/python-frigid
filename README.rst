@@ -130,11 +130,11 @@ initialization.)
 >>> dct['cherries'] = 42  # ❌ Attempted assignment raises error.
 Traceback (most recent call last):
 ...
-frigid.exceptions.EntryImmutabilityError: Cannot assign entry for 'cherries'.
+frigid.exceptions.EntryImmutability: Cannot assign entry for 'cherries'.
 >>> del dct['bananas']    # ❌ Attempted removal raises error.
 Traceback (most recent call last):
 ...
-frigid.exceptions.EntryImmutabilityError: Cannot delete entry for 'bananas'.
+frigid.exceptions.EntryImmutability: Cannot delete entry for 'bananas'.
 >>> dct
 frigid.dictionaries.Dictionary( {'apples': 12, 'bananas': 6} )
 

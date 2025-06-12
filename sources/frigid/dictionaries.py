@@ -56,16 +56,16 @@
     >>> d[ 'z' ] = 3  # Attempt to add entry
     Traceback (most recent call last):
         ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign or delete entry for 'z'.
+    frigid.exceptions.EntryImmutability: Cannot assign or delete entry for 'z'.
     >>> d[ 'x' ] = 4  # Attempt modification
     Traceback (most recent call last):
         ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign or delete entry for 'x'.
+    frigid.exceptions.EntryImmutability: Cannot assign or delete entry for 'x'.
     >>> del d[ 'y' ]  # Attempt removal
     Traceback (most recent call last):
         ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign or delete entry for 'y'.
-''' # noqa: E501
+    frigid.exceptions.EntryImmutability: Cannot assign or delete entry for 'y'.
+'''
 
 
 from . import __
@@ -95,12 +95,12 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
         raise NotImplementedError  # pragma: no coverage
 
     def __setitem__( self, key: __.H, value: __.V ) -> None:
-        from .exceptions import EntryImmutabilityError
-        raise EntryImmutabilityError( key )
+        from .exceptions import EntryImmutability
+        raise EntryImmutability( key )
 
     def __delitem__( self, key: __.H ) -> None:
-        from .exceptions import EntryImmutabilityError
-        raise EntryImmutabilityError( key )
+        from .exceptions import EntryImmutability
+        raise EntryImmutability( key )
 
 
 class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
@@ -112,8 +112,8 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
         conflicts = set( self.keys( ) ) & set( other.keys( ) )
         if conflicts:
-            from .exceptions import EntryImmutabilityError
-            raise EntryImmutabilityError( next( iter( conflicts ) ) )
+            from .exceptions import EntryImmutability
+            raise EntryImmutability( next( iter( conflicts ) ) )
         data = dict( self )
         data.update( other )
         return self.with_data( data )
@@ -274,8 +274,8 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
             ( *iterables, entries )
         ) ):
             if not self._validator_( key, value ): # pyright: ignore
-                from .exceptions import EntryValidityError
-                raise EntryValidityError( key, value )
+                from .exceptions import EntryInvalidity
+                raise EntryInvalidity( key, value )
             entries_.append( ( key, value ) ) # pyright: ignore
         super( ).__init__( entries_ )
 
