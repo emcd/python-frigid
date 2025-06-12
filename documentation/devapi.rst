@@ -50,19 +50,13 @@ Module ``frigid.__.exceptions``
 .. automodule:: frigid.__.exceptions
 
 
-Module ``frigid.__.immutables``
--------------------------------------------------------------------------------
-
-.. automodule:: frigid.__.immutables
-
-
 Module ``frigid.__.dictionaries``
 -------------------------------------------------------------------------------
 
 .. automodule:: frigid.__.dictionaries
 
 
-Module ``frigid.__.docstrings``
+Module ``frigid.__.doctab``
 -------------------------------------------------------------------------------
 
-.. automodule:: frigid.__.docstrings
+.. automodule:: frigid.__.doctab

@@ -55,22 +55,10 @@ Module ``frigid.classes``
 .. automodule:: frigid.classes
 
 
-Module ``frigid.dataclasses``
+Module ``frigid.exceptions``
 -------------------------------------------------------------------------------
 
-.. automodule:: frigid.dataclasses
-
-
-Module ``frigid.objects``
--------------------------------------------------------------------------------
-
-.. automodule:: frigid.objects
-
-
-Module ``frigid.sequences``
--------------------------------------------------------------------------------
-
-.. automodule:: frigid.sequences
+.. automodule:: frigid.exceptions
 
 
 Module ``frigid.installers``
@@ -79,15 +67,7 @@ Module ``frigid.installers``
 .. automodule:: frigid.installers
 
 
-Module ``frigid.exceptions``
+Module ``frigid.sequences``
 -------------------------------------------------------------------------------
 
-.. automodule:: frigid.exceptions
-
-
-Module ``frigid.qaliases``
--------------------------------------------------------------------------------
-
-.. automodule:: frigid.qaliases
-   :imported-members:
-   :noindex:
+.. automodule:: frigid.sequences

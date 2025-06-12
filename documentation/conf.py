@@ -83,6 +83,8 @@ nitpick_ignore = [
     ( 'py:class', "NotImplementedType" ),
     ( 'py:class', "absence.objects.AbsenceFactory" ),
     ( 'py:class', "absence.objects.AbsentSingleton" ),
+    ( 'py:class', "builtins.NotImplementedType" ),
+    ( 'py:class', "classcore.standard.classes.Object" ),
     ( 'py:class', "frigid.__.dictionaries._H" ),
     ( 'py:class', "frigid.__.dictionaries._V" ),
     ( 'py:class', "frigid.__.dictionaries.Annotated" ),
@@ -90,6 +92,8 @@ nitpick_ignore = [
     ( 'py:class', "frigid.__.imports.C" ),
     ( 'py:class', "frigid.__.imports.H" ),
     ( 'py:class', "frigid.__.imports.V" ),
+    ( 'py:class', "frigid.__.nomina.H" ),
+    ( 'py:class', "frigid.__.nomina.V" ),
     ( 'py:class', "frigid.dictionaries._DictionaryOperations" ),
     ( 'py:class', "frigid.sequences._V" ),
     ( 'py:class', "collections.abc.Annotated" ),
@@ -107,6 +111,8 @@ nitpick_ignore = [
     ( 'py:obj', "frigid.__.imports.C" ),
     ( 'py:obj', "frigid.__.imports.H" ),
     ( 'py:obj', "frigid.__.imports.V" ),
+    ( 'py:obj', "frigid.__.nomina.H" ),
+    ( 'py:obj', "frigid.__.nomina.V" ),
 ]
 
 # -- Options for linkcheck builder -------------------------------------------
