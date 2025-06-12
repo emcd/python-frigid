@@ -56,6 +56,7 @@ year-of-origin = 2024
 gha-runners = [
   '/home/runner/work/python-frigid/python-frigid/',
   '/Users/runner/work/python-frigid/python-frigid/',
+  'C:\a\python-frigid\python-frigid\',
   'D:\a\python-frigid\python-frigid\',
 ]
 [tool.coverage.run]
