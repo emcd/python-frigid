@@ -50,15 +50,6 @@ _class_factory = __.funct.partial(
     error_class_provider = _provide_error_class )
 
 
-class _CfcExtraArguments( __.typx.TypedDict, total = False ):
-
-    class_mutables: __.BehaviorExclusionVerifiersOmni
-    class_visibles: __.BehaviorExclusionVerifiersOmni
-    dynadoc_configuration: __.DynadocConfiguration
-    instances_mutables: __.BehaviorExclusionVerifiersOmni
-    instances_visibles: __.BehaviorExclusionVerifiersOmni
-
-
 mutables_default = ( )
 visibles_default = ( is_public_identifier, )
 
