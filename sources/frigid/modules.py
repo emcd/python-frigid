@@ -40,14 +40,41 @@ from . import __
 from . import classes as _classes
 
 
+ModuleNamespaceDictionary: __.typx.TypeAlias = (
+    __.cabc.Mapping[ str, __.typx.Any ] )
+
+ReclassifyModulesModuleArgument: __.typx.TypeAlias = __.typx.Annotated[
+    str | __.types.ModuleType | ModuleNamespaceDictionary,
+    __.ddoc.Doc( ''' Module, module name, or module namespace. ''' ),
+]
+ReclassifyModulesRecursiveArgument: __.typx.TypeAlias = __.typx.Annotated[
+    bool, __.ddoc.Doc( ''' Recursively reclassify package modules? ''' )
+]
+
+
 class Module( _classes.Object, __.types.ModuleType ):
-    ''' Modules with attributes immutability and concealment. '''
+    ''' Module class. '''
 
-    # TODO: Dynadoc fragments.
+    _dynadoc_fragments_ = ( 'module', 'module conceal', 'module protect' )
 
 
-reclassify_modules = (
-    __.funct.partial(
-        __.ccstd.reclassify_modules,
+def reclassify_modules(
+    module: ReclassifyModulesModuleArgument, /, *,
+    recursive: ReclassifyModulesRecursiveArgument = False,
+) -> None:
+    ''' Reclassifies modules to have attributes concealment and immutability.
+
+        Can operate on individual modules or entire package hierarchies.
+
+        Only converts modules within the same package to prevent unintended
+        modifications to external modules.
+
+        When used with a dictionary, converts any module objects found as
+        values if they belong to the same package.
+
+        Has no effect on already-reclassified modules.
+    '''
+    __.ccstd.reclassify_modules(
+        module,
         attributes_namer = __.calculate_attrname,
-        replacement_class = Module ) )
+        replacement_class = Module )

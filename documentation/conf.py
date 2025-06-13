@@ -93,6 +93,7 @@ nitpick_ignore = [
     ( 'py:class', "frigid.__.imports.H" ),
     ( 'py:class', "frigid.__.imports.V" ),
     ( 'py:class', "frigid.__.nomina.H" ),
+    ( 'py:class', "frigid.__.nomina.U" ),
     ( 'py:class', "frigid.__.nomina.V" ),
     ( 'py:class', "frigid.dictionaries._DictionaryOperations" ),
     ( 'py:class', "frigid.sequences._V" ),

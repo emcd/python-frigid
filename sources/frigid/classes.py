@@ -20,11 +20,15 @@
 
 ''' Immutable classes. '''
 
+# ruff: noqa: F811
+
 
 from . import __
 
 
 is_public_identifier = __.is_public_identifier
+mutables_default = ( )
+visibles_default = ( is_public_identifier, )
 
 
 def _provide_error_class( name: str ) -> type[ Exception ]:
@@ -48,10 +52,6 @@ _class_factory = __.funct.partial(
     attributes_namer = __.calculate_attrname,
     dynadoc_configuration = _dynadoc_configuration,
     error_class_provider = _provide_error_class )
-
-
-mutables_default = ( )
-visibles_default = ( is_public_identifier, )
 
 
 @_class_factory( )
@@ -274,15 +274,72 @@ class DataclassProtocolMutable(
         'class instance conceal' )
 
 
-dataclass_with_standard_behaviors = (
-    __.funct.partial(
+@__.typx.overload
+def dataclass_with_standard_behaviors( # pragma: no cover
+    cls: type[ __.U ], /, *,
+    decorators: __.ClassDecorators[ __.U ] = ( ),
+    mutables: __.BehaviorExclusionVerifiersOmni = mutables_default,
+    visibles: __.BehaviorExclusionVerifiersOmni = visibles_default,
+) -> type[ __.U ]: ...
+
+
+@__.typx.overload
+def dataclass_with_standard_behaviors( # pragma: no cover
+    cls: __.AbsentSingleton = __.absent, /, *,
+    decorators: __.ClassDecorators[ __.U ] = ( ),
+    mutables: __.BehaviorExclusionVerifiersOmni = mutables_default,
+    visibles: __.BehaviorExclusionVerifiersOmni = visibles_default,
+) -> __.ClassDecoratorFactory[ __.U ]: ...
+
+
+@__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
+def dataclass_with_standard_behaviors(
+    cls: __.Absential[ type[ __.U ] ] = __.absent, /, *,
+    decorators: __.ClassDecorators[ __.U ] = ( ),
+    mutables: __.BehaviorExclusionVerifiersOmni = mutables_default,
+    visibles: __.BehaviorExclusionVerifiersOmni = visibles_default,
+) -> type[ __.U ] | __.ClassDecoratorFactory[ __.U ]:
+    ''' Decorates dataclass to enforce standard behaviors on instances. '''
+    decorate = __.funct.partial(
         __.ccstd.dataclass_with_standard_behaviors,
         attributes_namer = __.calculate_attrname,
-        error_class_provider = _provide_error_class ) )
+        error_class_provider = _provide_error_class,
+        decorators = decorators,
+        mutables = mutables, visibles = visibles )
+    if not __.is_absent( cls ): return decorate( )( cls )
+    return decorate( )  # No class to decorate; keyword arguments only.
 
 
-with_standard_behaviors = (
-    __.funct.partial(
+@__.typx.overload
+def with_standard_behaviors( # pragma: no cover
+    cls: type[ __.U ], /, *,
+    decorators: __.ClassDecorators[ __.U ] = ( ),
+    mutables: __.BehaviorExclusionVerifiersOmni = mutables_default,
+    visibles: __.BehaviorExclusionVerifiersOmni = visibles_default,
+) -> type[ __.U ]: ...
+
+
+@__.typx.overload
+def with_standard_behaviors( # pragma: no cover
+    cls: __.AbsentSingleton = __.absent, /, *,
+    decorators: __.ClassDecorators[ __.U ] = ( ),
+    mutables: __.BehaviorExclusionVerifiersOmni = mutables_default,
+    visibles: __.BehaviorExclusionVerifiersOmni = visibles_default,
+) -> __.ClassDecoratorFactory[ __.U ]: ...
+
+
+def with_standard_behaviors(
+    cls: __.Absential[ type[ __.U ] ] = __.absent, /, *,
+    decorators: __.ClassDecorators[ __.U ] = ( ),
+    mutables: __.BehaviorExclusionVerifiersOmni = mutables_default,
+    visibles: __.BehaviorExclusionVerifiersOmni = visibles_default,
+) -> type[ __.U ] | __.ClassDecoratorFactory[ __.U ]:
+    ''' Decorates class to enforce standard behaviors on instances. '''
+    decorate = __.funct.partial(
         __.ccstd.with_standard_behaviors,
         attributes_namer = __.calculate_attrname,
-        error_class_provider = _provide_error_class ) )
+        error_class_provider = _provide_error_class,
+        decorators = decorators,
+        mutables = mutables, visibles = visibles )
+    if not __.is_absent( cls ): return decorate( )( cls )
+    return decorate( )  # No class to decorate; keyword arguments only.

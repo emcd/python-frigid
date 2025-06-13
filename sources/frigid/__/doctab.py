@@ -72,21 +72,17 @@ fragments: __.cabc.Mapping[ str, str ] = __.types.MappingProxyType( {
 
     'class dynadoc': ''' Is decorated by Dynadoc. ''',
 
-    'class attributes immutability': '''
-Prevents assignment or deletion of class attributes after class creation.
-''',
+    'module':
+    ''' Python module class, derived from :py:class:`types.ModuleType`. ''',
 
-    'description of module': '''
-Derived from :py:class:`types.ModuleType`, this class is suitable for use as a
-Python module class.
-''',
+    'module conceal':
+    ''' By default, conceals non-public module attributes. ''',
 
-    'description of namespace': '''
-A namespace is an object, whose attributes can be determined from iterables and
-keyword arguments, at initialization time. The string representation of the
-namespace object reflects its current instance attributes. Modeled after
-:py:class:`types.SimpleNamespace`.
-''',
+    'module protect':
+    ''' By default, protects module attributes. ''',
+
+    'namespace':
+    ''' Namespace object, modeled after :py:class:`types.SimpleNamespace. ''',
 
     'dictionary entries immutability': '''
 Prevents addition, alteration, or removal of dictionary entries after creation.
@@ -96,17 +92,6 @@ Prevents addition, alteration, or removal of dictionary entries after creation.
 When an attempt to create a dictionary with entries, each entry is validated
 against supplied criteria. If validation fails for any entry, then the
 dictionary creation is rejected.
-''',
-
-    'instance attributes immutability': '''
-Prevents assignment or deletion of instance attributes after instance creation.
-''',
-
-    'module attributes immutability': '''
-Prevents assignment or deletion of module attributes after module creation.
-
-This behavior helps ensure that module-level constants remain constant and that
-module interfaces remain stable during runtime.
 ''',
 
 } )
