@@ -20,58 +20,74 @@
 
 ''' Docstrings table for reuse across entities. '''
 
-# pylint: disable=unused-wildcard-import,wildcard-import
 # ruff: noqa: F403,F405
 
 
-from __future__ import annotations
-
-from .imports import *
+from . import imports as __
 
 
-TABLE: types.MappingProxyType[ str, str ] = types.MappingProxyType( {
+fragments: __.cabc.Mapping[ str, str ] = __.types.MappingProxyType( {
 
-    'class attributes immutability': '''
-Prevents assignment or deletion of class attributes after class creation.
-''',
+    'cfc class conceal':
+    ''' By default, conceals non-public class attributes. ''',
 
-    'description of class factory class': '''
-Derived from :py:class:`type`, this is a metaclass. A metaclass is a class
-factory class. I.e., it is a class that produces other classes as its
-instances.
-''',
+    'cfc class protect':
+    ''' By default, protects class attributes. ''',
 
-    'description of module': '''
-Derived from :py:class:`types.ModuleType`, this class is suitable for use as a
-Python module class.
-''',
+    'cfc dynadoc': ''' Applies Dynadoc decoration to classes. ''',
 
-    'description of namespace': '''
-A namespace is an object, whose attributes can be determined from iterables and
-keyword arguments, at initialization time. The string representation of the
-namespace object reflects its current instance attributes. Modeled after
-:py:class:`types.SimpleNamespace`.
-''',
+    'cfc instance conceal':
+    ''' Produces classes which can conceal instance attributes. ''',
 
-    'dictionary entries immutability': '''
-Prevents addition, alteration, or removal of dictionary entries after creation.
-''',
+    'cfc instance protect':
+    ''' Produces classes which can protect instance attributes. ''',
 
-    'dictionary entries validation': '''
-When an attempt to create a dictionary with entries, each entry is validated
-against supplied criteria. If validation fails for any entry, then the
-dictionary creation is rejected.
-''',
+    'cfc produce abstract base class':
+    ''' Produces abstract base classes compatible with :py:class:`abc.ABCMeta`.
+    ''',
 
-    'instance attributes immutability': '''
-Prevents assignment or deletion of instance attributes after instance creation.
-''',
+    'cfc produce dataclass':
+    ''' Produces inheritable dataclasses with keyword-only instantiation. ''',
 
-    'module attributes immutability': '''
-Prevents assignment or deletion of module attributes after module creation.
+    'cfc produce protocol class':
+    ''' Produces :pep:`544` protocol classes. ''',
 
-This behavior helps ensure that module-level constants remain constant and that
-module interfaces remain stable during runtime.
-''',
+    'class concealment':
+    ''' By default, non-public class attributes are invisible. ''',
+
+    'class protection':
+    ''' By default, class attributes are immutable. ''',
+
+    'class instance conceal':
+    ''' By default, conceals non-public instance attributes. ''',
+
+    'class instance protect':
+    ''' By default, protects instance attributes. ''',
+
+    'dataclass':
+    ''' Inheritable dataclass with keyword-only instantiation. ''',
+
+    'protocol class':
+    ''' Protocol class (:pep:`544`). Nominal and structural subtyping. ''',
+
+    'class dynadoc': ''' Is decorated by Dynadoc. ''',
+
+    'dictionary entries protect':
+    ''' Protects dictionary entries on initialization. ''',
+
+    'dictionary entries validate':
+    ''' Validates dictionary entries on initialization. ''',
+
+    'module':
+    ''' Python module class, derived from :py:class:`types.ModuleType`. ''',
+
+    'module conceal':
+    ''' By default, conceals non-public module attributes. ''',
+
+    'module protect':
+    ''' By default, protects module attributes. ''',
+
+    'namespace':
+    ''' Namespace object, modeled after :py:class:`types.SimpleNamespace. ''',
 
 } )

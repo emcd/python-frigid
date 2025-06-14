@@ -20,12 +20,6 @@
 
 ''' Assert correct function of internal dictionaries. '''
 
-# mypy: ignore-errors
-# pylint: disable=attribute-defined-outside-init
-# pylint: disable=magic-value-comparison
-# pylint: disable=missing-class-docstring
-# pylint: disable=protected-access
-# pylint: disable=unexpected-keyword-arg
 # ruff: noqa: E711,E712
 
 
@@ -72,7 +66,7 @@ def test_202_immutable_dictionary_prevents_key_overwrite( ):
     ''' Dictionary prevents overwriting existing keys during creation. '''
     module = cache_import_module( MODULE_QNAME )
     exceptions = cache_import_module( f"{PACKAGE_NAME}.__.exceptions" )
-    with pytest.raises( exceptions.EntryImmutabilityError ):
+    with pytest.raises( exceptions.EntryImmutability ):
         module.ImmutableDictionary( [ ( 'a', 1 ) ], { 'a': 2 } )
 
 
@@ -82,11 +76,11 @@ def test_210_immutable_dictionary_entry_protection( ):
     exceptions = cache_import_module( f"{PACKAGE_NAME}.__.exceptions" )
     factory = module.ImmutableDictionary
     dct = factory( *dictionary_posargs, **dictionary_nomargs )
-    with pytest.raises( exceptions.EntryImmutabilityError ):
+    with pytest.raises( exceptions.EntryImmutability ):
         dct[ 'foo' ] = 42
-    with pytest.raises( exceptions.EntryImmutabilityError ):
+    with pytest.raises( exceptions.EntryImmutability ):
         del dct[ 'foo' ]
-    with pytest.raises( exceptions.EntryImmutabilityError ):
+    with pytest.raises( exceptions.EntryImmutability ):
         dct[ 'baz' ] = 3.1415926535
 
 
@@ -132,4 +126,4 @@ def test_213_immutable_dictionary_behaviors( ):
     module = cache_import_module( MODULE_QNAME )
     factory = module.ImmutableDictionary
     dct = factory( a = 1 )
-    assert module.behavior_label in dct._behaviors_
+    assert module.dictionaries._immutability_label in dct._behaviors_

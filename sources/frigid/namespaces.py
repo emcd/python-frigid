@@ -18,7 +18,6 @@
 #============================================================================#
 
 
-# pylint: disable=line-too-long
 ''' Immutable namespaces.
 
     Provides a namespace type with immutable attributes. Similar to
@@ -35,23 +34,25 @@
     >>> ns.z = 3  # Attempt to add attribute
     Traceback (most recent call last):
         ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'z'.
+    frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'z'.
     >>> ns.x = 4  # Attempt modification
     Traceback (most recent call last):
         ...
-    frigid.exceptions.AttributeImmutabilityError: Cannot assign or delete attribute 'x'.
+    frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'x'.
     >>> ns
     frigid.namespaces.Namespace( x = 1, y = 2 )
-'''
-# pylint: enable=line-too-long
+''' # noqa: E501
 
 
 from . import __
-from . import objects as _objects
+from . import classes as _classes
 
 
-class Namespace( _objects.Object ):  # pylint: disable=eq-without-hash
+class Namespace( metaclass = _classes.Class ):
+    # TODO: Dynadoc fragments.
     ''' Immutable namespaces. '''
+
+    __slots__ = ( '__dict__', )
 
     def __init__(
         self,
@@ -59,28 +60,24 @@ class Namespace( _objects.Object ):  # pylint: disable=eq-without-hash
         **attributes: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
         self.__dict__.update(
-            __.ImmutableDictionary( *iterables, **attributes ) ) # type: ignore
+            __.ImmutableDictionary(
+                *iterables, **attributes ) ) # pyright: ignore
         super( ).__init__( )
 
     def __repr__( self ) -> str:
         attributes = ', '.join(
             f"{key} = {value!r}" for key, value
-            in super( ).__getattribute__( '__dict__' ).items( ) )
-        fqname = __.calculate_fqname( self )
+            in getattr( self, '__dict__', { } ).items( ) )
+        fqname = __.ccutils.qualify_class_name( type( self ) )
         if not attributes: return f"{fqname}( )"
         return f"{fqname}( {attributes} )"
 
     def __eq__( self, other: __.typx.Any ) -> __.ComparisonResult:
-        mydict = super( ).__getattribute__( '__dict__' )
         if isinstance( other, ( Namespace, __.types.SimpleNamespace ) ):
-            return mydict == other.__dict__
+            return self.__dict__ == other.__dict__
         return NotImplemented
 
     def __ne__( self, other: __.typx.Any ) -> __.ComparisonResult:
-        mydict = super( ).__getattribute__( '__dict__' )
         if isinstance( other, ( Namespace, __.types.SimpleNamespace ) ):
-            return mydict != other.__dict__
+            return self.__dict__ != other.__dict__
         return NotImplemented
-
-Namespace.__doc__ = __.generate_docstring(
-    Namespace, 'description of namespace', 'instance attributes immutability' )

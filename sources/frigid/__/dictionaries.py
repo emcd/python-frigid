@@ -20,7 +20,6 @@
 
 ''' Internal dictionary. '''
 
-# pylint: disable=unused-import
 # ruff: noqa: F401
 
 
@@ -28,19 +27,20 @@
 #       to be referenced in the '__setitem__' and '__delitem__' methods.
 
 
-from __future__ import annotations
-
 from . import imports as __
-from . import immutables as _immutables
+from . import nomina as _nomina
 
 
 _H = __.typx.TypeVar( '_H' )
 _V = __.typx.TypeVar( '_V' )
 
 
+_immutability_label = 'immutability'
+
+
 class ImmutableDictionary(
-    _immutables.ConcealerExtension,
     dict[ _H, _V ],
+    __.ccstd.Object,
     __.typx.Generic[ _H, _V ],
 ):
     ''' Immutable subclass of :py:class:`dict`.
@@ -52,34 +52,34 @@ class ImmutableDictionary(
 
     def __init__(
         self,
-        *iterables: __.DictionaryPositionalArgument[ _H, _V ],
-        **entries: __.DictionaryNominativeArgument[ _V ],
+        *iterables: _nomina.DictionaryPositionalArgument[ _H, _V ],
+        **entries: _nomina.DictionaryNominativeArgument[ _V ],
     ):
         self._behaviors_: set[ str ] = set( )
         super( ).__init__( )
         from itertools import chain
         # Add values in order received, enforcing no alteration.
-        for indicator, value in chain.from_iterable( map( # type: ignore
-            lambda element: ( # type: ignore
+        for indicator, value in chain.from_iterable( map( # pyright: ignore
+            lambda element: ( # pyright: ignore
                 element.items( )
                 if isinstance( element, __.cabc.Mapping )
                 else element
             ),
             ( *iterables, entries )
-        ) ): self[ indicator ] = value # type: ignore
-        self._behaviors_.add( _immutables.behavior_label )
+        ) ): self[ indicator ] = value # pyright: ignore
+        self._behaviors_.add( _immutability_label )
 
     def __delitem__( self, key: _H ) -> None:
-        from .exceptions import EntryImmutabilityError
-        raise EntryImmutabilityError( key )
+        from .exceptions import EntryImmutability
+        raise EntryImmutability( key )
 
     def __setitem__( self, key: _H, value: _V ) -> None:
-        from .exceptions import EntryImmutabilityError
+        from .exceptions import EntryImmutability
         default: set[ str ] = set( )
-        if _immutables.behavior_label in getattr(
+        if _immutability_label in getattr(
             self, '_behaviors_', default
-        ): raise EntryImmutabilityError( key )
-        if key in self: raise EntryImmutabilityError( key )
+        ): raise EntryImmutability( key )
+        if key in self: raise EntryImmutability( key )
         super( ).__setitem__( key, value )
 
     def clear( self ) -> __.typx.Never:
@@ -91,7 +91,7 @@ class ImmutableDictionary(
         ''' Provides fresh copy of dictionary. '''
         return type( self )( self )
 
-    def pop( # pylint: disable=unused-argument
+    def pop( # pyright: ignore
         self, key: _H, default: __.Absential[ _V ] = __.absent
     ) -> __.typx.Never:
         ''' Raises exception. Cannot pop immutable entry. '''
@@ -103,10 +103,10 @@ class ImmutableDictionary(
         from .exceptions import OperationInvalidity
         raise OperationInvalidity( 'popitem' )
 
-    def update( # type: ignore
-        self, # pylint: disable=unused-argument
-        *iterables: __.DictionaryPositionalArgument[ _H, _V ],
-        **entries: __.DictionaryNominativeArgument[ _V ],
+    def update( # pyright: ignore
+        self,
+        *iterables: _nomina.DictionaryPositionalArgument[ _H, _V ],
+        **entries: _nomina.DictionaryNominativeArgument[ _V ],
     ) -> None:
         ''' Raises exception. Cannot perform mass update. '''
         from .exceptions import OperationInvalidity

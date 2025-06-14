@@ -18,46 +18,27 @@
 #============================================================================#
 
 
-''' Assert correct function of installers. '''
+''' Assert correct function of nomina utilities. '''
 
-# ruff: noqa: F821
 
+import pytest
 
 from . import PACKAGE_NAME, cache_import_module
 
 
-MODULE_QNAME = f"{PACKAGE_NAME}.installers"
-
-
-def test_100_install_one_with_default( ):
-    ''' Install_one function adds one to builtins by default. '''
-    module = cache_import_module( MODULE_QNAME )
-    module.install( )
-    assert ( 42, ) == one( 42 )
-    import builtins
-    del builtins.one
-
-
-def test_101_install_one_with_name( ):
-    ''' Install_one function accepts custom name. '''
-    module = cache_import_module( MODULE_QNAME )
-    module.install( 'single' )
-    assert ( 42, ) == single( 42 )
-    import builtins
-    del builtins.single
-
-
-def test_102_install_one_skip( ):
-    ''' Install_one function accepts None to skip. '''
-    module = cache_import_module( MODULE_QNAME )
-    module.install( None )
-    import builtins
-    assert not hasattr( builtins, 'one' )
-
-
-def test_900_docstring_sanity( ):
-    ''' Function has valid docstring. '''
-    module = cache_import_module( MODULE_QNAME )
-    assert hasattr( module.install, '__doc__' )
-    assert isinstance( module.install.__doc__, str )
-    assert module.install.__doc__
+@pytest.mark.parametrize( 'name,expected', [
+    ( 'public_name', True ),
+    ( 'another_public', True ),
+    ( 'CamelCase', True ),
+    ( 'snake_case', True ),
+    ( 'single', True ),
+    ( '_private_name', False ),
+    ( '__dunder__', False ),
+    ( '__private', False ),
+    ( '_', False ),
+    ( '__class__', False ),
+])
+def test_100_is_public_identifier( name, expected ):
+    ''' Function correctly identifies public identifiers. '''
+    module = cache_import_module( f"{PACKAGE_NAME}.__.nomina" )
+    assert module.is_public_identifier( name ) is expected

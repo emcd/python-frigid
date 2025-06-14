@@ -18,7 +18,6 @@
 #============================================================================#
 
 
-# pylint: disable=line-too-long
 ''' Immutable dictionaries.
 
     Dictionaries which cannot be modified after creation.
@@ -57,22 +56,20 @@
     >>> d[ 'z' ] = 3  # Attempt to add entry
     Traceback (most recent call last):
         ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign or delete entry for 'z'.
+    frigid.exceptions.EntryImmutability: Cannot assign or delete entry for 'z'.
     >>> d[ 'x' ] = 4  # Attempt modification
     Traceback (most recent call last):
         ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign or delete entry for 'x'.
+    frigid.exceptions.EntryImmutability: Cannot assign or delete entry for 'x'.
     >>> del d[ 'y' ]  # Attempt removal
     Traceback (most recent call last):
         ...
-    frigid.exceptions.EntryImmutabilityError: Cannot assign or delete entry for 'y'.
+    frigid.exceptions.EntryImmutability: Cannot assign or delete entry for 'y'.
 '''
-# pylint: enable=line-too-long
 
 
 from . import __
 from . import classes as _classes
-from . import objects as _objects
 
 
 class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
@@ -98,12 +95,12 @@ class AbstractDictionary( __.cabc.Mapping[ __.H, __.V ] ):
         raise NotImplementedError  # pragma: no coverage
 
     def __setitem__( self, key: __.H, value: __.V ) -> None:
-        from .exceptions import EntryImmutabilityError
-        raise EntryImmutabilityError( key )
+        from .exceptions import EntryImmutability
+        raise EntryImmutability( key )
 
     def __delitem__( self, key: __.H ) -> None:
-        from .exceptions import EntryImmutabilityError
-        raise EntryImmutabilityError( key )
+        from .exceptions import EntryImmutability
+        raise EntryImmutability( key )
 
 
 class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
@@ -115,8 +112,8 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
         if not isinstance( other, __.cabc.Mapping ): return NotImplemented
         conflicts = set( self.keys( ) ) & set( other.keys( ) )
         if conflicts:
-            from .exceptions import EntryImmutabilityError
-            raise EntryImmutabilityError( next( iter( conflicts ) ) )
+            from .exceptions import EntryImmutability
+            raise EntryImmutability( next( iter( conflicts ) ) )
         data = dict( self )
         data.update( other )
         return self.with_data( data )
@@ -162,27 +159,23 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
         raise NotImplementedError # pragma: no coverage
 
 
-class _Dictionary(
-    __.ImmutableDictionary[ __.H, __.V ], metaclass = _classes.Class
-): pass
-
-
-class Dictionary( # pylint: disable=eq-without-hash
-    _objects.Object, _DictionaryOperations[ __.H, __.V ]
+class Dictionary(
+    _DictionaryOperations[ __.H, __.V ],
+    metaclass = _classes.AbstractBaseClass,
 ):
     ''' Immutable dictionary. '''
-    # TODO: version 2.0: Do not subclass from 'Object'.
 
     __slots__ = ( '_data_', )
 
-    _data_: _Dictionary[ __.H, __.V ]
+    _data_: __.ImmutableDictionary[ __.H, __.V ]
+    _dynadoc_fragments_ = ( 'dictionary entries protect', )
 
     def __init__(
         self,
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **entries: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
-        self._data_ = _Dictionary( *iterables, **entries )
+        self._data_ = __.ImmutableDictionary( *iterables, **entries )
         super( ).__init__( )
 
     def __iter__( self ) -> __.cabc.Iterator[ __.H ]:
@@ -193,7 +186,7 @@ class Dictionary( # pylint: disable=eq-without-hash
 
     def __repr__( self ) -> str:
         return "{fqname}( {contents} )".format(
-            fqname = __.calculate_fqname( self ),
+            fqname = __.ccutils.qualify_class_name( type( self ) ),
             contents = self._data_.__repr__( ) )
 
     def __str__( self ) -> str:
@@ -219,7 +212,7 @@ class Dictionary( # pylint: disable=eq-without-hash
         ''' Provides fresh copy of dictionary. '''
         return type( self )( self )
 
-    def get(
+    def get( # pyright: ignore
         self, key: __.H, default: __.Absential[ __.V ] = __.absent
     ) -> __.typx.Annotated[
         __.V,
@@ -229,7 +222,7 @@ class Dictionary( # pylint: disable=eq-without-hash
     ]:
         ''' Retrieves entry associated with key, if it exists. '''
         if __.is_absent( default ):
-            return self._data_.get( key )  # type: ignore
+            return self._data_.get( key ) # pyright: ignore
         return self._data_.get( key, default )
 
     def keys( self ) -> __.cabc.KeysView[ __.H ]:
@@ -251,15 +244,14 @@ class Dictionary( # pylint: disable=eq-without-hash
     ) -> __.typx.Self:
         return type( self )( *iterables, **entries )
 
-Dictionary.__doc__ = __.generate_docstring(
-    Dictionary, 'dictionary entries immutability' )
-
 
 class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
     ''' Immutable dictionary with validation of entries on initialization. '''
 
     __slots__ = ( '_validator_', )
 
+    _dynadoc_fragments_ = (
+        'dictionary entries protect', 'dictionary entries validate' )
     _validator_: __.DictionaryValidator[ __.H, __.V ]
 
     def __init__(
@@ -274,23 +266,23 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
         from itertools import chain
         # Collect entries in case an iterable is a generator
         # which would be consumed during validation, before initialization.
-        for key, value in chain.from_iterable( map( # type: ignore
-            lambda element: ( # type: ignore
+        for key, value in chain.from_iterable( map( # pyright: ignore
+            lambda element: ( # pyright: ignore
                 element.items( )
                 if isinstance( element, __.cabc.Mapping )
                 else element
             ),
             ( *iterables, entries )
         ) ):
-            if not self._validator_( key, value ): # type: ignore
-                from .exceptions import EntryValidityError
-                raise EntryValidityError( key, value )
-            entries_.append( ( key, value ) ) # type: ignore
+            if not self._validator_( key, value ): # pyright: ignore
+                from .exceptions import EntryInvalidity
+                raise EntryInvalidity( key, value )
+            entries_.append( ( key, value ) ) # pyright: ignore
         super( ).__init__( entries_ )
 
     def __repr__( self ) -> str:
         return "{fqname}( {validator}, {contents} )".format(
-            fqname = __.calculate_fqname( self ),
+            fqname = __.ccutils.qualify_class_name( type( self ) ),
             validator = self._validator_.__repr__( ),
             contents = self._data_.__repr__( ) )
 
@@ -305,9 +297,3 @@ class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
     ) -> __.typx.Self:
         ''' Creates new dictionary with same behavior but different data. '''
         return type( self )( self._validator_, *iterables, **entries )
-
-ValidatorDictionary.__doc__ = __.generate_docstring(
-    ValidatorDictionary,
-    'dictionary entries immutability',
-    'dictionary entries validation',
-)

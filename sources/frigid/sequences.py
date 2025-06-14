@@ -21,15 +21,10 @@
 ''' Immutable sequences. '''
 
 
-from __future__ import annotations
-
 from . import __
 
 
-_V = __.typx.TypeVar( '_V' )
-
-
-def one( value: _V ) -> tuple[ _V, ... ]:
+def one( value: __.V ) -> tuple[ __.V, ... ]:
     ''' Produces single-item tuple from value.
 
         Provides a more explicit and readable alternative to the comma-syntax
@@ -40,4 +35,4 @@ def one( value: _V ) -> tuple[ _V, ... ]:
         * List comprehensions and generator expressions
         * Situations where formatter behavior with trailing commas is undesired
     '''
-    return value, # pylint: disable=trailing-comma-tuple
+    return value,
