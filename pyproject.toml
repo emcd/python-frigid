@@ -98,9 +98,7 @@ description = ''' Development environment. '''
 dependencies = [
   'Jinja2',
   'coverage[toml]',
-  'emcd-projects',
   'furo',
-  'icecream',
   'packaging',
   'pre-commit',
   'pyright',
