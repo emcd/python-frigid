@@ -21,8 +21,36 @@
 Release Notes
 *******************************************************************************
 
-
 .. towncrier release notes start
+
+Frigid 4.0 (2025-06-14)
+=======================
+
+Enhancements
+------------
+
+- Add concealment of non-public attributes to standard behaviors of classes and
+  objects.
+- Documentation: Add comprehensive examples for classes and update all examples
+  for the new architecture.
+
+
+Removals
+--------
+
+- Exceptions: Rename exception classes for better consistency.
+
+  * ``AttributeImmutabilityError`` is now ``AttributeImmutability``
+  * ``EntryImmutabilityError`` is now ``EntryImmutability``
+  * ``EntryValidityError`` is now ``EntryInvalidity``
+
+  This is a breaking change - the old exception names are no longer available.
+- Merge ``dataclasses`` and ``objects`` modules into ``classes`` module.
+  Remove ``qaliases`` module.
+- Replace ``@immutable`` decorator with ``@with_standard_behaviors``.
+  Replace ``@immutable_dataclass`` decorator with
+  ``@dataclass_with_standard_behaviors``.
+
 
 Frigid 3.0 (2025-03-04)
 =======================
