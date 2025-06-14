@@ -26,14 +26,11 @@ from . import nomina as _nomina
 
 
 class Omniexception(
-    BaseException, __.ccstd.Object,
+    __.ccstd.Object, BaseException,
     instances_visibles = (
         '__cause__', '__context__', _nomina.is_public_identifier ),
 ):
     ''' Base for all exceptions raised internally. '''
-
-    _attribute_visibility_includes_: __.cabc.Collection[ str ] = (
-        frozenset( ( '__cause__', '__context__', ) ) )
 
 
 class Omnierror( Omniexception, Exception ):

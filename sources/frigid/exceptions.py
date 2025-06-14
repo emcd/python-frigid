@@ -31,7 +31,7 @@ from . import classes as _classes
 
 
 class Omniexception(
-    BaseException, _classes.Object,
+    _classes.Object, BaseException,
     instances_visibles = (
         '__cause__', '__context__', _classes.is_public_identifier ),
 ):
