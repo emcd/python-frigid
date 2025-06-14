@@ -40,7 +40,7 @@ from .sequences import *
 
 
 __version__: __.typx.Annotated[ str, __.ddoc.Visibilities.Reveal ]
-__version__ = '4.0rc0'
+__version__ = '4.0'
 
 
 __.ccstd.dynadoc.assign_module_docstring(
