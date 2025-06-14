@@ -72,6 +72,12 @@ fragments: __.cabc.Mapping[ str, str ] = __.types.MappingProxyType( {
 
     'class dynadoc': ''' Is decorated by Dynadoc. ''',
 
+    'dictionary entries protect':
+    ''' Protects dictionary entries on initialization. ''',
+
+    'dictionary entries validate':
+    ''' Validates dictionary entries on initialization. ''',
+
     'module':
     ''' Python module class, derived from :py:class:`types.ModuleType`. ''',
 
@@ -83,15 +89,5 @@ fragments: __.cabc.Mapping[ str, str ] = __.types.MappingProxyType( {
 
     'namespace':
     ''' Namespace object, modeled after :py:class:`types.SimpleNamespace. ''',
-
-    'dictionary entries immutability': '''
-Prevents addition, alteration, or removal of dictionary entries after creation.
-''',
-
-    'dictionary entries validation': '''
-When an attempt to create a dictionary with entries, each entry is validated
-against supplied criteria. If validation fails for any entry, then the
-dictionary creation is rejected.
-''',
 
 } )

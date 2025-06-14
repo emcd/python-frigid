@@ -26,8 +26,6 @@
 from classcore.standard.nomina import (
                             AttributesNamer,
                             BehaviorExclusionVerifiersOmni,
-    Decorator as            ClassDecorator,
-    Decorators as           ClassDecorators,
     DecorationPreparers as  ClassDecorationPreparers,
                             DynadocConfiguration,
                             concealment_label,
@@ -47,8 +45,15 @@ ComparisonResult: __.typx.TypeAlias = bool | __.types.NotImplementedType
 NominativeArguments: __.typx.TypeAlias = __.cabc.Mapping[ str, __.typx.Any ]
 PositionalArguments: __.typx.TypeAlias = __.cabc.Sequence[ __.typx.Any ]
 
+# TODO: Import ClassDecorator aliases from 'classcore' once documentation
+#       fragments have been removed from them.
+ClassDecorator: __.typx.TypeAlias = (
+    __.cabc.Callable[ [ type[ U ] ], type[ U ] ] )
+ClassDecorators: __.typx.TypeAlias = (
+    __.cabc.Sequence[ ClassDecorator[ U ] ] )
 ClassDecoratorFactory: __.typx.TypeAlias = (
     __.cabc.Callable[ ..., ClassDecorator[ U ] ] )
+
 DictionaryNominativeArgument: __.typx.TypeAlias = __.typx.Annotated[
     V,
     __.ddoc.Doc(

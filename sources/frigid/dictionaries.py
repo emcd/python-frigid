@@ -163,12 +163,12 @@ class Dictionary(
     _DictionaryOperations[ __.H, __.V ],
     metaclass = _classes.AbstractBaseClass,
 ):
-    # TODO: Dynadoc fragments.
     ''' Immutable dictionary. '''
 
     __slots__ = ( '_data_', )
 
     _data_: __.ImmutableDictionary[ __.H, __.V ]
+    _dynadoc_fragments_ = ( 'dictionary entries protect', )
 
     def __init__(
         self,
@@ -246,11 +246,12 @@ class Dictionary(
 
 
 class ValidatorDictionary( Dictionary[ __.H, __.V ] ):
-    # TODO: Dynadoc fragments.
     ''' Immutable dictionary with validation of entries on initialization. '''
 
     __slots__ = ( '_validator_', )
 
+    _dynadoc_fragments_ = (
+        'dictionary entries protect', 'dictionary entries validate' )
     _validator_: __.DictionaryValidator[ __.H, __.V ]
 
     def __init__(

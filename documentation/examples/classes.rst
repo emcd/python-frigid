@@ -25,9 +25,9 @@ Classes
 Introduction
 ===============================================================================
 
-The ``frigid`` package provides base classes, decorators, and class
-factories (metaclasses) to imbue classes, and the instances which they produce,
-with attributes concealment and immutability.
+The package provides base classes, decorators, and class factories
+(metaclasses) to imbue classes, and the instances which they produce, with
+attributes concealment and immutability.
 
 .. doctest:: Classes
 
@@ -113,7 +113,7 @@ class attributes:
 
 .. doctest:: Classes
 
-    >>> @frigid.with_standard_behaviors( )
+    >>> @frigid.with_standard_behaviors
     ... class Point2d:
     ...     def __init__( self, x: float, y: float ) -> None:
     ...         self.x = x
@@ -142,6 +142,63 @@ Thus, if you do not desire class attributes concealment and immutability, you
 can choose to decorate classes rather than produce them.
 
 
+Dataclasses
+===============================================================================
+
+The package also provides base classes, decorators, and class factories
+(metaclasses) to imbue :py:mod:`dataclasses`, and the instances which they
+produce, with attributes concealment and immutability.
+
+.. doctest:: Classes
+
+    >>> import frigid
+    >>> import dataclasses
+
+Inheriting from a standard base:
+
+.. doctest:: Classes
+
+    >>> class Point2d( frigid.DataclassObject ):
+    ...     x: float
+    ...     y: float
+    ...
+    >>> point = Point2d( x = 3, y = 4 )
+    >>> dataclasses.is_dataclass( Point2d )
+    True
+    >>> type( Point2d )
+    <class 'frigid.classes.Dataclass'>
+
+is essentially equivalent to producing a new class with a standard metaclass:
+
+.. doctest:: Classes
+
+    >>> class Point2d( metaclass = frigid.Dataclass ):
+    ...     x: float
+    ...     y: float
+    ...
+    >>> point = Point2d( x = 5, y = 12 )
+    >>> dataclasses.is_dataclass( Point2d )
+    True
+
+As can be seen above, dataclasses are produced without the need to explicitly
+decorate with the :py:func:`dataclasses.dataclass` decorator. And, speaking of
+decorators, one is provided which transforms a class into a dataclass with the
+standard behaviors (attributes concealment and immutability) of the package:
+
+.. doctest:: Classes
+
+    >>> @frigid.dataclass_with_standard_behaviors
+    ... class Point2d:
+    ...     x: float
+    ...     y: float
+    ...
+    >>> point = Point2d( x = 8, y = 15 )
+    >>> dataclasses.is_dataclass( Point2d )
+    True
+    >>> type( Point2d )
+    <class 'type'>
+
+
 Mutable Instances
 ===============================================================================
 
@@ -156,6 +213,51 @@ attributes, there is a convenience class, ``ObjectMutable``.
     ...         self.y = y
     ...
     >>> point = Point2d( 7, 24 )
+    >>> point.x, point.y = 20, 21
+    >>> point.x, point.y
+    (20, 21)
+
+Similarly, there is a convenience dataclass, ``DataclassObjectMutable``.
+
+.. doctest:: Classes
+
+    >>> class Point2d( frigid.DataclassObjectMutable ):
+    ...     x: float
+    ...     y: float
+    ...
+    >>> dataclasses.is_dataclass( Point2d )
+    True
+    >>> point = Point2d( x = 7, y = 24 )
+    >>> point.x, point.y = 20, 21
+    >>> point.x, point.y
+    (20, 21)
+
+The ``with_standard_behaviors`` decorator can also provide mutability by
+supplying the ``mutables`` argument as a wildcard:
+
+.. doctest:: Classes
+
+    >>> @frigid.with_standard_behaviors( mutables = '*' )
+    ... class Point2d:
+    ...     def __init__( self, x: float, y: float ) -> None:
+    ...         self.x = x
+    ...         self.y = y
+    ...
+    >>> point = Point2d( 7, 24 )
+    >>> point.x, point.y = 20, 21
+    >>> point.x, point.y
+    (20, 21)
+
+Likewise for the ``dataclass_with_standard_behaviors`` decorator:
+
+.. doctest:: Classes
+
+    >>> @frigid.dataclass_with_standard_behaviors( mutables = '*' )
+    ... class Point2d:
+    ...     x: float
+    ...     y: float
+    ...
+    >>> point = Point2d( x = 7, y = 24 )
     >>> point.x, point.y = 20, 21
     >>> point.x, point.y
     (20, 21)
