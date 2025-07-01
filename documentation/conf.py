@@ -83,6 +83,7 @@ nitpick_ignore = [
     ( 'py:class', "absence.objects.AbsentSingleton" ),
     ( 'py:class', "builtins.NotImplementedType" ),
     ( 'py:class', "classcore.standard.classes.Object" ),
+    ( 'py:class', "dynadoc.context.IntrospectionControl" ),
     ( 'py:class', "frigid.__.dictionaries._H" ),
     ( 'py:class', "frigid.__.dictionaries._V" ),
     ( 'py:class', "frigid.__.dictionaries.Annotated" ),

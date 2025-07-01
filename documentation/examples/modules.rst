@@ -17,81 +17,191 @@
    +--------------------------------------------------------------------------+
 
 
-Modules
+*******************************************************************************
+Frigid Modules
+*******************************************************************************
+
+
+Introduction
 ===============================================================================
 
-Module Objects
+The ``frigid.modules`` submodule provides functionality to enhance Python
+modules with immutability and concealment, with optional automatic
+documentation generation. This is particularly useful for package authors who
+want to prevent accidental modification of their module's public API while
+providing rich documentation.
+
+The module provides two main approaches:
+
+1. **Module finalization** - combines documentation generation with
+   reclassification in a single convenient function (recommended)
+2. **Module reclassification** - converts standard modules to have immutable
+   and concealed attributes (deprecated)
+
+
+Module Finalization with Documentation
+===============================================================================
+
+The ``finalize_module`` function provides a convenient way to combine automatic
+documentation generation (via Dynadoc integration) with module reclassification.
+This is the recommended approach for most packages.
+
+Basic Usage
 -------------------------------------------------------------------------------
-
-Immutable modules prevent any modification of attributes after creation. This
-makes them useful for ensuring that module-level constants remain constant and
-that module interfaces remain stable during runtime.
-
-.. doctest:: Modules
-
-    >>> from frigid import Module
-
-Creation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-While modules are typically initialized during import of their sources, they
-may also be created dynamically. As with standard Python modules, a name is
-required when dynamically creating a module.
-
-.. doctest:: Modules
-
-    >>> constants = Module( 'constants' )
-    >>> constants
-    <module 'constants'>
-
-Immutability
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Once created, a module becomes completely immutable. Even built-in attributes
-cannot be modified:
-
-.. doctest:: Modules
-
-    >>> constants.__name__ = 'renamed'
-    Traceback (most recent call last):
-    ...
-    frigid.exceptions.AttributeImmutability: Could not assign or delete attribute '__name__' on instance of class ...
-
-Attributes cannot be deleted:
-
-.. doctest:: Modules
-
-    >>> del constants.__name__
-    Traceback (most recent call last):
-    ...
-    frigid.exceptions.AttributeImmutability: Could not assign or delete attribute '__name__' on instance of class ...
-
-And new attributes cannot be added:
-
-.. doctest:: Modules
-
-    >>> constants.PI = 3.14159
-    Traceback (most recent call last):
-    ...
-    frigid.exceptions.AttributeImmutability: Could not assign or delete attribute 'PI' on instance of class ...
-
-Mass Reclassification
--------------------------------------------------------------------------------
-
-For cases where multiple modules need to be protected, the
-``reclassify_modules`` function can convert all modules in a package to
-immutable modules. This is particularly useful in package ``__init__.py`` files
-to protect all submodules:
 
 .. code-block:: python
 
-    from frigid import reclassify_modules
-    reclassify_modules( __name__ )
+    # mypackage/__init__.py
+    import frigid
 
-.. warning::
+    from . import core
+    from . import utils
+    from . import exceptions
 
-    While immutable modules prevent direct attribute modification, they cannot
-    prevent all forms of tampering. In particular, direct manipulation of a
-    module's ``__dict__`` is still possible. Use immutable modules to prevent
-    accidental modifications and basic tampering attempts, but do not rely on
-    them for security-critical protections.
+    # Finalize the module with documentation and reclassification
+    frigid.finalize_module( __name__, recursive = True )
+
+The ``finalize_module`` function will:
+
+1. Generate comprehensive documentation for the module and its members using
+   Dynadoc introspection
+2. Apply any documentation fragments you provide
+3. Reclassify the module and its submodules for immutability and concealment
+
+Advanced Configuration
+-------------------------------------------------------------------------------
+
+For complex packages, you might want to configure different parts differently:
+
+.. code-block:: python
+
+    # mypackage/__init__.py
+    import frigid
+
+    # Configure main package with full documentation
+    frigid.finalize_module(
+        __name__,
+        recursive = False  # Handle submodules individually
+    )
+
+    # Configure submodules with different settings
+    frigid.finalize_module(
+        f"{__name__}.core",
+        recursive = True
+    )
+
+    frigid.finalize_module(
+        f"{__name__}.utils",
+        recursive = True
+    )
+
+This approach allows you to provide different documentation and
+introspection settings for different parts of your package.
+
+
+Best Practices
+===============================================================================
+
+Package-Level Application
+-------------------------------------------------------------------------------
+
+For most packages, apply ``finalize_module`` at the package level in your
+``__init__.py`` file:
+
+.. code-block:: python
+
+    # mypackage/__init__.py
+    import frigid
+
+    # Package metadata
+    __version__ = '1.0.0'
+
+    # Import public API
+    from .core import PublicClass, public_function
+    from .utils import helper_function
+
+    # Finalize the entire package
+    frigid.finalize_module( __name__, recursive = True )
+
+This pattern ensures that:
+
+- Your package's public API is documented
+- All modules in the package are immutable and concealed
+- The entire package hierarchy is protected from accidental modification
+
+The ``recursive = True`` parameter provides the same mass reclassification
+behavior as the deprecated ``reclassify_modules`` function, but with the
+added benefit of automatic documentation generation.
+
+Error Handling
+-------------------------------------------------------------------------------
+
+When using module finalization, be aware that the resulting modules will raise
+``AttributeImmutability`` exceptions if code attempts to modify them:
+
+.. code-block:: python
+
+    import frigid.exceptions
+
+    # After finalization, this will raise an exception
+    try:
+        mypackage.core.some_function = lambda: "modified"
+    except frigid.exceptions.AttributeImmutability as e:
+        print( f"Cannot modify module: {e}" )
+
+Design your package APIs to avoid dynamic modification after finalization.
+If you need dynamic behavior, consider using configuration objects or factory
+functions instead of direct module attribute modification.
+
+
+Integration with Build Systems
+===============================================================================
+
+Module finalization integrates well with modern Python build systems. The
+immutability ensures that your package's API surface is clearly defined and
+cannot be accidentally modified at runtime.
+
+For packages that use entry points or plugin systems, apply finalization after
+all dynamic setup is complete:
+
+.. code-block:: python
+
+    # mypackage/__init__.py
+    import frigid
+
+    # Dynamic setup (plugin registration, etc.)
+    _setup_plugins()
+    _register_entry_points()
+
+    # Final API definition
+    from .api import *
+
+    # Lock down the package
+    frigid.finalize_module( __name__, recursive = True )
+
+This ensures that your package initialization is complete before the
+immutability protections are applied.
+
+
+Module Reclassification (Deprecated)
+===============================================================================
+
+.. deprecated::
+   The ``reclassify_modules`` function is deprecated. Use ``finalize_module``
+   with ``recursive = True`` instead, which provides the same functionality
+   along with automatic documentation generation.
+
+The ``reclassify_modules`` function converts modules to use a custom module
+class that provides immutability and concealment behaviors. For new code,
+use ``finalize_module`` instead:
+
+.. code-block:: python
+
+    # Deprecated approach
+    # frigid.reclassify_modules( __name__, recursive = True )
+
+    # Recommended approach
+    frigid.finalize_module( __name__, recursive = True )
+
+The ``finalize_module`` function provides the same module protection behaviors
+while also generating comprehensive documentation for your modules.
