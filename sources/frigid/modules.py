@@ -53,7 +53,7 @@ ReclassifyModulesRecursiveArgument: __.typx.TypeAlias = __.typx.Annotated[
 
 
 class Module( _classes.Object, __.types.ModuleType ):
-    ''' Module class. '''
+    ''' Immutable module. '''
 
     _dynadoc_fragments_ = ( 'module', 'module conceal', 'module protect' )
 

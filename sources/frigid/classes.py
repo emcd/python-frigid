@@ -97,7 +97,7 @@ class Dataclass( type ):
 @_class_factory( )
 @__.typx.dataclass_transform( kw_only_default = True )
 class DataclassMutable( type ):
-    ''' Metaclass for dataclasses with mutable instance attributes. '''
+    ''' Metaclass for dataclasses with mutable instances. '''
 
     _dynadoc_fragments_ = (
         'cfc produce dataclass',
@@ -179,7 +179,7 @@ class ProtocolDataclass( type( __.typx.Protocol ) ):
 @_class_factory( )
 @__.typx.dataclass_transform( kw_only_default = True )
 class ProtocolDataclassMutable( type( __.typx.Protocol ) ):
-    ''' Metaclass for protocol dataclasses with mutable instance attributes.
+    ''' Metaclass for protocol dataclasses with mutable instances.
     '''
 
     _dynadoc_fragments_ = (
