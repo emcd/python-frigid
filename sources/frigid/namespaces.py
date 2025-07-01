@@ -48,7 +48,7 @@ from . import __
 from . import classes as _classes
 
 
-class Namespace( metaclass = _classes.Class ):
+class Namespace( metaclass = _classes.Class ): # noqa: PLW1641
     # TODO: Dynadoc fragments.
     ''' Immutable namespaces. '''
 

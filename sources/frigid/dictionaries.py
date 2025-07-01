@@ -159,7 +159,7 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
         raise NotImplementedError # pragma: no coverage
 
 
-class Dictionary(
+class Dictionary( # noqa: PLW1641
     _DictionaryOperations[ __.H, __.V ],
     metaclass = _classes.AbstractBaseClass,
 ):

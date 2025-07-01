@@ -20,8 +20,6 @@
 
 ''' Internal dictionary. '''
 
-# ruff: noqa: F401
-
 
 # TODO: Consider a dictionary factory to allow 'mutables' closure
 #       to be referenced in the '__setitem__' and '__delitem__' methods.
