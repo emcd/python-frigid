@@ -20,8 +20,6 @@
 
 ''' Assert correct function of internal dictionaries. '''
 
-# ruff: noqa: E711,E712
-
 
 import pytest
 

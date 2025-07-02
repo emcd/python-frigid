@@ -223,6 +223,97 @@ def test_505_module_reclassification_requires_package(
     'module_qname, class_name',
     product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
 )
+def test_600_finalize_module_with_defaults( module_qname, class_name ):
+    ''' finalize_module works with default absent values. '''
+    module = cache_import_module( module_qname )
+    Module = getattr( module, class_name )
+    from types import ModuleType
+    test_module = ModuleType( f"{PACKAGE_NAME}.test_finalize" )
+    test_module.__package__ = PACKAGE_NAME
+    assert not isinstance( test_module, Module )
+    # This should use absent defaults for both dynadoc parameters
+    module.finalize_module( test_module )
+    assert isinstance( test_module, Module )
+    with pytest.raises( exceptions.AttributeImmutability ):
+        test_module.new_attr = 42
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_601_finalize_module_with_dynadoc_table( module_qname, class_name ):
+    ''' finalize_module works with explicit dynadoc_table. '''
+    module = cache_import_module( module_qname )
+    Module = getattr( module, class_name )
+    from types import ModuleType
+    test_module = ModuleType( f"{PACKAGE_NAME}.test_finalize_table" )
+    test_module.__package__ = PACKAGE_NAME
+    assert not isinstance( test_module, Module )
+    # This should exercise the dynadoc_table conditional branch
+    fragments_table = { 'version': '1.0.0', 'description': 'Test module' }
+    module.finalize_module( test_module, dynadoc_table = fragments_table )
+    assert isinstance( test_module, Module )
+    with pytest.raises( exceptions.AttributeImmutability ):
+        test_module.new_attr = 42
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_602_finalize_module_with_dynadoc_introspection(
+    module_qname, class_name
+):
+    ''' finalize_module works with explicit dynadoc_introspection. '''
+    module = cache_import_module( module_qname )
+    Module = getattr( module, class_name )
+    from types import ModuleType
+    test_module = ModuleType( f"{PACKAGE_NAME}.test_finalize_introspection" )
+    test_module.__package__ = PACKAGE_NAME
+    assert not isinstance( test_module, Module )
+    # This should exercise the dynadoc_introspection conditional branch
+    introspection_control = base.dynadoc_introspection_control_on_class
+    module.finalize_module( 
+        test_module, 
+        dynadoc_introspection = introspection_control 
+    )
+    assert isinstance( test_module, Module )
+    with pytest.raises( exceptions.AttributeImmutability ):
+        test_module.new_attr = 42
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
+def test_603_finalize_module_with_both_dynadoc_params(
+    module_qname, class_name
+):
+    ''' finalize_module works with both dynadoc parameters provided. '''
+    module = cache_import_module( module_qname )
+    Module = getattr( module, class_name )
+    from types import ModuleType
+    test_module = ModuleType( f"{PACKAGE_NAME}.test_finalize_both" )
+    test_module.__package__ = PACKAGE_NAME
+    assert not isinstance( test_module, Module )
+    # This should exercise both conditional branches
+    introspection_control = base.dynadoc_introspection_control_on_class
+    fragments_table = { 'version': '1.0.0', 'description': 'Test module' }
+    module.finalize_module( 
+        test_module, 
+        dynadoc_introspection = introspection_control,
+        dynadoc_table = fragments_table
+    )
+    assert isinstance( test_module, Module )
+    with pytest.raises( exceptions.AttributeImmutability ):
+        test_module.new_attr = 42
+
+
+@pytest.mark.parametrize(
+    'module_qname, class_name',
+    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
+)
 def test_900_docstring_sanity( module_qname, class_name ):
     ''' Class has valid docstring. '''
     module = cache_import_module( module_qname )

@@ -53,6 +53,8 @@ ClassDecorators: __.typx.TypeAlias = (
     __.cabc.Sequence[ ClassDecorator[ U ] ] )
 ClassDecoratorFactory: __.typx.TypeAlias = (
     __.cabc.Callable[ ..., ClassDecorator[ U ] ] )
+ModuleReclassifier: __.typx.TypeAlias = __.cabc.Callable[
+    [ __.cabc.Mapping[ str, __.typx.Any ] ], None ]
 
 DictionaryNominativeArgument: __.typx.TypeAlias = __.typx.Annotated[
     V,
@@ -72,8 +74,6 @@ DictionaryValidator: __.typx.TypeAlias = __.typx.Annotated[
     __.ddoc.Doc(
         'Callable which validates entries before addition to dictionary.' ),
 ]
-ModuleReclassifier: __.typx.TypeAlias = __.cabc.Callable[
-    [ __.cabc.Mapping[ str, __.typx.Any ] ], None ]
 
 
 package_name = __name__.split( '.', maxsplit = 1 )[ 0 ]
@@ -83,6 +83,7 @@ def calculate_attrname( level: str, core: str ) -> str:
     return f"_{package_name}_{level}_{core}_"
 
 
+# TODO: Import 'is_public_identifier' from 'classcore'.
 def is_public_identifier( name: str ) -> bool:
     ''' Is Python identifier public? '''
     return not name.startswith( '_' )

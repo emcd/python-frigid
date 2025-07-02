@@ -10,8 +10,6 @@
         https://jareddillard.com/blog/common-ways-to-customize-sphinx-themes.html
 '''
 
-# ruff: noqa: E402,F401
-
 
 def _calculate_copyright_notice( ):
     from datetime import datetime as DateTime, timezone as TimeZone
@@ -85,6 +83,7 @@ nitpick_ignore = [
     ( 'py:class', "absence.objects.AbsentSingleton" ),
     ( 'py:class', "builtins.NotImplementedType" ),
     ( 'py:class', "classcore.standard.classes.Object" ),
+    ( 'py:class', "dynadoc.context.IntrospectionControl" ),
     ( 'py:class', "frigid.__.dictionaries._H" ),
     ( 'py:class', "frigid.__.dictionaries._V" ),
     ( 'py:class', "frigid.__.dictionaries.Annotated" ),

@@ -23,6 +23,21 @@ Release Notes
 
 .. towncrier release notes start
 
+Frigid 4.1 (2025-07-02)
+=======================
+
+Enhancements
+------------
+
+- Add ``finalize_module`` function that combines Dynadoc docstring assignment and module reclassification.
+
+
+Notices
+-------
+
+- Deprecate ``reclassify_modules`` function. Use ``finalize_module`` instead.
+
+
 Frigid 4.0 (2025-06-14)
 =======================
 

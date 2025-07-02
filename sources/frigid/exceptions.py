@@ -53,7 +53,7 @@ class EntryImmutability( Omnierror, TypeError ):
 
     def __init__( self, key: __.cabc.Hashable ) -> None:
         super( ).__init__(
-            f"Cannot add, alter, or remove entry for {key!r}." )
+            f"Could not add, alter, or remove entry for {key!r}." )
 
 
 class EntryInvalidity( Omnierror, ValueError ):
@@ -62,11 +62,11 @@ class EntryInvalidity( Omnierror, ValueError ):
         self, indicator: __.cabc.Hashable, value: __.typx.Any
     ) -> None:
         super( ).__init__(
-            f"Cannot add invalid entry with key, {indicator!r}, "
+            f"Could not add invalid entry with key, {indicator!r}, "
             f"and value, {value!r}, to dictionary." )
 
 
-class ErrorProvideFailure( RuntimeError, Omnierror ):
+class ErrorProvideFailure( Omnierror, RuntimeError ):
 
     def __init__( self, name: str, reason: str ):
         super( ).__init__(

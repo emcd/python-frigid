@@ -21,8 +21,6 @@
 ''' Convenience to expose certain package features as Python builtins. '''
 
 
-from __future__ import annotations
-
 from . import __
 
 
