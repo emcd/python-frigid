@@ -75,6 +75,18 @@ Key Features ⭐
 Installation 📦
 ===============================================================================
 
+Method: Install Python Package
+-------------------------------------------------------------------------------
+
+Install via `uv <https://github.com/astral-sh/uv/blob/main/README.md>`_ ``pip``
+command:
+
+::
+
+    uv pip install frigid
+
+Or, install via ``pip``:
+
 ::
 
     pip install frigid
@@ -171,6 +183,23 @@ Use Cases 🎯
   like numbers or strings.
 * 🧱 **Immutable Collections**: Many scenarios requiring collections with
   complete immutability guarantees.
+
+
+Contribution 🤝
+===============================================================================
+
+Contribution to this project is welcome! However, it must follow the `code of
+conduct
+<https://emcd.github.io/python-project-common/stable/sphinx-html/common/conduct.html>`_
+for the project.
+
+Please file bug reports and feature requests in the `issue tracker
+<https://github.com/emcd/python-frigid/issues>`_ or submit `pull
+requests <https://github.com/emcd/python-frigid/pulls>`_ to
+improve the source code or documentation.
+
+For development guidance and standards, please see the `development guide
+<https://emcd.github.io/python-frigid/stable/sphinx-html/contribution.html#development>`_.
 
 
 `More Flair <https://www.imdb.com/title/tt0151804/characters/nm0431918>`_
