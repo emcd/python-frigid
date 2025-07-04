@@ -44,9 +44,7 @@ def _provide_error_class( name: str ) -> type[ Exception ]:
 
 _dataclass_core = __.dcls.dataclass( kw_only = True, slots = True )
 _dynadoc_configuration = (
-    __.ccstd.dynadoc.produce_dynadoc_configuration(
-        introspection = __.dynadoc_introspection_control_on_class,
-        table = __.fragments ) )
+    __.ccstd.dynadoc.produce_dynadoc_configuration( table = __.fragments ) )
 _class_factory = __.funct.partial(
     __.ccstd.class_factory,
     attributes_namer = __.calculate_attrname,

@@ -273,7 +273,13 @@ def test_602_finalize_module_with_dynadoc_introspection(
     test_module.__package__ = PACKAGE_NAME
     assert not isinstance( test_module, Module )
     # This should exercise the dynadoc_introspection conditional branch
-    introspection_control = base.dynadoc_introspection_control_on_class
+    # Create a simple introspection control for testing
+    import dynadoc.context as ddoc_context
+    class_control = ddoc_context.ClassIntrospectionControl(
+        inheritance = True )
+    introspection_control = ddoc_context.IntrospectionControl( 
+        class_control = class_control 
+    )
     module.finalize_module( 
         test_module, 
         dynadoc_introspection = introspection_control 
@@ -298,7 +304,13 @@ def test_603_finalize_module_with_both_dynadoc_params(
     test_module.__package__ = PACKAGE_NAME
     assert not isinstance( test_module, Module )
     # This should exercise both conditional branches
-    introspection_control = base.dynadoc_introspection_control_on_class
+    # Create a simple introspection control for testing
+    import dynadoc.context as ddoc_context
+    class_control = ddoc_context.ClassIntrospectionControl(
+        inheritance = True )
+    introspection_control = ddoc_context.IntrospectionControl( 
+        class_control = class_control 
+    )
     fragments_table = { 'version': '1.0.0', 'description': 'Test module' }
     module.finalize_module( 
         test_module, 

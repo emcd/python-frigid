@@ -25,11 +25,3 @@ from .dictionaries import *
 from .doctab import *
 from .imports import *
 from .nomina import *
-
-
-dynadoc_introspection_limiter = (
-    ccstd.dynadoc.produce_dynadoc_introspection_limiter(
-        attributes_namer = calculate_attrname ) )
-dynadoc_introspection_control_on_class = (
-    ccstd.dynadoc.produce_dynadoc_introspection_control(
-        limiters = ( dynadoc_introspection_limiter, ) ) )
