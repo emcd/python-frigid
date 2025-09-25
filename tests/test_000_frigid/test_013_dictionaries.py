@@ -21,12 +21,11 @@
 ''' Assert correct function of internal dictionaries. '''
 
 
-import pytest
-
 from types import MappingProxyType as DictionaryProxy
 
-from . import PACKAGE_NAME, cache_import_module
+import pytest
 
+from .__ import PACKAGE_NAME, cache_import_module
 
 MODULE_QNAME = f"{PACKAGE_NAME}.__"
 

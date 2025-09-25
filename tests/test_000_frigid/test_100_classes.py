@@ -23,7 +23,7 @@
 
 import pytest
 
-from . import PACKAGE_NAME, cache_import_module
+from .__ import PACKAGE_NAME, cache_import_module
 
 
 def test_100_provide_error_class_failure():

@@ -23,7 +23,7 @@
 # ruff: noqa: F821
 
 
-from . import PACKAGE_NAME, cache_import_module
+from .__ import PACKAGE_NAME, cache_import_module
 
 
 MODULE_QNAME = f"{PACKAGE_NAME}.installers"
