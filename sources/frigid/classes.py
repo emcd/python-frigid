@@ -26,6 +26,12 @@
 from . import __
 
 
+abc_class_mutables = (
+    '_abc_cache',
+    '_abc_negative_cache',
+    '_abc_negative_cache_version',
+    '_abc_registry',
+)
 is_public_identifier = __.is_public_identifier
 mutables_default = ( )
 visibles_default = ( is_public_identifier, )
@@ -44,9 +50,7 @@ def _provide_error_class( name: str ) -> type[ Exception ]:
 
 _dataclass_core = __.dcls.dataclass( kw_only = True, slots = True )
 _dynadoc_configuration = (
-    __.ccstd.dynadoc.produce_dynadoc_configuration(
-        introspection = __.dynadoc_introspection_control_on_class,
-        table = __.fragments ) )
+    __.ccstd.dynadoc.produce_dynadoc_configuration( table = __.fragments ) )
 _class_factory = __.funct.partial(
     __.ccstd.class_factory,
     attributes_namer = __.calculate_attrname,
@@ -232,7 +236,11 @@ class DataclassObjectMutable( metaclass = DataclassMutable ):
         'class instance conceal' )
 
 
-class Protocol( __.typx.Protocol, metaclass = ProtocolClass ):
+class Protocol(
+    __.typx.Protocol,
+    metaclass = ProtocolClass,
+    class_mutables = abc_class_mutables,
+):
     ''' Standard base protocol class. '''
 
     _dynadoc_fragments_ = (
@@ -242,7 +250,10 @@ class Protocol( __.typx.Protocol, metaclass = ProtocolClass ):
 
 
 class ProtocolMutable(
-    __.typx.Protocol, metaclass = ProtocolClass, instances_mutables = '*'
+    __.typx.Protocol,
+    metaclass = ProtocolClass,
+    class_mutables = abc_class_mutables,
+    instances_mutables = '*',
 ):
     ''' Base protocol class with mutable instance attributes. '''
 
@@ -253,7 +264,9 @@ class ProtocolMutable(
 
 
 class DataclassProtocol(
-    __.typx.Protocol, metaclass = ProtocolDataclass,
+    __.typx.Protocol,
+    metaclass = ProtocolDataclass,
+    class_mutables = abc_class_mutables,
 ):
     ''' Standard base protocol dataclass. '''
 
@@ -264,7 +277,9 @@ class DataclassProtocol(
 
 
 class DataclassProtocolMutable(
-    __.typx.Protocol, metaclass = ProtocolDataclassMutable,
+    __.typx.Protocol,
+    metaclass = ProtocolDataclassMutable,
+    class_mutables = abc_class_mutables,
 ):
     ''' Base protocol dataclass with mutable instance attributes. '''
 

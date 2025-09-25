@@ -21,17 +21,16 @@
 ''' Assert correct function of dictionaries. '''
 
 
-import pytest
-
 from itertools import product
 from types import MappingProxyType as DictionaryProxy
 
-from . import (
+import pytest
+
+from .__ import (
     MODULES_QNAMES,
     PACKAGE_NAME,
     cache_import_module,
 )
-
 
 THESE_MODULE_QNAMES = tuple(
     name for name in MODULES_QNAMES if name.endswith( '.dictionaries' ) )
@@ -67,8 +66,8 @@ def test_100_instantiation( module_qname, class_name ):
     ''' Class instantiates. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
-    dct = factory( *posargs, **nomargs )
+    posargs, _nomargs = select_arguments( class_name )
+    dct = factory( *posargs, **_nomargs )
     assert isinstance( dct, factory )
     simple_posargs, simple_nomargs = select_simple_arguments( class_name )
     dct = factory( *posargs, *simple_posargs, **simple_nomargs )
@@ -92,8 +91,8 @@ def test_102_instantiation( module_qname, class_name ):
     ''' Validator class instantiates. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
-    dct = factory( *posargs, **nomargs )
+    posargs, _nomargs = select_arguments( class_name )
+    dct = factory( *posargs, **_nomargs )
     assert isinstance( dct, factory )
     with pytest.raises( exceptions.EntryInvalidity ):
         dct = factory( *posargs, invalid = 'str' )
@@ -107,8 +106,8 @@ def test_110_attribute_immutability( module_qname, class_name ):
     ''' Dictionary attributes are immutable. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
-    obj = factory( *posargs, **nomargs )
+    posargs, _nomargs = select_arguments( class_name )
+    obj = factory( *posargs, **_nomargs )
     with pytest.raises( AttributeError ):
         obj.attr = 42
 
@@ -121,7 +120,7 @@ def test_200_dictionary_entry_immutability( module_qname, class_name ):
     ''' Dictionary entries are immutable. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     simple_posargs, simple_nomargs = select_simple_arguments( class_name )
     dct = factory( *posargs, *simple_posargs, **simple_nomargs )
     with pytest.raises( exceptions.EntryImmutability ):
@@ -140,7 +139,7 @@ def test_160_or_combines_dictionaries( module_qname, class_name ):
     ''' Dictionary union produces new dictionary with combined entries. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     # Test union of non-overlapping dictionaries
     d1 = factory( *posargs, a = 1 )
     d2 = factory( *posargs, b = 2 )
@@ -167,8 +166,8 @@ def test_161_or_rejects_invalid_operands( module_qname, class_name ):
     ''' Dictionary union rejects non-mapping operands. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
-    dct = factory( *posargs, **nomargs )
+    posargs, _nomargs = select_arguments( class_name )
+    dct = factory( *posargs, **_nomargs )
     assert NotImplemented == dct.__or__( [ ] )
     assert NotImplemented == dct.__ror__( [ ] )
 
@@ -181,7 +180,7 @@ def test_162_or_prevents_key_conflicts( module_qname, class_name ):
     ''' Dictionary union raises error on key conflicts. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     d1 = factory( *posargs, conflict_key = 1, unique1 = 2 )
     d2 = factory( *posargs, conflict_key = 3, unique2 = 4 )
     d3 = { 'conflict_key': 2, 'unique3': 5 }
@@ -204,7 +203,7 @@ def test_170_and_intersects_mappings( module_qname, class_name ):
     ''' Dictionary intersection with mapping matches key-value pairs. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     d1 = factory( *posargs, a = 1, b = 2, c = 3 )
     d2 = factory( *posargs, a = 1, b = 3, d = 4 )
     d3 = { 'a': 1, 'c': 3, 'e': 5 }
@@ -227,7 +226,7 @@ def test_171_and_filters_by_keys( module_qname, class_name ):
     ''' Dictionary intersection with set filters by keys. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     d1 = factory( *posargs, a = 1, b = 2, c = 3 )
     s1 = { 'a', 'b' }
     d2 = d1 & s1
@@ -249,8 +248,8 @@ def test_172_and_rejects_invalid_operands( module_qname, class_name ):
     ''' Dictionary intersection rejects invalid operands. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
-    dct = factory( *posargs, **nomargs )
+    posargs, _nomargs = select_arguments( class_name )
+    dct = factory( *posargs, **_nomargs )
     assert NotImplemented == dct.__and__( [ ] )
     assert NotImplemented == dct.__rand__( [ ] )
 
@@ -263,7 +262,7 @@ def test_202_validator_dictionary_validation( module_qname, class_name ):
     ''' Validator dictionary validates entries during creation. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     with pytest.raises( exceptions.EntryInvalidity ):
         factory( *posargs, invalid = 'str' )
 
@@ -384,7 +383,7 @@ def test_220_duplication( module_qname, class_name ):
     ''' Dictionary is duplicable. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     odct = factory( *posargs, a = 1, b = 2 )
     ddct = odct.copy( )
     assert odct == ddct
@@ -399,7 +398,7 @@ def test_221_dictionary_iterability( module_qname, class_name ):
     ''' Dictionary is iterable. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     simple_posargs, simple_nomargs = select_simple_arguments( class_name )
     dct = factory( *posargs, *simple_posargs, **simple_nomargs )
     assert frozenset( dct.keys( ) ) == frozenset( iter( dct ) )
@@ -414,7 +413,7 @@ def test_222_dictionary_measurability( module_qname, class_name ):
     ''' Dictionary is measurable. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     simple_posargs, simple_nomargs = select_simple_arguments( class_name )
     dct = factory( *posargs, *simple_posargs, **simple_nomargs )
     assert len( dct.keys( ) ) == len( dct )
@@ -430,7 +429,7 @@ def test_225_dictionary_equality( module_qname, class_name ):
     ''' Dictionary is equivalent to another dictionary with same values. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     simple_posargs, simple_nomargs = select_simple_arguments( class_name )
     dct1 = factory( *posargs, *simple_posargs, **simple_nomargs )
     dct2 = dct1.copy( )
@@ -452,7 +451,7 @@ def test_230_string_representation( module_qname, class_name ):
     ''' Dictionary has expected string representations. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     simple_posargs, simple_nomargs = select_simple_arguments( class_name )
     dct = factory( *posargs, *simple_posargs, **simple_nomargs )
     cdct = dict( dct )
@@ -469,7 +468,7 @@ def test_240_dictionary_entry_optional_retrieval( module_qname, class_name ):
     ''' Default value on optional access of dictionary entry. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     simple_posargs, simple_nomargs = select_simple_arguments( class_name )
     dct = factory( *posargs, *simple_posargs, **simple_nomargs )
     assert None is dct.get( 'baz' )
@@ -487,7 +486,7 @@ def test_250_with_data( module_qname, class_name ):
     ''' Dictionary creates new instance with different data. '''
     module = cache_import_module( module_qname )
     factory = getattr( module, class_name )
-    posargs, nomargs = select_arguments( class_name )
+    posargs, _ = select_arguments( class_name )
     d1 = factory( *posargs, a = 1, b = 2 )
     new_data = { 'c': 3, 'd': 4 }
     d2 = d1.with_data( new_data )

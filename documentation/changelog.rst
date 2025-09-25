@@ -23,6 +23,23 @@ Release Notes
 
 .. towncrier release notes start
 
+frigid 4.2 (2025-09-25)
+=======================
+
+Enhancements
+------------
+
+- Internal simplification to reduce dependency on auxiliary functions from
+  ``classcore`` package.
+
+
+Repairs
+-------
+
+- Fix runtime compatibility issues with PyPy interpreter by ensuring proper mutability
+  of internal attributes for exceptions, protocol classes, and dictionaries.
+
+
 Frigid 4.1 (2025-07-02)
 =======================
 

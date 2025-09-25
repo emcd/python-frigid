@@ -21,16 +21,15 @@
 ''' Assert correct function of modules. '''
 
 
-import pytest
-
 from itertools import product
 
-from . import (
+import pytest
+
+from .__ import (
     MODULES_QNAMES,
     PACKAGE_NAME,
     cache_import_module,
 )
-
 
 THESE_MODULE_QNAMES = tuple(
     name for name in MODULES_QNAMES if name.endswith( '.modules' ) )
@@ -93,7 +92,8 @@ def test_500_module_reclassification_by_dict( module_qname, class_name ):
     assert not isinstance( m1, Module )
     assert not isinstance( m2, Module )
     assert not isinstance( m3, Module )
-    module.reclassify_modules( attrs, recursive = True )
+    with pytest.warns( DeprecationWarning ):
+        module.reclassify_modules( attrs, recursive = True )
     assert isinstance( m1, Module )
     assert isinstance( m2, Module )
     assert not isinstance( m3, Module )
@@ -112,13 +112,14 @@ def test_501_module_reclassification_by_name( module_qname, class_name ):
     ''' Modules are correctly reclassified as immutable from name. '''
     module = cache_import_module( module_qname )
     Module = getattr( module, class_name )
-    from types import ModuleType
     from sys import modules
+    from types import ModuleType
     test_module = ModuleType( f"{PACKAGE_NAME}.test" )
     test_module.__package__ = PACKAGE_NAME
     modules[ test_module.__name__ ] = test_module
     assert not isinstance( test_module, Module )
-    module.reclassify_modules( test_module.__name__ )
+    with pytest.warns( DeprecationWarning ):
+        module.reclassify_modules( test_module.__name__ )
     assert isinstance( test_module, Module )
     with pytest.raises( exceptions.AttributeImmutability ):
         test_module.new_attr = 42
@@ -137,7 +138,8 @@ def test_502_module_reclassification_by_object( module_qname, class_name ):
     test_module = ModuleType( f"{PACKAGE_NAME}.test" )
     test_module.__package__ = PACKAGE_NAME
     assert not isinstance( test_module, Module )
-    module.reclassify_modules( test_module )
+    with pytest.warns( DeprecationWarning ):
+        module.reclassify_modules( test_module )
     assert isinstance( test_module, Module )
     with pytest.raises( exceptions.AttributeImmutability ):
         test_module.new_attr = 42
@@ -161,7 +163,8 @@ def test_503_recursive_module_reclassification( module_qname, class_name ):
     assert not isinstance( root, Module )
     assert not isinstance( sub1, Module )
     assert not isinstance( sub2, Module )
-    module.reclassify_modules( root, recursive = True )
+    with pytest.warns( DeprecationWarning ):
+        module.reclassify_modules( root, recursive = True )
     assert isinstance( root, Module )
     assert isinstance( sub1, Module )
     assert isinstance( sub2, Module )
@@ -190,7 +193,8 @@ def test_504_module_reclassification_respects_package(
     root.external = external
     assert not isinstance( root, Module )
     assert not isinstance( external, Module )
-    module.reclassify_modules( root )
+    with pytest.warns( DeprecationWarning ):
+        module.reclassify_modules( root )
     assert isinstance( root, Module )
     assert not isinstance( external, Module )
     with pytest.raises( exceptions.AttributeImmutability ):
@@ -213,7 +217,8 @@ def test_505_module_reclassification_requires_package(
     m1 = ModuleType( f"{PACKAGE_NAME}.test1" )
     attrs = { 'module1': m1 }  # Missing __package__ or __name__
     assert not isinstance( m1, Module )
-    module.reclassify_modules( attrs )
+    with pytest.warns( DeprecationWarning ):
+        module.reclassify_modules( attrs )
     assert not isinstance( m1, Module )
     m1.new_attr = 42  # Should work
     assert 42 == m1.new_attr
@@ -273,7 +278,13 @@ def test_602_finalize_module_with_dynadoc_introspection(
     test_module.__package__ = PACKAGE_NAME
     assert not isinstance( test_module, Module )
     # This should exercise the dynadoc_introspection conditional branch
-    introspection_control = base.dynadoc_introspection_control_on_class
+    # Create a simple introspection control for testing
+    import dynadoc.context as ddoc_context
+    class_control = ddoc_context.ClassIntrospectionControl(
+        inheritance = True )
+    introspection_control = ddoc_context.IntrospectionControl( 
+        class_control = class_control 
+    )
     module.finalize_module( 
         test_module, 
         dynadoc_introspection = introspection_control 
@@ -298,7 +309,13 @@ def test_603_finalize_module_with_both_dynadoc_params(
     test_module.__package__ = PACKAGE_NAME
     assert not isinstance( test_module, Module )
     # This should exercise both conditional branches
-    introspection_control = base.dynadoc_introspection_control_on_class
+    # Create a simple introspection control for testing
+    import dynadoc.context as ddoc_context
+    class_control = ddoc_context.ClassIntrospectionControl(
+        inheritance = True )
+    introspection_control = ddoc_context.IntrospectionControl( 
+        class_control = class_control 
+    )
     fragments_table = { 'version': '1.0.0', 'description': 'Test module' }
     module.finalize_module( 
         test_module, 

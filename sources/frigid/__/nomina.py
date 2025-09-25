@@ -23,7 +23,7 @@
 # ruff: noqa: F401
 
 
-from classcore.standard.nomina import (
+from classcore.standard.nomina import ( # isort: skip
                             AttributesNamer,
                             BehaviorExclusionVerifiersOmni,
     DecorationPreparers as  ClassDecorationPreparers,
