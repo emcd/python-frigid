@@ -22,5 +22,4 @@ ValidatorDictionary     # unused class
 install                 # unused function
 
 # --- BEGIN: Injected by Copier ---
-Omnierror              # unused base exception class for derivation
 # --- END: Injected by Copier ---
