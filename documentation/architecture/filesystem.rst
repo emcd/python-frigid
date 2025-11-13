@@ -414,18 +414,8 @@ Development-specific files are organized in ``.auxiliary/``:
 
     .auxiliary/
     ├── notes/                       # Development notes and session state
-    │   ├── todo.md                 # Current development TODOs
-    │   └── session-*.md            # Session-specific notes
     ├── scribbles/                   # Temporary scratch files
-    │   └── (ephemeral content)     # Experiments, debugging artifacts
     └── instructions/                # Cached development guidelines
-        ├── architecture.rst         # Architecture documentation guide
-        ├── nomenclature.rst         # Naming conventions guide
-        ├── nomenclature-latin.rst   # Latin-derived vocabulary
-        ├── nomenclature-germanic.rst # Germanic-derived vocabulary
-        ├── practices.rst            # Development practices guide
-        ├── requirements.rst         # Requirements documentation guide
-        └── tests.rst                # Test development guidelines
 
 Purpose and Usage
 -------------------------------------------------------------------------------
@@ -464,85 +454,17 @@ The ``.auxiliary/`` directory is excluded from package distributions:
 Configuration Files
 ===============================================================================
 
-Project Configuration
--------------------------------------------------------------------------------
-
 ``pyproject.toml``
-  Centralized project configuration following PEP 518/PEP 621:
-
-  * Package metadata (name, version, description, authors)
-  * Dependencies (runtime and development)
-  * Build system configuration (hatch)
-  * Tool configurations (pytest, coverage, ruff, pyright)
-  * Entry points and optional dependencies
+  Centralized project configuration following PEP 518/PEP 621 with package
+  metadata, dependencies, build system (hatch), and tool configurations
+  (pytest, coverage, ruff, pyright).
 
 ``README.rst``
-  Project overview and quick start:
-
-  * Brief description and key features
-  * Installation instructions
-  * Basic usage examples
-  * Links to documentation
-  * Contribution guidelines
+  Project overview with key features, installation instructions, basic
+  examples, and contribution guidelines.
 
 ``LICENSE.txt``
-  Apache License 2.0:
-
-  * Open source license terms
-  * Copyright information
-  * Legal permissions and limitations
-
-Development Tool Configuration
--------------------------------------------------------------------------------
-
-Tool configurations are centralized in ``pyproject.toml``:
-
-**Hatch** (``[tool.hatch]``):
-
-* Build system configuration
-* Environment definitions
-* Version management
-* Distribution settings
-
-**Pytest** (``[tool.pytest.ini_options]``):
-
-* Test discovery patterns
-* Coverage reporting
-* Test execution options
-* Fixture configuration
-
-**Ruff** (``[tool.ruff]``):
-
-* Linting rules and exclusions
-* Code style enforcement
-* Import sorting
-* Line length and formatting
-
-**Pyright** (``[tool.pyright]``):
-
-* Type checking strictness
-* Python version targeting
-* Type stub paths
-* Reportable issues
-
-**Coverage** (``[tool.coverage]``):
-
-* Coverage measurement configuration
-* Exclusion patterns
-* Reporting thresholds
-* Branch coverage settings
-
-Data Resources
-===============================================================================
-
-The ``data/`` directory (if present) contains resources intended for package
-distribution. Currently, frigid does not include data resources, but the
-structure supports future additions such as:
-
-* Configuration templates
-* Default settings files
-* Static assets (if applicable)
-* Resource files accessed via ``importlib.resources``
+  Apache License 2.0 with copyright and legal terms.
 
 Architecture Evolution
 ===============================================================================

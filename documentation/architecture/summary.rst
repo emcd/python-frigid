@@ -21,11 +21,11 @@
 System Overview
 *******************************************************************************
 
-Frigid is a Python library that provides immutable data structures and class
-behaviors through a layered architecture. The system enforces immutability
-at multiple levels - from low-level dictionary implementations to high-level
-class decorators - while maintaining compatibility with Python's standard
-library patterns and third-party tools like dataclasses.
+The package provides immutable data structures and class behaviors through a
+layered architecture. The system enforces immutability at multiple levels -
+from low-level dictionary implementations to high-level class decorators -
+while maintaining compatibility with Python's standard library patterns and
+third-party tools like dataclasses.
 
 Purpose and Scope
 ===============================================================================
@@ -46,87 +46,23 @@ Major Components
 
 The system is organized into distinct layers that build upon each other:
 
-Public API Layer
--------------------------------------------------------------------------------
+**Public API Layer**
+  Modules that provide user-facing functionality: dictionaries, namespaces,
+  classes (metaclasses and decorators), modules, sequences, exceptions, and
+  installers. See ``architecture/filesystem.rst`` for detailed module
+  descriptions.
 
-**dictionaries.py**
-  Immutable dictionary implementations with two variants:
+**Core Implementation Layer**
+  Internal ``__`` subpackage containing ImmutableDictionary, centralized
+  imports, type aliases, documentation fragments, and internal exceptions.
+  See ``architecture/filesystem.rst`` for detailed module descriptions.
 
-  - ``Dictionary``: Standard immutable dictionary similar to dict but frozen
-  - ``ValidatorDictionary``: Dictionary with validation on initialization
-  - Provides set operations (union, intersection) not available on MappingProxyType
+**Foundation Dependencies**
+  External libraries providing core functionality:
 
-**namespaces.py**
-  Immutable namespace objects similar to ``types.SimpleNamespace`` but with
-  frozen attributes after creation.
-
-**classes.py**
-  Metaclasses and decorators for creating immutable classes:
-
-  - Metaclasses (Class, Dataclass, AbstractBaseClass, ProtocolClass, etc.)
-  - Base classes (Object, DataclassObject, Protocol variants)
-  - Decorators (with_standard_behaviors, dataclass_with_standard_behaviors)
-
-**modules.py**
-  Immutable module types and utilities for freezing module-level constants
-  after initialization.
-
-**sequences.py**
-  Utility functions for creating immutable sequences, primarily the ``one()``
-  function for single-item tuples.
-
-**exceptions.py**
-  Exception hierarchy for immutability violations:
-
-  - ``AttributeImmutability``: Raised when modifying immutable attributes
-  - ``EntryImmutability``: Raised when modifying immutable dictionary entries
-  - ``EntryInvalidity``: Raised when validation fails
-
-**installers.py**
-  Convenience utilities for installing frigid functions into Python builtins.
-
-Core Implementation Layer
--------------------------------------------------------------------------------
-
-Located in the ``__`` subpackage (internal implementation):
-
-**ImmutableDictionary** (``__/dictionaries.py``)
-  The foundational immutable dictionary class that all other dictionary-based
-  structures build upon. Subclasses ``dict`` and uses behavioral flags to
-  enforce immutability after initialization.
-
-**imports.py** (``__/imports.py``)
-  Centralized import hub providing all external dependencies through a single
-  namespace. Primary dependencies include classcore, dynadoc, absence, and
-  typing_extensions.
-
-**nomina.py** (``__/nomina.py``)
-  Type aliases, type variables, and naming utilities used throughout the
-  package.
-
-**doctab.py** (``__/doctab.py``)
-  Documentation fragments table for dynamic documentation generation via
-  dynadoc.
-
-**exceptions.py** (``__/exceptions.py``)
-  Internal exception classes used by the implementation layer.
-
-Foundation Dependencies
--------------------------------------------------------------------------------
-
-**classcore**
-  Provides the core class factory mechanism and attribute protection system.
-  Frigid delegates most low-level immutability enforcement to classcore's
-  ``standard`` module while providing higher-level API and configuration.
-
-**dynadoc**
-  Enables dynamic documentation generation using reusable fragments. All
-  classes define ``_dynadoc_fragments_`` attributes referencing documentation
-  strings from the doctab.
-
-**absence**
-  Provides the ``absent`` sentinel value for distinguishing missing values
-  from ``None`` in optional parameters.
+  - **classcore**: Class factory mechanism and attribute protection system
+  - **dynadoc**: Dynamic documentation generation using reusable fragments
+  - **absence**: Sentinel value for distinguishing missing values from ``None``
 
 Component Relationships
 ===============================================================================
@@ -348,16 +284,16 @@ Compatibility
 
 * Works with dataclasses and other decorators
 * Compatible with protocols and abstract base classes
-* Supports pickling and standard Python introspection
+* Supports standard Python introspection
 * Respects existing Python conventions
 
 Performance
 -------------------------------------------------------------------------------
 
 * Centralized imports reduce per-module import overhead
-* Delegation to classcore leverages optimized C code where available
 * Minimal runtime overhead beyond Python's standard attribute access
 * No runtime code generation or bytecode manipulation
+* Delegation to classcore for efficient attribute protection
 
 System Constraints
 ===============================================================================

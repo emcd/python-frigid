@@ -103,7 +103,7 @@ Primary Objectives
 **GOAL-003: Maintain compatibility with Python ecosystem**
 
 * Success metric: Compatible with type checkers (mypy, pyright)
-* Success metric: Works with pickle, copy, and standard introspection tools
+* Success metric: Works with standard introspection tools
 * Success metric: Integrates with dataclasses and other decorators
 
 **GOAL-004: Support gradual adoption**
@@ -290,63 +290,45 @@ Requirements:
 Non-Functional Requirements
 ===============================================================================
 
-Performance Requirements
--------------------------------------------------------------------------------
-
-**NFR-001: Low Overhead**
-
-* Import time < 100ms on standard hardware
-* Immutable dictionary operations within 2x of built-in dict performance
-* Attribute access on immutable objects within 1.5x of regular classes
-* Memory overhead < 10% compared to mutable equivalents
-
-**NFR-002: Scalability**
-
-* Support dictionaries with 1M+ entries without performance degradation
-* Support class hierarchies with 10+ levels of inheritance
-* Minimal performance impact from attribute protection
-
 Compatibility Requirements
 -------------------------------------------------------------------------------
 
-**NFR-003: Python Version Support**
+**NFR-001: Python Version Support**
 
 * Support Python 3.10+ (latest stable versions)
 * Follow Python's deprecation schedule for older versions
 * Test against multiple Python implementations (CPython priority)
 
-**NFR-004: Type Checking Compatibility**
+**NFR-002: Type Checking Compatibility**
 
 * Full type hint coverage for public APIs
 * Compatible with mypy, pyright, and other type checkers
 * Proper generic type support for containers
 * dataclass_transform decorator for dataclass metaclasses
 
-**NFR-005: Ecosystem Integration**
+**NFR-003: Ecosystem Integration**
 
-* Pickle support for all immutable types
-* Copy module compatibility (deepcopy, copy)
 * Works with standard introspection (inspect module)
 * Compatible with other decorators and metaclasses
 
 Usability Requirements
 -------------------------------------------------------------------------------
 
-**NFR-006: API Familiarity**
+**NFR-004: API Familiarity**
 
 * Immutable types mirror built-in type interfaces
 * Method names follow Python naming conventions
 * Consistent behavior with Python's data model
 * Familiar initialization patterns
 
-**NFR-007: Error Messages**
+**NFR-005: Error Messages**
 
 * Informative exception messages with context
 * Clear indication of which attribute/entry caused violation
 * Helpful suggestions for common mistakes
 * Stack traces point to user code, not library internals
 
-**NFR-008: Documentation Quality**
+**NFR-006: Documentation Quality**
 
 * Comprehensive API documentation for all public symbols
 * Practical examples for each major feature
@@ -357,14 +339,14 @@ Usability Requirements
 Maintainability Requirements
 -------------------------------------------------------------------------------
 
-**NFR-009: Code Quality**
+**NFR-007: Code Quality**
 
 * Type hints for all public and internal APIs
 * Test coverage > 95% for all modules
 * Automated testing on multiple Python versions
 * Linting with ruff, type checking with pyright
 
-**NFR-010: Architectural Clarity**
+**NFR-008: Architectural Clarity**
 
 * Clear separation between public API and implementation
 * Layered architecture documented
@@ -374,7 +356,7 @@ Maintainability Requirements
 Reliability Requirements
 -------------------------------------------------------------------------------
 
-**NFR-011: Robustness**
+**NFR-009: Robustness**
 
 * Graceful handling of edge cases (empty collections, None values)
 * No silent failures or data corruption
@@ -384,7 +366,7 @@ Reliability Requirements
 Security Requirements
 -------------------------------------------------------------------------------
 
-**NFR-012: Practical Immutability**
+**NFR-010: Practical Immutability**
 
 * Immutability enforced for normal usage patterns
 * Clear documentation that circumvention is possible
@@ -414,17 +396,8 @@ Compatibility Constraints
 -------------------------------------------------------------------------------
 
 * Must work with dataclasses decorator
-* Must support Python's pickling protocol
 * Must be compatible with metaclass conflicts resolution
 * Must work with standard library introspection tools
-
-Performance Constraints
--------------------------------------------------------------------------------
-
-* Cannot use runtime code generation (impacts startup time)
-* Cannot significantly impact import time
-* Memory overhead must remain reasonable for large collections
-* Attribute access must remain fast for real-time applications
 
 Assumptions
 -------------------------------------------------------------------------------
