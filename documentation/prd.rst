@@ -133,78 +133,18 @@ Secondary Objectives
 * Success metric: Examples cover common use cases
 * Success metric: Migration guides assist users transitioning from mutable code
 
-Target Users
-===============================================================================
-
-Primary User Personas
--------------------------------------------------------------------------------
-
-**Backend Python Developer**
-
-* Experience: 2-5 years with Python
-* Needs: Thread-safe data structures, configuration management
-* Context: Building web services and APIs
-* Pain points: Debugging race conditions, unintended state mutations
-* Technical proficiency: Comfortable with decorators, type hints
-
-**Library Author**
-
-* Experience: 5+ years with Python
-* Needs: Stable public APIs, consistent object behavior
-* Context: Publishing open-source or internal libraries
-* Pain points: API stability, versioning, backward compatibility
-* Technical proficiency: Deep Python knowledge, metaclasses, protocols
-
-**Data Engineer**
-
-* Experience: 3-7 years with Python
-* Needs: Immutable data pipelines, cacheable results
-* Context: ETL processes, data transformations
-* Pain points: Cache invalidation, data consistency
-* Technical proficiency: Strong with dataclasses, type hints, functional patterns
-
-**Scientific Computing Developer**
-
-* Experience: Varied (1-10+ years)
-* Needs: Immutable parameters, reproducible computations
-* Context: Research, numerical computing, simulations
-* Pain points: Parameter tracking, result reproducibility
-* Technical proficiency: NumPy, dataclasses, type annotations
-
-User Needs and Motivations
--------------------------------------------------------------------------------
-
-* **Correctness**: Prevent accidental mutations that cause bugs
-* **Concurrency**: Safe data sharing across threads/processes
-* **Performance**: Avoid defensive copying overhead
-* **Maintainability**: Clear intent through immutable types
-* **Interoperability**: Work with existing Python tools and libraries
-
-Usage Contexts
--------------------------------------------------------------------------------
-
-* Web application configuration objects
-* API request/response models
-* Shared cache keys and values
-* Functional programming pipelines
-* Thread-safe message passing
-* Domain model value objects
-* Immutable test fixtures
-
 Functional Requirements
 ===============================================================================
 
-Immutable Dictionary (Priority: Critical)
+Immutable Dictionary
 -------------------------------------------------------------------------------
 
-**REQ-001: Standard Immutable Dictionary**
+**REQ-001: Standard Immutable Dictionary** (Priority: Critical)
 
-Priority: Critical
+Provide an immutable dictionary type similar to dict that prevents
+modifications after creation.
 
-As a Python developer, I want an immutable dictionary similar to dict so that
-I can prevent accidental modifications to my data structures.
-
-Acceptance Criteria:
+Requirements:
 
 * Initialization from iterables, mappings, and keyword arguments
 * All read operations (``__getitem__``, ``get``, ``keys``, ``values``,
@@ -214,47 +154,37 @@ Acceptance Criteria:
 * Supports equality comparison and hashing
 * Preserves dict-like repr and iteration order
 
-**REQ-002: Set Operations on Dictionaries**
+**REQ-002: Set Operations on Dictionaries** (Priority: High)
 
-Priority: High
+Support set-like operations for combining immutable dictionaries.
 
-As a developer working with multiple dictionaries, I want set-like operations
-(union, intersection) so that I can combine immutable dictionaries while
-maintaining immutability.
-
-Acceptance Criteria:
+Requirements:
 
 * Union operation (``|``) creates new immutable dictionary
 * Intersection operation (``&``) creates new immutable dictionary
 * Operations return same type as operands (subclass-aware)
 * Type signatures accept both mutable and immutable dictionaries
 
-**REQ-003: Dictionary with Validation**
+**REQ-003: Dictionary with Validation** (Priority: High)
 
-Priority: High
+Provide a dictionary variant that validates entries on initialization.
 
-As a developer creating validated data structures, I want a dictionary that
-validates entries on initialization so that I can ensure data integrity.
-
-Acceptance Criteria:
+Requirements:
 
 * Accepts validator function during initialization
 * Validator receives all entries and raises exception on invalid data
 * Validation occurs before immutability is enforced
 * Clear error messages indicate which entries failed validation
 
-Immutable Namespace (Priority: Critical)
+Immutable Namespace
 -------------------------------------------------------------------------------
 
-**REQ-004: Immutable Namespace Object**
+**REQ-004: Immutable Namespace Object** (Priority: Critical)
 
-Priority: Critical
+Provide an immutable namespace type similar to types.SimpleNamespace for
+simple immutable objects with attribute access.
 
-As a Python developer, I want an immutable namespace similar to
-types.SimpleNamespace so that I can create simple immutable objects with
-attribute access.
-
-Acceptance Criteria:
+Requirements:
 
 * Initialization from iterables, mappings, and keyword arguments
 * Attribute read access (``__getattr__``)
@@ -262,17 +192,14 @@ Acceptance Criteria:
 * Supports equality comparison
 * Readable repr showing all attributes
 
-Immutable Classes (Priority: Critical)
+Immutable Classes
 -------------------------------------------------------------------------------
 
-**REQ-005: Metaclass for Immutable Classes**
+**REQ-005: Metaclass for Immutable Classes** (Priority: Critical)
 
-Priority: Critical
+Provide metaclasses for creating immutable class hierarchies.
 
-As a library author, I want metaclasses for creating immutable class
-hierarchies so that I can build consistent immutable APIs.
-
-Acceptance Criteria:
+Requirements:
 
 * Metaclass ``Class`` for standard immutable classes
 * Metaclass ``Dataclass`` for immutable dataclasses
@@ -281,14 +208,12 @@ Acceptance Criteria:
 * Attributes can be set during ``__init__``
 * Attribute protection activates after ``__init__`` completes
 
-**REQ-006: Decorator for Immutable Classes**
+**REQ-006: Decorator for Immutable Classes** (Priority: Critical)
 
-Priority: Critical
+Provide decorators to make existing classes immutable without changing
+inheritance.
 
-As a Python developer, I want decorators to make existing classes immutable
-so that I can add immutability without changing class inheritance.
-
-Acceptance Criteria:
+Requirements:
 
 * ``with_standard_behaviors`` decorator for any class
 * ``dataclass_with_standard_behaviors`` combines dataclass and immutability
@@ -296,14 +221,11 @@ Acceptance Criteria:
 * Compatible with inheritance hierarchies
 * Preserves type hints and docstrings
 
-**REQ-007: Selective Mutability**
+**REQ-007: Selective Mutability** (Priority: High)
 
-Priority: High
+Support marking specific attributes as mutable for gradual adoption.
 
-As a developer with legacy code, I want to mark specific attributes as
-mutable so that I can adopt immutability gradually.
-
-Acceptance Criteria:
+Requirements:
 
 * Metaclass parameter ``instances_mutables`` lists mutable attributes
 * Decorator parameter ``instances_mutables`` lists mutable attributes
@@ -311,63 +233,52 @@ Acceptance Criteria:
 * Class attributes remain protected by default
 * Clear error messages distinguish protected vs. mutable attributes
 
-Immutable Modules (Priority: Medium)
+Immutable Modules
 -------------------------------------------------------------------------------
 
-**REQ-008: Immutable Module Type**
+**REQ-008: Immutable Module Type** (Priority: Medium)
 
-Priority: Medium
+Provide immutable module types to prevent modification of module-level
+constants.
 
-As a library author, I want immutable modules so that I can prevent
-modification of module-level constants.
-
-Acceptance Criteria:
+Requirements:
 
 * ``Module`` class extends types.ModuleType
 * Module attributes cannot be modified after ``finalize_module`` call
 * Integration with dynadoc for documentation generation
 * Compatible with standard module importing
 
-Utility Functions (Priority: Medium)
+Utility Functions
 -------------------------------------------------------------------------------
 
-**REQ-009: Sequence Utilities**
+**REQ-009: Sequence Utilities** (Priority: Medium)
 
-Priority: Medium
+Provide readable utilities for creating immutable sequences.
 
-As a Python developer, I want readable utilities for creating immutable
-sequences so that my code is more maintainable.
-
-Acceptance Criteria:
+Requirements:
 
 * ``one(x)`` creates single-item tuple more readably than ``(x,)``
 * Compatible with type checkers
 * Minimal performance overhead
 
-**REQ-010: Builtins Installation**
+**REQ-010: Builtins Installation** (Priority: Low)
 
-Priority: Low
+Support optional installation of frigid functions into builtins.
 
-As a developer, I want to optionally install frigid functions into builtins
-so that they are available throughout my application.
-
-Acceptance Criteria:
+Requirements:
 
 * Installer function adds frigid utilities to builtins
 * Opt-in mechanism (not automatic)
 * Clear documentation about when to use
 
-Exception Handling (Priority: Critical)
+Exception Handling
 -------------------------------------------------------------------------------
 
-**REQ-011: Clear Exception Hierarchy**
+**REQ-011: Clear Exception Hierarchy** (Priority: Critical)
 
-Priority: Critical
+Provide clear exception hierarchy for debugging immutability violations.
 
-As a developer debugging immutability violations, I want clear exception
-messages so that I can quickly identify and fix issues.
-
-Acceptance Criteria:
+Requirements:
 
 * ``AttributeImmutability`` for attribute violations (inherits AttributeError)
 * ``EntryImmutability`` for dictionary entry violations (inherits TypeError)
