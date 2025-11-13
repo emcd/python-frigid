@@ -26,5 +26,39 @@ Test Plans
 
    summary
 
+Test Structure
+===============================================================================
 
-.. todo:: Add test plan documents to toctree.
+Tests mirror the source package structure:
+
+.. code-block::
+
+    tests/
+    ├── test_000_modules/           # Module-level tests
+    │   ├── test_010_classes.py     # Tests for classes.py
+    │   ├── test_020_dictionaries.py # Tests for dictionaries.py
+    │   ├── test_030_namespaces.py  # Tests for namespaces.py
+    │   ├── test_040_sequences.py   # Tests for sequences.py
+    │   └── test_050_modules.py     # Tests for modules.py
+    ├── test_100_edge_cases/        # Edge case and integration tests
+    └── fixtures/                   # Shared test fixtures
+
+Naming Conventions
+-------------------------------------------------------------------------------
+
+**File naming**: ``test_<priority>_<module>.py``
+
+* Priority indicates test execution order (000, 010, 020, etc.)
+* Module name matches the source module being tested
+
+**Test function naming**: ``test_<number>_<description>``
+
+* Number indicates test execution order within file
+* Description uses snake_case and clearly states what is tested
+
+Coverage Targets
+-------------------------------------------------------------------------------
+
+* >95% line coverage for source code
+* 100% coverage of public API surface
+* All documented examples tested via doctest

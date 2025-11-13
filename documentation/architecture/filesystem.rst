@@ -280,66 +280,9 @@ The package uses dynadoc for dynamic documentation generation:
 Test Organization
 ===============================================================================
 
-Test Structure
--------------------------------------------------------------------------------
-
-Tests mirror the source package structure:
-
-.. code-block::
-
-    tests/
-    ├── test_000_modules/           # Module-level tests
-    │   ├── test_010_classes.py     # Tests for classes.py
-    │   ├── test_020_dictionaries.py # Tests for dictionaries.py
-    │   ├── test_030_namespaces.py  # Tests for namespaces.py
-    │   ├── test_040_sequences.py   # Tests for sequences.py
-    │   └── test_050_modules.py     # Tests for modules.py
-    ├── test_100_edge_cases/        # Edge case and integration tests
-    └── fixtures/                   # Shared test fixtures
-
-This organization follows the `test development guidelines
-<https://raw.githubusercontent.com/emcd/python-project-common/refs/tags/docs-1/documentation/common/tests.rst>`_.
-
-Test Naming Conventions
--------------------------------------------------------------------------------
-
-**File naming**: ``test_<priority>_<module>.py``
-
-* Priority indicates test execution order (000, 010, 020, etc.)
-* Module name matches the source module being tested
-
-**Test function naming**: ``test_<number>_<description>``
-
-* Number indicates test execution order within file
-* Description uses snake_case and clearly states what is tested
-
-**Example**:
-
-.. code-block:: python
-
-    # In tests/test_000_modules/test_020_dictionaries.py
-    def test_010_dictionary_initialization_from_kwargs( ):
-        ''' Dictionary can be initialized from keyword arguments. '''
-
-    def test_020_dictionary_prevents_modification( ):
-        ''' Dictionary raises exception on modification attempt. '''
-
-Test Coverage
--------------------------------------------------------------------------------
-
-The test suite aims for comprehensive coverage:
-
-* Unit tests for all public APIs
-* Edge case tests for boundary conditions
-* Integration tests for component interactions
-* Doctest examples in documentation
-* Type checking via pyright
-
-Coverage targets:
-
-* >95% line coverage for source code
-* 100% coverage of public API surface
-* All documented examples tested via doctest
+Tests mirror the source package structure and follow project naming conventions.
+For detailed information about test structure, naming conventions, and coverage
+targets, see ``architecture/testplans/index.rst``.
 
 Documentation Organization
 ===============================================================================
@@ -353,26 +296,16 @@ Project documentation resides in ``documentation/``:
 
     documentation/
     ├── index.rst                   # Documentation home
+    ├── prd.rst                    # Product requirements document
+    ├── contribution.rst           # Contribution guidelines
     ├── architecture/               # Architecture documentation
     │   ├── index.rst              # Architecture overview
     │   ├── summary.rst            # System architecture summary
     │   ├── filesystem.rst         # This file
-    │   ├── decisions/             # Architectural decision records (ADRs)
-    │   │   └── index.rst          # ADR index
+    │   ├── decisions/             # Architectural decision records
     │   ├── designs/               # Detailed design documents
-    │   │   └── index.rst          # Design documents index
     │   └── testplans/             # Test planning documentation
-    │       ├── index.rst          # Test plans index
-    │       └── summary.rst        # Test coverage summary
-    ├── examples/                   # Usage examples
-    │   ├── index.rst              # Examples overview
-    │   ├── classes.rst            # Immutable classes examples
-    │   ├── dictionaries.rst       # Dictionary examples
-    │   ├── namespaces.rst         # Namespace examples
-    │   ├── sequences.rs           # Sequence utilities examples
-    │   └── modules.rst            # Module examples
-    ├── prd.rst                    # Product requirements document
-    └── contribution.rst           # Contribution guidelines
+    └── examples/                   # Usage examples for each module
 
 Documentation Types
 -------------------------------------------------------------------------------
