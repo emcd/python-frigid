@@ -1,7 +1,7 @@
 # Project Context
 
 ## Purpose
-The `frigid` project provides a Python library for **immutable data structures** - collections and objects which cannot be modified after creation. It aims to offer drop-in replacements for mutable built-in types (like `dict` and `SimpleNamespace`) and mechanisms to make arbitrary classes immutable, enhancing safety and predictability in Python programs while maintaining compatibility with standard Python idioms.
+This project provides a Python library for **immutable data structures** - collections and objects which cannot be modified after creation. It aims to offer drop-in replacements for mutable built-in types (like `dict` and `SimpleNamespace`) and mechanisms to make arbitrary classes immutable, enhancing safety and predictability in Python programs while maintaining compatibility with standard Python idioms.
 
 ## Tech Stack
 - **Language**: Python >= 3.10
