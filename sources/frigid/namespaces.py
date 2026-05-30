@@ -59,9 +59,9 @@ class Namespace( metaclass = _classes.Class ): # noqa: PLW1641
         *iterables: __.DictionaryPositionalArgument[ __.H, __.V ],
         **attributes: __.DictionaryNominativeArgument[ __.V ],
     ) -> None:
-        self.__dict__.update(
+        self.__dict__.update( # pyright: ignore
             __.ImmutableDictionary(
-                *iterables, **attributes ) ) # pyright: ignore
+                *iterables, **attributes ) )
         super( ).__init__( )
 
     def __repr__( self ) -> str:
