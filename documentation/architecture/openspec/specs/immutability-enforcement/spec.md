@@ -32,6 +32,14 @@ Priority: Critical
 - **WHEN** an entry is set after dictionary `__init__` completes
 - **THEN** `EntryImmutability` MUST be raised
 
+#### Scenario: Attribute deletion after initialization
+- **WHEN** an attribute is deleted after `__init__` completes
+- **THEN** `AttributeImmutability` MUST be raised
+
+#### Scenario: Dictionary entry deletion after initialization
+- **WHEN** an entry is deleted after dictionary `__init__` completes
+- **THEN** `EntryImmutability` MUST be raised
+
 ### Requirement: Behavioral Flags
 
 The system MUST use a behavioral flags mechanism to track immutability state,

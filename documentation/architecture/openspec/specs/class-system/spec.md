@@ -66,7 +66,7 @@ Priority: High
 ### Requirement: Protocol Metaclasses
 
 The system MUST provide metaclasses for protocol classes and protocol
-dataclasses with immutable instances.
+dataclasses, supporting both immutable and mutable variants.
 
 Priority: Medium
 
@@ -75,10 +75,27 @@ Priority: Medium
 - **THEN** the class MUST behave as a protocol
 - **AND** instances MUST have immutable attributes
 
+#### Scenario: Defining a mutable protocol
+- **WHEN** a class uses `metaclass=ProtocolClass` with
+  `instances_mutables='*'`
+- **THEN** instances MUST allow attribute modification
+
+#### Scenario: Defining an immutable protocol dataclass
+- **WHEN** a class uses `metaclass=ProtocolDataclass` with
+  `typing.Protocol`
+- **THEN** the class MUST behave as a protocol dataclass
+- **AND** instances MUST have immutable attributes
+
+#### Scenario: Defining a mutable protocol dataclass
+- **WHEN** a class uses `metaclass=ProtocolDataclassMutable` with
+  `typing.Protocol`
+- **THEN** instances MUST allow attribute modification
+
 ### Requirement: Base Classes
 
 The system MUST provide ready-to-use base classes: `Object`, `ObjectMutable`,
-`DataclassObject`, `DataclassObjectMutable`, and protocol variants.
+`DataclassObject`, `DataclassObjectMutable`, `Protocol`, `ProtocolMutable`,
+`DataclassProtocol`, and `DataclassProtocolMutable`.
 
 Priority: High
 
