@@ -69,12 +69,29 @@ state. During `__init__`, immutability is not active. After `__init__`,
 same type and validator but different data. Subclasses override to maintain
 behavior.
 
-## Initialization Flow
+## Data Flow
+
+### Initialization Flow
+
+Immutable objects follow a consistent initialization pattern:
 
 1. Object creation begins with `__new__`
 2. During `__init__`, attributes/entries can be freely set
-3. After `__init__` completes, protection activates
-4. Subsequent modification attempts raise immutability exceptions
+3. After `__init__` completes, protection activates via `__setattr__`/`__delattr__` overrides
+4. Subsequent modification or deletion attempts raise immutability exceptions
+
+For `ImmutableDictionary`, the `_behaviors_` set controls this: `'immutability'`
+is absent during `__init__` (mutations allowed) and added after initialization.
+
+### Dictionary Operation Flow
+
+Set operations (union, intersection) maintain immutability guarantees:
+
+1. User invokes operation: `dict1 | dict2`
+2. Operation method computes new data (checks for key conflicts on union)
+3. Method calls `with_data()` to create a new instance
+4. New instance has the same type and validator (if applicable)
+5. Returns a new immutable dictionary — originals are unchanged
 
 ## Dependencies
 
@@ -95,3 +112,8 @@ Omniexception (BaseException)
 ```
 
 Dual inheritance allows catching via frigid's hierarchy or Python built-ins.
+
+## Sister Projects
+
+- **[classcore](https://github.com/emcd/python-classcore)** — Foundational class factory and behavior system. Provides the metaclass machinery, attribute protection, and concealment that frigid delegates to.
+- **[accretive](https://github.com/emcd/python-accretive)** — Grow-only data structures. Like frigid, but values can be added (never modified or removed) after creation. Useful for registries, plugin systems, and sticky-state configurations.
