@@ -79,3 +79,15 @@ Priority: Medium
 - **WHEN** a user reads the package documentation
 - **THEN** they MUST find a note explaining the practical nature of
   immutability enforcement
+
+### Requirement: Delegation of Concealment
+
+The system MUST delegate attribute concealment (`dir()` filtering) to
+classcore, ensuring internal attributes are hidden from the public
+interface without frigid reimplementing the concealment mechanism.
+
+Priority: Medium
+
+#### Scenario: Concealment via class factory
+- **WHEN** a frigid class is constructed via `_class_factory`
+- **THEN** classcore's concealment mechanism MUST be applied automatically

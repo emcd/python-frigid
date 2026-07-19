@@ -121,15 +121,43 @@ Priority: High
 ### Requirement: Selective Mutability
 
 The system MUST support declaring specific attributes as mutable while
-maintaining immutability for all other attributes.
+maintaining immutability for all other attributes. Frigid accepts mutables
+specifiers (names, compiled regexes, predicates, or the wildcard `'*'`)
+and delegates matching to classcore.
 
 Priority: High
 
 #### Scenario: Named mutable attributes
-- **WHEN** a class specifies mutable attributes by name
+- **WHEN** a class specifies mutable attributes by exact name
 - **THEN** those attributes MUST be modifiable after initialization
 - **AND** all other attributes MUST remain immutable
+
+#### Scenario: Regex-matched mutable attributes
+- **WHEN** a class specifies mutable attributes by compiled regex pattern
+- **THEN** attributes whose names match the pattern MUST be mutable
+- **AND** non-matching attributes MUST remain immutable
+
+#### Scenario: Predicate-matched mutable attributes
+- **WHEN** a class specifies mutable attributes by predicate function
+- **THEN** attributes for which the predicate returns `True` MUST be mutable
+- **AND** other attributes MUST remain immutable
 
 #### Scenario: Wildcard mutability
 - **WHEN** `instances_mutables='*'` is specified
 - **THEN** all instance attributes MUST be mutable
+
+### Requirement: Attribute Concealment
+
+The system MUST delegate `dir()` filtering to classcore, which conceals
+internal attributes (those matching the package-specific naming pattern)
+from the public interface.
+
+Priority: Medium
+
+#### Scenario: Concealed attributes excluded from dir
+- **WHEN** a user calls `dir()` on a frigid object
+- **THEN** internal attributes (e.g., `_frigid_*_`) MUST NOT appear
+
+#### Scenario: Concealment delegated to classcore
+- **WHEN** a frigid class is constructed via the class factory
+- **THEN** classcore's concealment mechanism MUST be applied
