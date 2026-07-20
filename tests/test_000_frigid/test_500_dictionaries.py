@@ -152,10 +152,12 @@ def test_160_or_combines_dictionaries( module_qname, class_name ):
     d5 = d1 | d3
     assert isinstance( d5, factory )
     assert d5 == { 'a': 1, 'c': 3, 'd': 4 }
+    assert list( d5.keys( ) ) == [ 'a', 'c', 'd' ]
     # Reverse union with regular dict
     d6 = d3 | d1
     assert isinstance( d6, factory )
     assert d6 == { 'a': 1, 'c': 3, 'd': 4 }
+    assert list( d6.keys( ) ) == [ 'c', 'd', 'a' ]
 
 
 @pytest.mark.parametrize(
