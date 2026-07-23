@@ -10,7 +10,8 @@ clear                   # unused method
 copy                    # unused method
 pop                     # unused method
 popitem                 # unused method
-ModuleReclassifier      # unused variable
+ClassDecorator          # unused import
+ModuleReclassifier      # unused import
 arguments               # unused variable
 ObjectMutable           # unused class
 DataclassObject         # unused class

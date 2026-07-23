@@ -95,7 +95,7 @@ Set operations (union, intersection) maintain immutability guarantees:
 
 ## Dependencies
 
-- **classcore** `~=1.10`: Class factory mechanism and attribute protection
+- **classcore** `~=1.11`: Class factory mechanism and attribute protection
 - **dynadoc** `~=1.4`: Dynamic documentation generation with reusable fragments
 - **absence** `~=1.1`: Sentinel for absent values (distinguishes missing from `None`)
 - **typing-extensions**: Backported typing features
