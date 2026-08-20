@@ -161,7 +161,7 @@ class ProtocolClass( type( __.typx.Protocol ) ):
 
 @_class_factory( )
 @__.typx.dataclass_transform( frozen_default = True, kw_only_default = True )
-class ProtocolDataclass( type( __.typx.Protocol ) ):
+class ProtocolDataclass( ProtocolClass ):
     ''' Metaclass for standard protocol dataclasses. '''
 
     _dynadoc_fragments_ = (
@@ -182,7 +182,7 @@ class ProtocolDataclass( type( __.typx.Protocol ) ):
 
 @_class_factory( )
 @__.typx.dataclass_transform( kw_only_default = True )
-class ProtocolDataclassMutable( type( __.typx.Protocol ) ):
+class ProtocolDataclassMutable( ProtocolDataclass ):
     ''' Metaclass for protocol dataclasses with mutable instances.
     '''
 
