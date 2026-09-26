@@ -23,6 +23,34 @@ Release Notes
 
 .. towncrier release notes start
 
+frigid 4.3 (2026-09-25)
+=======================
+
+Enhancements
+------------
+
+- Align protocol metaclass inheritance with ``classcore``.
+  ``ProtocolDataclass`` now inherits from ``ProtocolClass``, and
+  ``ProtocolDataclassMutable`` inherits from ``ProtocolDataclass``. A
+  protocol dataclass can now also be a ``ProtocolClass`` protocol without
+  a metaclass conflict.
+
+
+Notices
+-------
+
+- Require ``classcore~=1.12`` and ``dynadoc~=1.4``. Earlier releases
+  accepted ``classcore~=1.4`` and ``dynadoc~=1.2``.
+
+
+Repairs
+-------
+
+- Fix reflected dictionary union order. ``other | dictionary`` now keeps
+  ``other``'s entries first. Previously ``__ror__`` delegated to
+  ``__or__`` and reversed that order.
+
+
 frigid 4.2 (2025-09-25)
 =======================
 
