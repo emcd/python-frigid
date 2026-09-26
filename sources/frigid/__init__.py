@@ -27,8 +27,8 @@
 
 
 from . import __
-# --- BEGIN: Injected by Copier ---
 from . import exceptions
+# --- BEGIN: Injected by Copier ---
 # --- END: Injected by Copier ---
 
 from .classes import *
@@ -40,7 +40,7 @@ from .sequences import *
 
 
 __version__: __.typx.Annotated[ str, __.ddoc.Visibilities.Reveal ]
-__version__ = '4.2'
+__version__ = '4.3'
 
 
 finalize_module( __name__, dynadoc_table = __.fragments, recursive = True )

@@ -10,7 +10,8 @@ clear                   # unused method
 copy                    # unused method
 pop                     # unused method
 popitem                 # unused method
-ModuleReclassifier      # unused variable
+ClassDecorator          # unused import
+ModuleReclassifier      # unused import
 arguments               # unused variable
 ObjectMutable           # unused class
 DataclassObject         # unused class
@@ -22,5 +23,4 @@ ValidatorDictionary     # unused class
 install                 # unused function
 
 # --- BEGIN: Injected by Copier ---
-Omnierror              # unused base exception class for derivation
 # --- END: Injected by Copier ---

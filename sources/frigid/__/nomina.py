@@ -26,10 +26,15 @@
 from classcore.standard.nomina import ( # isort: skip
                             AttributesNamer,
                             BehaviorExclusionVerifiersOmni,
+                            ClassDecorator,
+                            ClassDecorators,
+                            ClassDecoratorFactory,
     DecorationPreparers as  ClassDecorationPreparers,
                             DynadocConfiguration,
+                            ModuleReclassifier,
                             concealment_label,
                             immutability_label,
+                            is_public_identifier,
 )
 
 from . import imports as __
@@ -45,16 +50,6 @@ ComparisonResult: __.typx.TypeAlias = bool | __.types.NotImplementedType
 NominativeArguments: __.typx.TypeAlias = __.cabc.Mapping[ str, __.typx.Any ]
 PositionalArguments: __.typx.TypeAlias = __.cabc.Sequence[ __.typx.Any ]
 
-# TODO: Import ClassDecorator aliases from 'classcore' once documentation
-#       fragments have been removed from them.
-ClassDecorator: __.typx.TypeAlias = (
-    __.cabc.Callable[ [ type[ U ] ], type[ U ] ] )
-ClassDecorators: __.typx.TypeAlias = (
-    __.cabc.Sequence[ ClassDecorator[ U ] ] )
-ClassDecoratorFactory: __.typx.TypeAlias = (
-    __.cabc.Callable[ ..., ClassDecorator[ U ] ] )
-ModuleReclassifier: __.typx.TypeAlias = __.cabc.Callable[
-    [ __.cabc.Mapping[ str, __.typx.Any ] ], None ]
 
 DictionaryNominativeArgument: __.typx.TypeAlias = __.typx.Annotated[
     V,
@@ -81,9 +76,3 @@ package_name = __name__.split( '.', maxsplit = 1 )[ 0 ]
 
 def calculate_attrname( level: str, core: str ) -> str:
     return f"_{package_name}_{level}_{core}_"
-
-
-# TODO: Import 'is_public_identifier' from 'classcore'.
-def is_public_identifier( name: str ) -> bool:
-    ''' Is Python identifier public? '''
-    return not name.startswith( '_' )

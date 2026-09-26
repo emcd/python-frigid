@@ -16,8 +16,8 @@ readme = { 'file' = 'README.rst', 'content-type' = 'text/x-rst' }
 requires-python = '>= 3.10'
 dependencies = [
   'absence~=1.1',
-  'classcore~=1.4',
-  'dynadoc~=1.2',
+  'classcore~=1.12',
+  'dynadoc~=1.4',
   'typing-extensions',
   # --- BEGIN: Injected by Copier ---
   # --- END: Injected by Copier ---
@@ -32,6 +32,7 @@ classifiers = [ # https://pypi.org/classifiers
   'Programming Language :: Python :: 3.11',
   'Programming Language :: Python :: 3.12',
   'Programming Language :: Python :: 3.13',
+  'Programming Language :: Python :: 3.14',
   'Programming Language :: Python :: Implementation :: CPython',
   'Programming Language :: Python :: Implementation :: PyPy',
   # --- END: Injected by Copier ---
@@ -95,12 +96,12 @@ strict-naming = false
 python = '3.10'
 [tool.hatch.envs.develop]
 description = ''' Development environment. '''
+builder = true
 dependencies = [
-  'Jinja2',
   'coverage[toml]',
   'furo',
   'isort',
-  'packaging',
+  'myst-parser',
   'pre-commit',
   'pyright',
   'pytest',
@@ -130,10 +131,10 @@ docsgen = [
 ]
 linters = [
   """ruff check --quiet sources documentation tests""",
+  """vibelinter check""",
   # --- BEGIN: Injected by Copier ---
   # --- END: Injected by Copier ---
   """isort --check-only --diff sources tests""",
-  """vulture""",
   """pyright sources""",
 ]
 packagers = [
@@ -175,7 +176,8 @@ python = [
     '3.11',
     '3.12',
     '3.13',
-    'pypy3.10',
+    '3.14',
+    'pypy3.11',
 ]
 [tool.hatch.version]
 path = 'sources/frigid/__init__.py'
@@ -347,6 +349,14 @@ showcontent = true
 directory = 'repair'
 name = 'Repairs'
 showcontent = true
+
+[tool.vibelinter]
+context = 3
+exclude_paths = [ '.auxiliary/**', '.venv/**', 'tests/**',  ]
+[tool.vibelinter.rules.VBL201]
+hub_patterns = [
+  '__init__.py', '__main__.py', '__.py', '__/imports.py', '__/nomina.py',
+]
 
 [tool.vulture]
 paths = [ '.auxiliary/configuration/vulturefood.py', 'sources' ]
