@@ -21,8 +21,6 @@
 ''' Assert correct function of modules. '''
 
 
-from itertools import product
-
 import pytest
 
 from .__ import (
@@ -39,10 +37,8 @@ base = cache_import_module( f"{PACKAGE_NAME}.__" )
 exceptions = cache_import_module( f"{PACKAGE_NAME}.exceptions" )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_100_instantiation( module_qname, class_name ):
     ''' Class instantiates with name. '''
     module = cache_import_module( module_qname )
@@ -52,10 +48,8 @@ def test_100_instantiation( module_qname, class_name ):
     assert 'foo' == obj.__name__
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_101_immutability( module_qname, class_name ):
     ''' Module prevents attribute modification. '''
     module = cache_import_module( module_qname )
@@ -70,10 +64,8 @@ def test_101_immutability( module_qname, class_name ):
         del obj.__name__
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_500_module_reclassification_by_dict( module_qname, class_name ):
     ''' Modules are correctly reclassified as immutable from dictionary. '''
     module = cache_import_module( module_qname )
@@ -104,10 +96,8 @@ def test_500_module_reclassification_by_dict( module_qname, class_name ):
     m3.new_attr = 42  # Should work
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_501_module_reclassification_by_name( module_qname, class_name ):
     ''' Modules are correctly reclassified as immutable from name. '''
     module = cache_import_module( module_qname )
@@ -126,10 +116,8 @@ def test_501_module_reclassification_by_name( module_qname, class_name ):
     modules.pop( test_module.__name__ )  # Cleanup
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_502_module_reclassification_by_object( module_qname, class_name ):
     ''' Modules are correctly reclassified as immutable from object. '''
     module = cache_import_module( module_qname )
@@ -145,10 +133,8 @@ def test_502_module_reclassification_by_object( module_qname, class_name ):
         test_module.new_attr = 42
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_503_recursive_module_reclassification( module_qname, class_name ):
     ''' Recursive module reclassification works correctly. '''
     module = cache_import_module( module_qname )
@@ -176,10 +162,8 @@ def test_503_recursive_module_reclassification( module_qname, class_name ):
         sub2.new_attr = 42
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_504_module_reclassification_respects_package(
     module_qname, class_name
 ):
@@ -203,10 +187,8 @@ def test_504_module_reclassification_respects_package(
     assert 42 == external.new_attr
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_505_module_reclassification_requires_package(
     module_qname, class_name
 ):
@@ -224,10 +206,8 @@ def test_505_module_reclassification_requires_package(
     assert 42 == m1.new_attr
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_600_finalize_module_with_defaults( module_qname, class_name ):
     ''' finalize_module works with default absent values. '''
     module = cache_import_module( module_qname )
@@ -243,10 +223,8 @@ def test_600_finalize_module_with_defaults( module_qname, class_name ):
         test_module.new_attr = 42
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_601_finalize_module_with_dynadoc_table( module_qname, class_name ):
     ''' finalize_module works with explicit dynadoc_table. '''
     module = cache_import_module( module_qname )
@@ -263,10 +241,8 @@ def test_601_finalize_module_with_dynadoc_table( module_qname, class_name ):
         test_module.new_attr = 42
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_602_finalize_module_with_dynadoc_introspection(
     module_qname, class_name
 ):
@@ -294,10 +270,8 @@ def test_602_finalize_module_with_dynadoc_introspection(
         test_module.new_attr = 42
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_603_finalize_module_with_both_dynadoc_params(
     module_qname, class_name
 ):
@@ -327,10 +301,8 @@ def test_603_finalize_module_with_both_dynadoc_params(
         test_module.new_attr = 42
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_900_docstring_sanity( module_qname, class_name ):
     ''' Class has valid docstring. '''
     module = cache_import_module( module_qname )

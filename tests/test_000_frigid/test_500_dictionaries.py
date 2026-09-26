@@ -21,7 +21,6 @@
 ''' Assert correct function of dictionaries. '''
 
 
-from itertools import product
 from types import MappingProxyType as DictionaryProxy
 
 import pytest
@@ -58,10 +57,8 @@ def select_simple_arguments( class_name ):
     return posargs, nomargs
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_100_instantiation( module_qname, class_name ):
     ''' Class instantiates. '''
     module = cache_import_module( module_qname )
@@ -83,10 +80,8 @@ def test_100_instantiation( module_qname, class_name ):
     assert ( 'bar', 'foo', 'orb', 'unicorn' ) == tuple( sorted( dct.keys( ) ) )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', VALIDATOR_NAMES )
 def test_102_instantiation( module_qname, class_name ):
     ''' Validator class instantiates. '''
     module = cache_import_module( module_qname )
@@ -98,10 +93,8 @@ def test_102_instantiation( module_qname, class_name ):
         dct = factory( *posargs, invalid = 'str' )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_110_attribute_immutability( module_qname, class_name ):
     ''' Dictionary attributes are immutable. '''
     module = cache_import_module( module_qname )
@@ -112,10 +105,8 @@ def test_110_attribute_immutability( module_qname, class_name ):
         obj.attr = 42
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_200_dictionary_entry_immutability( module_qname, class_name ):
     ''' Dictionary entries are immutable. '''
     module = cache_import_module( module_qname )
@@ -131,10 +122,8 @@ def test_200_dictionary_entry_immutability( module_qname, class_name ):
         dct[ 'baz' ] = 43
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_160_or_combines_dictionaries( module_qname, class_name ):
     ''' Dictionary union produces new dictionary with combined entries. '''
     module = cache_import_module( module_qname )
@@ -160,10 +149,8 @@ def test_160_or_combines_dictionaries( module_qname, class_name ):
     assert list( d6.keys( ) ) == [ 'c', 'd', 'a' ]
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_161_or_rejects_invalid_operands( module_qname, class_name ):
     ''' Dictionary union rejects non-mapping operands. '''
     module = cache_import_module( module_qname )
@@ -174,10 +161,8 @@ def test_161_or_rejects_invalid_operands( module_qname, class_name ):
     assert NotImplemented == dct.__ror__( [ ] )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_162_or_prevents_key_conflicts( module_qname, class_name ):
     ''' Dictionary union raises error on key conflicts. '''
     module = cache_import_module( module_qname )
@@ -197,10 +182,8 @@ def test_162_or_prevents_key_conflicts( module_qname, class_name ):
     assert "entry for 'conflict_key'" in str( excinfo.value )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_170_and_intersects_mappings( module_qname, class_name ):
     ''' Dictionary intersection with mapping matches key-value pairs. '''
     module = cache_import_module( module_qname )
@@ -220,10 +203,8 @@ def test_170_and_intersects_mappings( module_qname, class_name ):
     assert d6 == { 'a': 1, 'c': 3 }
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_171_and_filters_by_keys( module_qname, class_name ):
     ''' Dictionary intersection with set filters by keys. '''
     module = cache_import_module( module_qname )
@@ -242,10 +223,8 @@ def test_171_and_filters_by_keys( module_qname, class_name ):
     assert d4 == { 'a': 1, 'b': 2 }
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_172_and_rejects_invalid_operands( module_qname, class_name ):
     ''' Dictionary intersection rejects invalid operands. '''
     module = cache_import_module( module_qname )
@@ -256,10 +235,8 @@ def test_172_and_rejects_invalid_operands( module_qname, class_name ):
     assert NotImplemented == dct.__rand__( [ ] )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', VALIDATOR_NAMES )
 def test_202_validator_dictionary_validation( module_qname, class_name ):
     ''' Validator dictionary validates entries during creation. '''
     module = cache_import_module( module_qname )
@@ -269,10 +246,8 @@ def test_202_validator_dictionary_validation( module_qname, class_name ):
         factory( *posargs, invalid = 'str' )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', VALIDATOR_NAMES )
 def test_203_validator_dictionary_generator_handling(
     module_qname, class_name
 ):
@@ -304,10 +279,8 @@ def test_203_validator_dictionary_generator_handling(
         factory( int_validator, gen )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', VALIDATOR_NAMES )
 def test_204_validator_dictionary_operations_preserve_validation(
     module_qname, class_name
 ):
@@ -344,10 +317,8 @@ def test_204_validator_dictionary_operations_preserve_validation(
 
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, VALIDATOR_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', VALIDATOR_NAMES )
 def test_205_validator_dictionary_complex_validation(
     module_qname, class_name
 ):
@@ -377,10 +348,8 @@ def test_205_validator_dictionary_complex_validation(
     assert d4 == { 'zz': 2 }
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_220_duplication( module_qname, class_name ):
     ''' Dictionary is duplicable. '''
     module = cache_import_module( module_qname )
@@ -392,10 +361,8 @@ def test_220_duplication( module_qname, class_name ):
     assert odct is not ddct
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_221_dictionary_iterability( module_qname, class_name ):
     ''' Dictionary is iterable. '''
     module = cache_import_module( module_qname )
@@ -407,10 +374,8 @@ def test_221_dictionary_iterability( module_qname, class_name ):
     assert tuple( dct.items( ) ) == tuple( zip( dct.keys( ), dct.values( ) ) )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_222_dictionary_measurability( module_qname, class_name ):
     ''' Dictionary is measurable. '''
     module = cache_import_module( module_qname )
@@ -423,10 +388,8 @@ def test_222_dictionary_measurability( module_qname, class_name ):
     assert len( dct.values( ) ) == len( dct )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_225_dictionary_equality( module_qname, class_name ):
     ''' Dictionary is equivalent to another dictionary with same values. '''
     module = cache_import_module( module_qname )
@@ -445,10 +408,8 @@ def test_225_dictionary_equality( module_qname, class_name ):
     assert dct1 != ( )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_230_string_representation( module_qname, class_name ):
     ''' Dictionary has expected string representations. '''
     module = cache_import_module( module_qname )
@@ -462,10 +423,8 @@ def test_230_string_representation( module_qname, class_name ):
     assert base.ccutils.qualify_class_name( type( dct ) ) in repr( dct )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_240_dictionary_entry_optional_retrieval( module_qname, class_name ):
     ''' Default value on optional access of dictionary entry. '''
     module = cache_import_module( module_qname )
@@ -480,10 +439,8 @@ def test_240_dictionary_entry_optional_retrieval( module_qname, class_name ):
     assert 1 == dct.get( 'foo', -1 )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_250_with_data( module_qname, class_name ):
     ''' Dictionary creates new instance with different data. '''
     module = cache_import_module( module_qname )
@@ -501,10 +458,8 @@ def test_250_with_data( module_qname, class_name ):
             d2 = d1.with_data( invalid = 'str' )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_260_subclasses_abc_dictionary( module_qname, class_name ):
     ''' Subclasses 'collections.abc.Mapping'. '''
     from collections.abc import Mapping as AbstractDictionary
@@ -513,10 +468,8 @@ def test_260_subclasses_abc_dictionary( module_qname, class_name ):
     assert issubclass( factory, AbstractDictionary )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_900_docstring_sanity( module_qname, class_name ):
     ''' Class has valid docstring. '''
     module = cache_import_module( module_qname )
