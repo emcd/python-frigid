@@ -34,6 +34,25 @@ class _Data( _frigid.DataclassProtocol ): pass
 class _Combined( _Data, _Regular ): pass
 
 
+_TYPING_MACHINERY_NAMES = (
+    '_is_runtime_protocol',
+    '__non_callable_proto_members__',
+    '__typing_is_deprecated_inherited_runtime_protocol__',
+)
+_ABC_MACHINERY_NAMES = (
+    '_abc_cache',
+    '_abc_negative_cache',
+    '_abc_negative_cache_version',
+    '_abc_registry',
+)
+_PROTOCOL_BASES_NAMES = (
+    'Protocol',
+    'ProtocolMutable',
+    'DataclassProtocol',
+    'DataclassProtocolMutable',
+)
+
+
 def test_100_provide_error_class_failure():
     ''' Error provider raises for unknown error names. '''
     classes_module = cache_import_module( f"{PACKAGE_NAME}.classes" )
@@ -81,3 +100,48 @@ def test_202_protocol_metaclass_composability():
     '''
     assert type( _Combined ) is _frigid.ProtocolDataclass
     assert issubclass( _Combined, _Regular )
+
+
+@pytest.mark.parametrize( 'base_name', _PROTOCOL_BASES_NAMES )
+@pytest.mark.parametrize( 'name', _TYPING_MACHINERY_NAMES )
+def test_300_typing_machinery_names_assignable( base_name, name ):
+    ''' Typing machinery names remain assignable on protocol bases.
+
+        CPython 3.15+ typing sets
+        '__typing_is_deprecated_inherited_runtime_protocol__' during class
+        decoration and again in the 'runtime_checkable' decorator. The
+        '_is_runtime_protocol' and '__non_callable_proto_members__' names
+        are set by 'runtime_checkable'. All three must survive class-level
+        immutability, which is what the typing_class_mutables exemption
+        provides.
+    '''
+    base = getattr( _frigid, base_name )
+    cls = type( f"_Probe{base_name}", ( base, ), { } )
+    setattr( cls, name, True )
+    assert cls.__dict__[ name ] is True
+
+
+@pytest.mark.parametrize( 'base_name', _PROTOCOL_BASES_NAMES )
+@pytest.mark.parametrize( 'name', _ABC_MACHINERY_NAMES )
+def test_301_abc_machinery_names_assignable( base_name, name ):
+    ''' ABC machinery names remain assignable on protocol bases. '''
+    base = getattr( _frigid, base_name )
+    cls = type( f"_Probe{base_name}", ( base, ), { } )
+    setattr( cls, name, True )
+    assert cls.__dict__[ name ] is True
+
+
+@pytest.mark.parametrize( 'base_name', _PROTOCOL_BASES_NAMES )
+def test_302_ordinary_names_remain_immutable( base_name ):
+    ''' Class-level immutability still rejects ordinary names.
+
+        Exempting the typing and ABC machinery must not weaken immutability
+        for anything else.
+    '''
+    exceptions_module = cache_import_module( f"{PACKAGE_NAME}.exceptions" )
+    base = getattr( _frigid, base_name )
+    cls = type( f"_Probe{base_name}", ( base, ), { } )
+    with pytest.raises( exceptions_module.AttributeImmutability ) as exc_info:
+        setattr( cls, 'ordinary', True )
+    assert 'ordinary' in str( exc_info.value )
+    assert base_name in str( exc_info.value )
