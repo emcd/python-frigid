@@ -26,12 +26,6 @@
 from . import __
 
 
-abc_class_mutables = (
-    '_abc_cache',
-    '_abc_negative_cache',
-    '_abc_negative_cache_version',
-    '_abc_registry',
-)
 is_public_identifier = __.is_public_identifier
 mutables_default = ( )
 visibles_default = ( is_public_identifier, )
@@ -239,7 +233,7 @@ class DataclassObjectMutable( metaclass = DataclassMutable ):
 class Protocol(
     __.typx.Protocol,
     metaclass = ProtocolClass,
-    class_mutables = abc_class_mutables,
+    class_mutables = ( *__.abc_class_mutables, *__.typing_class_mutables ),
 ):
     ''' Standard base protocol class. '''
 
@@ -252,7 +246,7 @@ class Protocol(
 class ProtocolMutable(
     __.typx.Protocol,
     metaclass = ProtocolClass,
-    class_mutables = abc_class_mutables,
+    class_mutables = ( *__.abc_class_mutables, *__.typing_class_mutables ),
     instances_mutables = '*',
 ):
     ''' Base protocol class with mutable instance attributes. '''
@@ -266,7 +260,7 @@ class ProtocolMutable(
 class DataclassProtocol(
     __.typx.Protocol,
     metaclass = ProtocolDataclass,
-    class_mutables = abc_class_mutables,
+    class_mutables = ( *__.abc_class_mutables, *__.typing_class_mutables ),
 ):
     ''' Standard base protocol dataclass. '''
 
@@ -279,7 +273,7 @@ class DataclassProtocol(
 class DataclassProtocolMutable(
     __.typx.Protocol,
     metaclass = ProtocolDataclassMutable,
-    class_mutables = abc_class_mutables,
+    class_mutables = ( *__.abc_class_mutables, *__.typing_class_mutables ),
 ):
     ''' Base protocol dataclass with mutable instance attributes. '''
 

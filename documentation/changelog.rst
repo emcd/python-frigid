@@ -23,6 +23,43 @@ Release Notes
 
 .. towncrier release notes start
 
+frigid 4.4 (2026-10-16)
+=======================
+
+Enhancements
+------------
+
+- Support for Python 3.15. The class-level immutability behavior now exempts the
+  names CPython 3.15 typing machinery assigns to protocol classes.
+
+
+Notices
+-------
+
+- Raise the Classcore requirement to ``~= 1.14``. The class-level mutables
+  exemptions for ABC and typing machinery are now imported from
+  ``classcore.standard.nomina`` instead of being maintained locally.
+
+
+Removals
+--------
+
+- Drop support for Python 3.10, Python 3.11, and PyPy. The minimum supported
+  Python version is now 3.12.
+
+
+Repairs
+-------
+
+- Permit CPython 3.15 typing machinery names on immutable classes. CPython 3.15
+  ``typing`` sets ``__typing_is_deprecated_inherited_runtime_protocol__`` during
+  class decoration and again in the ``runtime_checkable`` decorator, and the
+  class-level immutability behavior refused it. The typing and ABC machinery
+  exemptions are now taken from Classcore rather than maintained locally, so
+  ``_is_runtime_protocol`` and ``__non_callable_proto_members__`` are permitted
+  as well.
+
+
 frigid 4.3 (2026-09-25)
 =======================
 

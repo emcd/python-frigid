@@ -32,9 +32,11 @@ from classcore.standard.nomina import ( # isort: skip
     DecorationPreparers as  ClassDecorationPreparers,
                             DynadocConfiguration,
                             ModuleReclassifier,
+                            abc_class_mutables,
                             concealment_label,
                             immutability_label,
                             is_public_identifier,
+                            typing_class_mutables,
 )
 
 from . import imports as __

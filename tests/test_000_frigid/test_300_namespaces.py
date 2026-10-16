@@ -21,8 +21,6 @@
 ''' Assert correct function of namespaces. '''
 
 
-from itertools import product
-
 import pytest
 
 from .__ import (
@@ -39,10 +37,8 @@ base = cache_import_module( f"{PACKAGE_NAME}.__" )
 exceptions = cache_import_module( f"{PACKAGE_NAME}.exceptions" )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_100_instantiation( module_qname, class_name ):
     ''' Class instantiates with various input types. '''
     module = cache_import_module( module_qname )
@@ -60,10 +56,8 @@ def test_100_instantiation( module_qname, class_name ):
     # assert ( 1, 2, True, False ) == tuple( ns2.__dict__.values( )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_101_immutability( module_qname, class_name ):
     ''' Namespace prevents attribute modification after initialization. '''
     module = cache_import_module( module_qname )
@@ -82,10 +76,8 @@ def test_101_immutability( module_qname, class_name ):
         ns2.attr = 42
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_102_string_representation( module_qname, class_name ):
     ''' Namespace has expected string representations. '''
     module = cache_import_module( module_qname )
@@ -97,10 +89,8 @@ def test_102_string_representation( module_qname, class_name ):
     assert 'a = 1, b = 2' in repr( ns2 )
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_105_namespace_equality( module_qname, class_name ):
     ''' Namespace compares properly with other namespaces. '''
     from types import SimpleNamespace
@@ -121,10 +111,8 @@ def test_105_namespace_equality( module_qname, class_name ):
     assert ns4 != ns1
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_106_namespace_initialization_validation( module_qname, class_name ):
     ''' Namespace properly handles various initialization inputs. '''
     module = cache_import_module( module_qname )
@@ -144,10 +132,8 @@ def test_106_namespace_initialization_validation( module_qname, class_name ):
     assert 9 == ns4.i
 
 
-@pytest.mark.parametrize(
-    'module_qname, class_name',
-    product( THESE_MODULE_QNAMES, THESE_CLASSES_NAMES )
-)
+@pytest.mark.parametrize( 'module_qname', THESE_MODULE_QNAMES )
+@pytest.mark.parametrize( 'class_name', THESE_CLASSES_NAMES )
 def test_900_docstring_sanity( module_qname, class_name ):
     ''' Class has valid docstring. '''
     module = cache_import_module( module_qname )

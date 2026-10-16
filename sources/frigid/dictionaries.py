@@ -168,7 +168,7 @@ class _DictionaryOperations( AbstractDictionary[ __.H, __.V ] ):
 class Dictionary( # noqa: PLW1641
     _DictionaryOperations[ __.H, __.V ],
     metaclass = _classes.AbstractBaseClass,
-    class_mutables = _classes.abc_class_mutables,
+    class_mutables = __.abc_class_mutables,
 ):
     ''' Immutable dictionary. '''
 
