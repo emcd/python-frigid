@@ -47,7 +47,7 @@ All modules follow the `__` import pattern: public modules import from
 | Module | Purpose |
 |---|---|
 | `imports.py` | Centralized external library imports |
-| `nomina.py` | Type aliases, type variables, `calculate_attrname()` |
+| `nomina.py` | Type aliases, type variables, `calculate_attrname` namer |
 | `dictionaries.py` | `ImmutableDictionary` — core dict subclass with immutability enforcement |
 | `doctab.py` | Documentation fragments table for dynadoc |
 | `exceptions.py` | Internal exception classes |

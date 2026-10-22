@@ -25,6 +25,7 @@
 
 from classcore.standard.nomina import ( # isort: skip
                             AttributesNamer,
+                            AttrnameCalculator,
                             BehaviorExclusionVerifiersOmni,
                             ClassDecorator,
                             ClassDecorators,
@@ -76,5 +77,4 @@ DictionaryValidator: __.typx.TypeAlias = __.typx.Annotated[
 package_name = __name__.split( '.', maxsplit = 1 )[ 0 ]
 
 
-def calculate_attrname( level: str, core: str ) -> str:
-    return f"_{package_name}_{level}_{core}_"
+calculate_attrname = AttrnameCalculator( package_name = package_name )
