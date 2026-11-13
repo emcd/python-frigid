@@ -154,7 +154,7 @@ def _collect_namer_sites( ):
     sites = [ ]
     for filepath in Path( 'sources' ).rglob( '*.py' ):
         source = filepath.read_text( )
-        path = str( filepath )
+        path = filepath.as_posix( )
         for node in ast.walk( ast.parse( source ) ):
             if isinstance( node, ast.Call ):
                 sites.extend(
@@ -184,7 +184,7 @@ def _collect_namer_definitions( ):
 
     found = [ ]
     for filepath in Path( 'sources' ).rglob( '*.py' ):
-        path = str( filepath )
+        path = filepath.as_posix( )
         nodes = ast.walk( ast.parse( filepath.read_text( ) ) )
         found.extend(
             path for node in nodes
