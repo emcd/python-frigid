@@ -166,6 +166,32 @@ def _collect_namer_sites( ):
     return sites
 
 
+def _collect_namer_definitions( ):
+    ''' Collects source paths binding the namer name. '''
+    import ast
+    from pathlib import Path
+
+    def targets( node ):
+        ''' Binding names introduced by a definition node. '''
+        if isinstance( node, ( ast.FunctionDef, ast.AsyncFunctionDef ) ):
+            return [ node.name ]
+        if isinstance( node, ast.Assign ):
+            return [ t.id for t in node.targets if isinstance( t, ast.Name ) ]
+        if isinstance( node, ast.AnnAssign ):
+            target = node.target
+            return [ target.id ] if isinstance( target, ast.Name ) else [ ]
+        return [ ]
+
+    found = [ ]
+    for filepath in Path( 'sources' ).rglob( '*.py' ):
+        path = str( filepath )
+        nodes = ast.walk( ast.parse( filepath.read_text( ) ) )
+        found.extend(
+            path for node in nodes
+            if 'calculate_attrname' in targets( node ) )
+    return found
+
+
 def test_206_namer_inventory_uses_shared_calculator( ):
     ''' Every namer site in the sources uses the shared calculator.
 
@@ -180,3 +206,16 @@ def test_206_namer_inventory_uses_shared_calculator( ):
         allowed = ( 'calculate_attrname', 'attributes_namer' )
         assert name in allowed, ( path, name )
     assert 5 <= len( sites )
+
+
+def test_207_namer_defined_in_canonical_module_only( ):
+    ''' The namer is bound nowhere outside its canonical module.
+
+        A same-named shadow elsewhere would satisfy the name check in
+        test_206 while not being the shared calculator.
+    '''
+    canonical = 'sources/frigid/__/nomina.py'
+    found = _collect_namer_definitions( )
+    assert found, 'no calculate_attrname definition found; scan is vacuous'
+    for path in found:
+        assert canonical == path, path
