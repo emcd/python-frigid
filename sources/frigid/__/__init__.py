@@ -23,5 +23,6 @@
 
 from .dictionaries import *
 from .doctab import *
+from .exceptions import *
 from .imports import *
 from .nomina import *
